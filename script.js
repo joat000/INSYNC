@@ -404,16 +404,6 @@ function switchMobileTab(tabName) {
 // ============================================
 
 function initializeMobileMiniPreview() {
-    const expandBtn = document.getElementById('expandPreviewBtn');
-    const miniPreview = document.getElementById('mobileMiniPreview');
-
-    if (expandBtn) {
-        expandBtn.addEventListener('click', () => {
-            switchMobileTab('preview');
-            playSound('click');
-        });
-    }
-
     // Update mini preview when text changes
     const textInputs = ['recipientName', 'frontMessage', 'mainMessage'];
     textInputs.forEach(id => {
@@ -422,6 +412,9 @@ function initializeMobileMiniPreview() {
             input.addEventListener('input', debounce(updateMiniPreview, 100));
         }
     });
+
+    // Initial update
+    updateMiniPreview();
 }
 
 function updateMiniPreview() {
@@ -598,16 +591,12 @@ function initializeTextInputs() {
 
         const config = inputs[inputId];
 
-        // Force focus on touch for Android keyboard
-        input.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            this.focus();
-            // Place cursor at end of input
-            if (this.setSelectionRange) {
-                const len = this.value.length;
-                this.setSelectionRange(len, len);
-            }
-        }, { passive: false });
+        // Scroll input into view when focused (helps with mobile keyboard)
+        input.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
 
         input.addEventListener('input', function() {
             const value = this.value || config.default;
