@@ -404,6 +404,16 @@ function switchMobileTab(tabName) {
 // ============================================
 
 function initializeMobileMiniPreview() {
+    const miniPreviewCard = document.getElementById('miniPreviewCard');
+
+    // Tap mini preview to go to full preview
+    if (miniPreviewCard) {
+        miniPreviewCard.addEventListener('click', () => {
+            switchMobileTab('preview');
+            playSound('click');
+        });
+    }
+
     // Update mini preview when text changes
     const textInputs = ['recipientName', 'frontMessage', 'mainMessage'];
     textInputs.forEach(id => {
@@ -593,9 +603,21 @@ function initializeTextInputs() {
 
         // Scroll input into view when focused (helps with mobile keyboard)
         input.addEventListener('focus', function() {
+            const el = this;
+            // Wait for keyboard to open, then scroll
             setTimeout(() => {
-                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 300);
+                // Get sticky preview height to offset scroll
+                const preview = document.getElementById('mobileMiniPreview');
+                const previewHeight = preview?.offsetHeight || 0;
+
+                const rect = el.getBoundingClientRect();
+                const scrollTarget = window.scrollY + rect.top - previewHeight - 20;
+
+                window.scrollTo({
+                    top: Math.max(0, scrollTarget),
+                    behavior: 'smooth'
+                });
+            }, 350);
         });
 
         input.addEventListener('input', function() {

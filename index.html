@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
     <meta name="theme-color" content="#ff1744">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -83,13 +83,16 @@
             </button>
         </div>
 
-        <!-- Mobile Mini Preview (shows while editing) -->
+        <!-- Mobile Live Preview - Always visible while editing -->
         <div class="mobile-mini-preview" id="mobileMiniPreview">
-            <span class="mini-preview-label">Live Preview</span>
             <div class="mini-preview-card" id="miniPreviewCard">
                 <div class="mini-card-front" id="miniCardDisplay">
                     <div class="mini-message">Your card preview</div>
                 </div>
+            </div>
+            <div class="mini-preview-info">
+                <span class="mini-preview-label">✨ Live Preview</span>
+                <span class="mini-preview-hint">Tap card for full view</span>
             </div>
         </div>
 
