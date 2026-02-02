@@ -1,10 +1,8 @@
-# InSync - Deployment Guide
+# NOTE2U - Deployment Guide
 
 ## Pre-Deployment Checklist
 
-Before deploying, make sure to:
-
-1. **Update URLs**: Replace `insync.com` in these files with your actual domain:
+URLs are already configured for `note2u.netlify.app`. If you change domain, update:
    - `index.html` (Open Graph & Twitter meta tags, canonical URL)
    - `robots.txt`
    - `sitemap.xml`

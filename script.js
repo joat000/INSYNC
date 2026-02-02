@@ -128,6 +128,7 @@ function initializeApp() {
     // Mobile-specific initialization
     if (DeviceInfo.isMobile || DeviceInfo.hasTouchScreen) {
         initializeMobileTabs();
+        initializeMobileMiniPreview();
     }
 
     initializeTabs();
@@ -234,6 +235,7 @@ function switchMobileTab(tabName) {
     const toolsPanel = document.getElementById('toolsPanel');
     const previewArea = document.getElementById('previewArea');
     const tabContents = document.querySelectorAll('.tab-content');
+    const miniPreview = document.getElementById('mobileMiniPreview');
 
     // Update mobile tab buttons
     mobileTabs.forEach(tab => {
@@ -243,9 +245,16 @@ function switchMobileTab(tabName) {
     if (tabName === 'preview') {
         toolsPanel.classList.remove('active');
         previewArea.style.display = 'flex';
+        // Hide mini preview when on full preview
+        if (miniPreview) miniPreview.classList.remove('active');
     } else {
         toolsPanel.classList.add('active');
         previewArea.style.display = 'none';
+        // Show mini preview when editing
+        if (miniPreview) {
+            miniPreview.classList.add('active');
+            updateMiniPreview();
+        }
 
         // Show corresponding tab content
         tabContents.forEach(content => content.classList.remove('active'));
@@ -254,6 +263,51 @@ function switchMobileTab(tabName) {
         if (targetContent) {
             targetContent.classList.add('active');
         }
+    }
+}
+
+// ============================================
+// Mobile Mini Preview
+// ============================================
+
+function initializeMobileMiniPreview() {
+    const expandBtn = document.getElementById('expandPreviewBtn');
+    const miniPreview = document.getElementById('mobileMiniPreview');
+
+    if (expandBtn) {
+        expandBtn.addEventListener('click', () => {
+            switchMobileTab('preview');
+            playSound('click');
+        });
+    }
+
+    // Update mini preview when text changes
+    const textInputs = ['recipientName', 'frontMessage', 'mainMessage'];
+    textInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', debounce(updateMiniPreview, 100));
+        }
+    });
+}
+
+function updateMiniPreview() {
+    const miniCard = document.getElementById('miniCardDisplay');
+    const miniMessage = miniCard?.querySelector('.mini-message');
+    const card = document.getElementById('card');
+
+    if (!miniCard) return;
+
+    // Update mini card background to match selected theme
+    const cardStyles = window.getComputedStyle(card);
+    miniCard.style.background = cardStyles.background || state.currentTemplate;
+
+    // Update mini message
+    if (miniMessage) {
+        const frontMsg = document.getElementById('frontMessage')?.value || 'Your card preview';
+        miniMessage.textContent = frontMsg.substring(0, 30) + (frontMsg.length > 30 ? '...' : '');
+        miniMessage.style.color = state.currentColor;
+        miniMessage.style.fontFamily = state.currentFont;
     }
 }
 
