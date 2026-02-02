@@ -1,5 +1,5 @@
 /* ============================================
-   InSync - Valentine's Card Creator
+   NOTE2U - Valentine's Card Creator
    Enhanced 3D & Mobile First CSS
    ============================================ */
 
@@ -46,16 +46,20 @@
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+    height: 100%;
+    /* Prevent layout shift when keyboard opens */
+    overflow: auto;
 }
 
 body {
     font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100%;
     color: var(--white);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    /* Prevent iOS bounce and keyboard issues */
+    position: relative;
 }
 
 /* Parallax Background */
@@ -142,7 +146,7 @@ body {
     letter-spacing: 3px;
 }
 
-.logo-in {
+.logo-note {
     background: linear-gradient(135deg, #ff6b6b 0%, #ff4081 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -150,8 +154,8 @@ body {
     font-weight: 700;
 }
 
-.logo-sync {
-    background: linear-gradient(135deg, #ff4081 0%, #e91e63 100%);
+.logo-2u {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -159,15 +163,31 @@ body {
     position: relative;
 }
 
-.logo-sync::after {
+.logo-2u::after {
     content: '';
     position: absolute;
     bottom: -5px;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, transparent, #ff4081, transparent);
+    background: linear-gradient(90deg, transparent, #ffd700, transparent);
     border-radius: 2px;
+}
+
+/* Keep old classes for compatibility */
+.logo-in {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff4081 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+.logo-sync {
+    background: linear-gradient(135deg, #ff4081 0%, #e91e63 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
 }
 
 .logo-heart {
@@ -556,8 +576,10 @@ body {
     background: rgba(255, 255, 255, 0.1);
     color: var(--white);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 16px; /* Prevents iOS zoom on focus */
     transition: var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .text-input::placeholder {
@@ -568,6 +590,9 @@ body {
     outline: none;
     background: rgba(255, 255, 255, 0.15);
     box-shadow: 0 0 20px rgba(255, 64, 129, 0.3);
+    /* Keep input visible when keyboard opens */
+    position: relative;
+    z-index: 100;
 }
 
 .textarea {

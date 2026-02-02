@@ -1413,7 +1413,7 @@ function handleShare(type) {
         telegram: `https://t.me/share/url?url=${url}&text=${message}`,
         facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
         twitter: `https://twitter.com/intent/tweet?text=${message}&url=${url}`,
-        email: `mailto:?subject=${encodeURIComponent("A Valentine's Card For You 💕")}&body=${message}%0A%0A${url}`,
+        email: `mailto:?subject=${encodeURIComponent("A NOTE2U Card For You 💕")}&body=${message}%0A%0A${url}`,
         sms: DeviceInfo.isIOS ? `sms:&body=${message}%20${url}` : `sms:?body=${message}%20${url}`
     };
 
@@ -1557,6 +1557,23 @@ function downloadViaDataUrl(dataUrl, filename) {
 }
 
 // ============================================
+// iOS Preview Helper
+// ============================================
+
+function openIOSPreview(htmlContent, filename) {
+    // Open the card directly in a new tab - iOS users can use share sheet
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+        newWindow.document.write(htmlContent);
+        newWindow.document.close();
+        showToast('Card opened! Use Share (📤) to save or send 💕');
+    } else {
+        // Popup blocked - copy to clipboard instead
+        showToast('Popup blocked. Try the Share button instead!', true);
+    }
+}
+
+// ============================================
 // Interactive HTML Download - Safari/iOS Compatible
 // ============================================
 
@@ -1589,73 +1606,25 @@ function downloadInteractiveHTML() {
             const filename = `valentine-card-${Date.now()}.html`;
 
             if (DeviceInfo.isIOS) {
-                // iOS: Create a data URL and open in new tab with instructions
-                const reader = new FileReader();
-                reader.onload = function() {
-                    const newWindow = window.open('', '_blank');
-                    if (newWindow) {
-                        newWindow.document.write(`
-                            <!DOCTYPE html>
-                            <html>
-                            <head>
-                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>Save Your Interactive Card</title>
-                                <style>
-                                    body {
-                                        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                                        background: linear-gradient(135deg, #1a1a2e, #16213e);
-                                        min-height: 100vh;
-                                        display: flex;
-                                        flex-direction: column;
-                                        align-items: center;
-                                        justify-content: center;
-                                        padding: 20px;
-                                        margin: 0;
-                                        color: white;
-                                        text-align: center;
-                                    }
-                                    h2 { color: #ff4081; }
-                                    .btn {
-                                        display: inline-block;
-                                        padding: 15px 30px;
-                                        background: linear-gradient(135deg, #ff1744, #ff4081);
-                                        color: white;
-                                        text-decoration: none;
-                                        border-radius: 25px;
-                                        font-weight: bold;
-                                        margin: 10px;
-                                    }
-                                    .instructions {
-                                        background: rgba(255,255,255,0.1);
-                                        padding: 20px;
-                                        border-radius: 15px;
-                                        margin: 20px 0;
-                                    }
-                                    .instructions p { margin: 10px 0; color: #ffb6c1; }
-                                </style>
-                            </head>
-                            <body>
-                                <h2>💕 Interactive Card Created!</h2>
-                                <div class="instructions">
-                                    <p>📱 <strong>To save on iPhone/iPad:</strong></p>
-                                    <p>1. Tap the button below to view the card</p>
-                                    <p>2. Tap the share icon (📤) at the bottom</p>
-                                    <p>3. Scroll down and tap "Save to Files"</p>
-                                    <p>4. Share the file with your loved one!</p>
-                                </div>
-                                <a class="btn" href="data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}" download="${filename}">
-                                    📥 Download Card
-                                </a>
-                                <a class="btn" href="data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}" target="_blank">
-                                    👁️ Preview Card
-                                </a>
-                            </body>
-                            </html>
-                        `);
-                        newWindow.document.close();
-                    }
-                };
-                reader.readAsDataURL(blob);
+                // iOS: Try Web Share API first, fallback to preview
+                const file = new File([blob], filename, { type: 'text/html' });
+
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    // iOS 15+ supports sharing files
+                    navigator.share({
+                        title: 'My Valentine Card 💕',
+                        text: 'I made this special card for you!',
+                        files: [file]
+                    }).then(() => {
+                        showToast('Card shared! 💕');
+                    }).catch(err => {
+                        console.log('Share cancelled or failed, opening preview');
+                        openIOSPreview(htmlContent, filename);
+                    });
+                } else {
+                    // Fallback for older iOS
+                    openIOSPreview(htmlContent, filename);
+                }
             } else if (DeviceInfo.isSafari && !DeviceInfo.isMobile) {
                 // Desktop Safari
                 const url = URL.createObjectURL(blob);
@@ -1754,7 +1723,7 @@ function generateSafariCompatibleHTML(data) {
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ff1744">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>💕 A Valentine's Card For You</title>
+    <title>💕 A NOTE2U Card For You</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Quicksand:wght@400;600&family=Sacramento&family=Satisfy&display=swap" rel="stylesheet">
     <style>
@@ -2002,6 +1971,12 @@ function generateSafariCompatibleHTML(data) {
         .flip-card-back {
             -webkit-transform: rotateY(180deg);
             transform: rotateY(180deg);
+        }
+
+        /* Fix text appearing mirrored - ensure content is readable */
+        .flip-card-back .inside-content {
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
         }
 
         .card {
@@ -2381,7 +2356,7 @@ function generateSafariCompatibleHTML(data) {
         ${memoriesHtml}
 
         <div class="footer">
-            <p>Made with 💕</p>
+            <p>Made with 💕 on NOTE2U</p>
         </div>
     </div>
 
