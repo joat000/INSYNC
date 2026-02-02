@@ -598,6 +598,17 @@ function initializeTextInputs() {
 
         const config = inputs[inputId];
 
+        // Force focus on touch for Android keyboard
+        input.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.focus();
+            // Place cursor at end of input
+            if (this.setSelectionRange) {
+                const len = this.value.length;
+                this.setSelectionRange(len, len);
+            }
+        }, { passive: false });
+
         input.addEventListener('input', function() {
             const value = this.value || config.default;
             const displayEl = document.getElementById(config.display);

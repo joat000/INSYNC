@@ -652,11 +652,15 @@ body {
     transition: var(--transition);
     -webkit-appearance: none;
     appearance: none;
-    /* Ensure input is tappable */
+    /* Ensure input is tappable on mobile */
     touch-action: manipulation;
     -webkit-user-select: text;
     user-select: text;
     cursor: text;
+    /* Android keyboard fixes */
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
 }
 
 .text-input::placeholder {
