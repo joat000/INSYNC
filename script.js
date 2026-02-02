@@ -601,6 +601,24 @@ function initializeTextInputs() {
 
         const config = inputs[inputId];
 
+        // Android: explicitly focus on click to trigger keyboard
+        input.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const el = this;
+
+            // Android workaround: toggle readOnly to force keyboard
+            if (/Android/i.test(navigator.userAgent)) {
+                el.readOnly = true;
+                setTimeout(() => {
+                    el.readOnly = false;
+                    el.focus();
+                    el.click();
+                }, 10);
+            } else {
+                el.focus();
+            }
+        });
+
         // Scroll input into view when focused (helps with mobile keyboard)
         input.addEventListener('focus', function() {
             const el = this;

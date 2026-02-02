@@ -650,20 +650,25 @@ body {
     background: rgba(255, 255, 255, 0.12);
     color: var(--white);
     font-family: inherit;
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    font-size: 16px;
     line-height: 1.4;
-    transition: var(--transition);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    /* Critical for Android keyboard */
     -webkit-appearance: none;
     appearance: none;
-    /* Ensure input is tappable on mobile */
-    touch-action: manipulation;
+    touch-action: auto;
     -webkit-user-select: text;
     user-select: text;
     cursor: text;
-    /* Android keyboard fixes */
-    pointer-events: auto;
+    /* Ensure clickable on Android */
     position: relative;
-    z-index: 10;
+    z-index: 50;
+    isolation: isolate;
+}
+
+/* Fix for Android Chrome keyboard */
+.text-input:read-write {
+    -webkit-user-modify: read-write-plaintext-only;
 }
 
 .text-input::placeholder {
