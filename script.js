@@ -75,6 +75,136 @@ const state = {
 };
 
 // ============================================
+// Auto-Save System
+// ============================================
+
+const STORAGE_KEY = 'note2u_card_draft';
+
+function saveToLocalStorage() {
+    try {
+        const dataToSave = {
+            state: {
+                currentTemplate: state.currentTemplate,
+                currentEnvelope: state.currentEnvelope,
+                currentFont: state.currentFont,
+                currentColor: state.currentColor,
+                photoShape: state.photoShape,
+                photoEditing: state.photoEditing,
+                effect3D: state.effect3D,
+                effects: state.effects
+            },
+            content: {
+                recipientName: document.getElementById('recipientName')?.value || '',
+                frontMessage: document.getElementById('frontMessage')?.value || '',
+                mainMessage: document.getElementById('mainMessage')?.value || '',
+                signOff: document.getElementById('signOff')?.value || '',
+                senderName: document.getElementById('senderName')?.value || ''
+            },
+            photoMemories: state.photoMemories,
+            savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    } catch (e) {
+        console.log('Could not save to localStorage:', e);
+    }
+}
+
+function loadFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return false;
+
+        const data = JSON.parse(saved);
+
+        // Check if saved data is less than 24 hours old
+        if (Date.now() - data.savedAt > 24 * 60 * 60 * 1000) {
+            localStorage.removeItem(STORAGE_KEY);
+            return false;
+        }
+
+        // Restore state
+        if (data.state) {
+            Object.assign(state, data.state);
+        }
+
+        // Restore content after DOM is ready
+        setTimeout(() => {
+            if (data.content) {
+                const fields = ['recipientName', 'frontMessage', 'mainMessage', 'signOff', 'senderName'];
+                fields.forEach(field => {
+                    const el = document.getElementById(field);
+                    if (el && data.content[field]) {
+                        el.value = data.content[field];
+                        // Trigger input event to update preview
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+            }
+
+            // Restore photos
+            if (data.photoMemories && data.photoMemories.length > 0) {
+                state.photoMemories = data.photoMemories;
+                updateMemoriesGallery();
+                if (state.photoMemories.length > 0) {
+                    updateCardPhoto(state.photoMemories[0].data);
+                }
+            }
+
+            // Apply restored state to UI
+            applyRestoredState();
+
+            showToast('Draft restored! 📝');
+        }, 500);
+
+        return true;
+    } catch (e) {
+        console.log('Could not load from localStorage:', e);
+        return false;
+    }
+}
+
+function applyRestoredState() {
+    // Apply template
+    const templateCards = document.querySelectorAll('.template-card');
+    templateCards.forEach(card => {
+        card.classList.toggle('active', card.dataset.template === state.currentTemplate);
+    });
+    const cardEl = document.getElementById('card');
+    if (cardEl) {
+        cardEl.className = 'card ' + state.currentTemplate;
+    }
+
+    // Apply envelope
+    const envelopeCards = document.querySelectorAll('.envelope-card');
+    envelopeCards.forEach(card => {
+        card.classList.toggle('active', card.dataset.envelope === state.currentEnvelope);
+    });
+
+    // Apply font
+    const fontBtns = document.querySelectorAll('.font-btn');
+    fontBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.font === state.currentFont);
+    });
+    const cardFrontContent = document.getElementById('cardFrontContent');
+    const insideContent = document.getElementById('insideContent');
+    if (cardFrontContent) cardFrontContent.style.fontFamily = state.currentFont;
+    if (insideContent) insideContent.style.fontFamily = state.currentFont;
+
+    // Apply color
+    if (cardFrontContent) cardFrontContent.style.color = state.currentColor;
+
+    // Apply 3D effect
+    apply3DEffect();
+}
+
+function clearSavedDraft() {
+    localStorage.removeItem(STORAGE_KEY);
+}
+
+// Debounced auto-save
+const autoSave = debounce(saveToLocalStorage, 1000);
+
+// ============================================
 // Audio Context for Sounds (iOS Compatible)
 // ============================================
 
@@ -118,8 +248,11 @@ function initAudioContext() {
 // ============================================
 
 function initializeApp() {
-    console.log('💕 Valentine Card Creator - Ultimate Edition');
+    console.log('💕 NOTE2U - Valentine Card Creator');
     console.log(`Device: ${DeviceInfo.isMobile ? 'Mobile' : 'Desktop'}, iOS: ${DeviceInfo.isIOS}, Safari: ${DeviceInfo.isSafari}`);
+
+    // Load saved draft if exists
+    loadFromLocalStorage();
 
     initAudioContext();
     createFloatingHearts();
@@ -415,6 +548,7 @@ function initializeTemplates() {
 
         playSound('click');
         trackInteraction('template_change');
+        autoSave();
     });
 }
 
@@ -441,6 +575,7 @@ function initializeEnvelopes() {
         envelope.className = 'envelope ' + envelopeName;
 
         playSound('click');
+        autoSave();
     });
 }
 
@@ -479,6 +614,9 @@ function initializeTextInputs() {
                 const envelopeEl = document.getElementById(config.envelope);
                 if (envelopeEl) envelopeEl.textContent = value;
             }
+
+            // Auto-save on input
+            autoSave();
         });
 
         // Auto-resize textareas
@@ -560,6 +698,7 @@ function initializeFontOptions() {
         if (insideContent) insideContent.style.fontFamily = fontFamily;
 
         playSound('click');
+        autoSave();
     });
 }
 
@@ -589,6 +728,7 @@ function initializeColorOptions() {
         if (customColor) customColor.value = color;
 
         playSound('click');
+        autoSave();
     });
 
     // Custom color picker
@@ -600,6 +740,7 @@ function initializeColorOptions() {
 
             // Remove active from all preset buttons
             colorOptions.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+            autoSave();
         });
     }
 }
@@ -891,6 +1032,7 @@ function initializePhotoMemories() {
                 playSound('pop');
                 showToast(`Photo ${state.photoMemories.length} added! 📷`);
                 trackInteraction('photo_upload');
+                autoSave();
             };
             reader.readAsDataURL(file);
         });
@@ -981,6 +1123,7 @@ function updateMemoriesGallery() {
             const memory = state.photoMemories.find(m => m.id === memoryId);
             if (memory) {
                 memory.caption = this.value;
+                autoSave();
             }
         });
     });
@@ -1007,6 +1150,7 @@ function updateMemoriesGallery() {
                 if (photoShapeOptions) photoShapeOptions.classList.remove('active');
             }
             playSound('click');
+            autoSave();
         });
     });
 
@@ -2410,7 +2554,7 @@ function generateSafariCompatibleHTML(data) {
         ${memoriesHtml}
 
         <div class="footer">
-            <p>Made with 💕 on NOTE2U</p>
+            <p>💕 NOTE2U 💕</p>
         </div>
     </div>
 

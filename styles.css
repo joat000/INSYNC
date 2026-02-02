@@ -641,29 +641,39 @@ body {
 
 .text-input {
     width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
+    padding: 14px 12px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
     color: var(--white);
     font-family: inherit;
     font-size: 16px; /* Prevents iOS zoom on focus */
+    line-height: 1.4;
     transition: var(--transition);
     -webkit-appearance: none;
     appearance: none;
+    /* Ensure input is tappable */
+    touch-action: manipulation;
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: text;
 }
 
 .text-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .text-input:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 20px rgba(255, 64, 129, 0.3);
-    /* Keep input visible when keyboard opens */
-    position: relative;
-    z-index: 100;
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--primary-pink);
+    box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.2);
+}
+
+/* Ensure textareas scroll properly */
+.text-input.textarea {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .textarea {
