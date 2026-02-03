@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
     <meta name="theme-color" content="#ff1744">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -622,6 +624,20 @@
             </div>
 
             <div class="share-options">
+                <!-- Share Card Link (URL-based) -->
+                <button class="share-option-btn share-link featured" id="shareLinkBtn">
+                    <span class="share-icon">🔗</span>
+                    <span>Share Card Link</span>
+                    <span class="share-hint">Recipients can view your card!</span>
+                </button>
+
+                <!-- Share as Image (iOS Safari compatible) -->
+                <button class="share-option-btn share-image" id="shareImageBtn">
+                    <span class="share-icon">🖼️</span>
+                    <span>Share as Image</span>
+                    <span class="share-hint">Save or share card image</span>
+                </button>
+
                 <!-- Native Share (Android/iOS) -->
                 <button class="share-option-btn native-share" id="nativeShareBtn">
                     <span class="share-icon">📤</span>
@@ -657,6 +673,15 @@
                     <span class="share-hint">Send via email</span>
                 </button>
             </div>
+
+            <!-- Generated link display -->
+            <div class="share-link-container" id="shareLinkContainer" style="display: none;">
+                <p class="share-link-label">Your card link:</p>
+                <div class="share-link-box">
+                    <input type="text" id="generatedLink" class="share-link-input" readonly>
+                    <button class="copy-btn" id="copyGeneratedLink">📋 Copy</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -680,6 +705,9 @@
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
+
+    <!-- Hidden Canvas for Image Generation -->
+    <canvas id="cardCanvas" style="display: none;"></canvas>
 
     <script src="script.js"></script>
 </body>

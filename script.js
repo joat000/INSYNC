@@ -1,9 +1,15 @@
 // ============================================
 // Valentine's Day Card Creator - Ultimate Edition
 // Safari/iOS Compatible + Mobile/Desktop Adaptive
+// URL-Based Sharing + Canvas Image Generation
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for shared card in URL first
+    if (checkForSharedCard()) {
+        initializeApp();
+        return;
+    }
     initializeApp();
 });
 
@@ -30,8 +36,20 @@ const DeviceInfo = {
         return this.hasTouchScreen && this.screenWidth >= 768 && this.screenWidth <= 1024;
     },
 
+    // CRITICAL: Force mobile mode on all touch devices regardless of screen width
+    // This prevents desktop mode from loading on phones
     isDesktop() {
-        return this.screenWidth >= 768;
+        // If device has touch AND is detected as mobile UA, always return false
+        if (this.isMobile && this.hasTouchScreen) {
+            return false;
+        }
+        // For non-mobile devices, use screen width check
+        return this.screenWidth >= 768 && !this.hasTouchScreen;
+    },
+
+    // Helper to detect if we should use mobile layout
+    shouldUseMobileLayout() {
+        return this.isMobile || this.hasTouchScreen || this.screenWidth < 768;
     }
 };
 
@@ -325,7 +343,8 @@ function handleResponsiveLayout() {
     const toolsPanel = document.getElementById('toolsPanel');
     const mobileTabBar = document.getElementById('mobileTabBar');
 
-    if (DeviceInfo.isDesktop()) {
+    // Use shouldUseMobileLayout for definitive check
+    if (!DeviceInfo.shouldUseMobileLayout()) {
         // Desktop: show tools panel, hide mobile tab bar
         toolsPanel.classList.add('active');
         if (mobileTabBar) mobileTabBar.style.display = 'none';
@@ -336,7 +355,10 @@ function handleResponsiveLayout() {
         if (mobileTabBar) mobileTabBar.style.display = 'flex';
         document.body.classList.add('mobile-mode');
         document.body.classList.remove('desktop-mode');
-        switchMobileTab('preview');
+        // Only switch to preview if not already on a tab
+        if (!state.currentMobileTab || state.currentMobileTab === 'preview') {
+            switchMobileTab('preview');
+        }
     }
 }
 
@@ -1536,12 +1558,21 @@ function initializeModals() {
     }
 
     // Share option buttons
+    const shareLinkBtn = document.getElementById('shareLinkBtn');
+    const shareImageBtn = document.getElementById('shareImageBtn');
     const nativeShareBtn = document.getElementById('nativeShareBtn');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const whatsappBtn = document.getElementById('whatsappBtn');
     const smsBtn = document.getElementById('smsBtn');
     const emailBtn = document.getElementById('emailBtn');
+    const copyGeneratedLink = document.getElementById('copyGeneratedLink');
 
+    if (shareLinkBtn) {
+        shareLinkBtn.addEventListener('click', shareCardLink);
+    }
+    if (shareImageBtn) {
+        shareImageBtn.addEventListener('click', shareAsImage);
+    }
     if (nativeShareBtn) {
         nativeShareBtn.addEventListener('click', shareNative);
     }
@@ -1556,6 +1587,14 @@ function initializeModals() {
     }
     if (emailBtn) {
         emailBtn.addEventListener('click', shareEmail);
+    }
+    if (copyGeneratedLink) {
+        copyGeneratedLink.addEventListener('click', () => {
+            const linkInput = document.getElementById('generatedLink');
+            if (linkInput) {
+                copyToClipboard(linkInput.value);
+            }
+        });
     }
 
     // Success modal
@@ -1710,6 +1749,369 @@ function shareEmail() {
     document.getElementById('shareModal').classList.remove('active');
     showToast('Opening Email... 📧');
     trackInteraction('share_email');
+}
+
+// ============================================
+// URL-Based Card Sharing System
+// Serializes card state into query parameters
+// ============================================
+
+function generateShareableURL() {
+    const cardData = {
+        t: state.currentTemplate,           // template
+        e: state.currentEnvelope,           // envelope
+        f: state.currentFont,               // font
+        c: state.currentColor,              // color
+        e3: state.effect3D,                 // 3D effect
+        rn: document.getElementById('recipientName')?.value || '',
+        fm: document.getElementById('frontMessage')?.value || '',
+        mm: document.getElementById('mainMessage')?.value || '',
+        so: document.getElementById('signOff')?.value || '',
+        sn: document.getElementById('senderName')?.value || ''
+    };
+
+    // Compress and encode card data
+    const encoded = btoa(encodeURIComponent(JSON.stringify(cardData)));
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}?card=${encoded}`;
+}
+
+function checkForSharedCard() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cardParam = urlParams.get('card');
+
+    if (!cardParam) return false;
+
+    try {
+        const decoded = JSON.parse(decodeURIComponent(atob(cardParam)));
+
+        // Schedule state restoration after DOM ready
+        setTimeout(() => {
+            restoreCardFromURL(decoded);
+        }, 100);
+
+        return true;
+    } catch (e) {
+        console.log('Invalid card URL:', e);
+        return false;
+    }
+}
+
+function restoreCardFromURL(data) {
+    // Restore template
+    if (data.t) {
+        state.currentTemplate = data.t;
+        const card = document.getElementById('card');
+        if (card) card.className = 'card ' + data.t;
+        document.querySelectorAll('.template-card').forEach(tc => {
+            tc.classList.toggle('active', tc.dataset.template === data.t);
+        });
+    }
+
+    // Restore envelope
+    if (data.e) {
+        state.currentEnvelope = data.e;
+        const envelope = document.getElementById('envelope');
+        if (envelope) envelope.className = 'envelope ' + data.e;
+    }
+
+    // Restore font
+    if (data.f) {
+        state.currentFont = data.f;
+        const cardFrontContent = document.getElementById('cardFrontContent');
+        const insideContent = document.getElementById('insideContent');
+        if (cardFrontContent) cardFrontContent.style.fontFamily = data.f;
+        if (insideContent) insideContent.style.fontFamily = data.f;
+    }
+
+    // Restore color
+    if (data.c) {
+        state.currentColor = data.c;
+        const cardFrontContent = document.getElementById('cardFrontContent');
+        if (cardFrontContent) cardFrontContent.style.color = data.c;
+    }
+
+    // Restore 3D effect
+    if (data.e3) {
+        state.effect3D = data.e3;
+        apply3DEffect();
+    }
+
+    // Restore text content
+    const fields = {
+        recipientName: data.rn,
+        frontMessage: data.fm,
+        mainMessage: data.mm,
+        signOff: data.so,
+        senderName: data.sn
+    };
+
+    Object.entries(fields).forEach(([id, value]) => {
+        if (value) {
+            const input = document.getElementById(id);
+            if (input) {
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+    });
+
+    // Show card view mode indicator
+    showToast('💌 Viewing shared card!');
+
+    // Auto-open envelope after delay
+    setTimeout(() => {
+        const envelope = document.getElementById('envelope');
+        if (envelope && !state.isEnvelopeOpen) {
+            envelope.click();
+        }
+    }, 1500);
+}
+
+// Share card link (URL-based)
+function shareCardLink() {
+    const shareUrl = generateShareableURL();
+    const senderName = document.getElementById('senderName')?.value || 'Someone special';
+
+    // Show link container
+    const linkContainer = document.getElementById('shareLinkContainer');
+    const linkInput = document.getElementById('generatedLink');
+    if (linkContainer && linkInput) {
+        linkInput.value = shareUrl;
+        linkContainer.style.display = 'block';
+    }
+
+    // Try native share with URL
+    if (navigator.share) {
+        navigator.share({
+            title: `Valentine's Card from ${senderName}`,
+            text: `${senderName} sent you a Valentine's card! 💕`,
+            url: shareUrl
+        }).then(() => {
+            showToast('Card link shared! 💕');
+            trackInteraction('share_link');
+        }).catch(err => {
+            if (err.name !== 'AbortError') {
+                // Fallback to copy
+                copyToClipboard(shareUrl);
+            }
+        });
+    } else {
+        copyToClipboard(shareUrl);
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Link copied! Share it anywhere 💕');
+        trackInteraction('share_link_copy');
+    }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Link copied! 💕');
+    });
+}
+
+// ============================================
+// Canvas Image Generation for iOS Safari
+// Renders card to canvas and exports as PNG
+// ============================================
+
+async function generateCardImage() {
+    showLoading(true, 'Creating card image...');
+
+    const canvas = document.getElementById('cardCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size (high resolution for sharing)
+    const width = 600;
+    const height = 800;
+    canvas.width = width;
+    canvas.height = height;
+
+    // Get card data
+    const recipientName = document.getElementById('recipientName')?.value || 'My Love';
+    const frontMessage = document.getElementById('frontMessage')?.value || 'Will You Be My Valentine?';
+    const mainMessage = document.getElementById('mainMessage')?.value || '';
+    const signOff = document.getElementById('signOff')?.value || 'Forever Yours';
+    const senderName = document.getElementById('senderName')?.value || '';
+
+    // Get colors based on template
+    const colors = getTemplateColors(state.currentTemplate);
+
+    // Draw background gradient
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, colors.primary);
+    gradient.addColorStop(1, colors.secondary);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw decorative border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(20, 20, width - 40, height - 40);
+
+    // Draw hearts decoration
+    ctx.font = '30px Arial';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillText('💕', 40, 60);
+    ctx.fillText('💕', width - 70, 60);
+    ctx.fillText('💕', 40, height - 40);
+    ctx.fillText('💕', width - 70, height - 40);
+
+    // Draw "To" section
+    ctx.font = '24px Arial';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.textAlign = 'center';
+    ctx.fillText('To:', width / 2, 100);
+
+    ctx.font = `bold 36px ${state.currentFont.split(',')[0].replace(/'/g, '')}`;
+    ctx.fillStyle = state.currentColor;
+    ctx.fillText(recipientName, width / 2, 145);
+
+    // Draw main message (front)
+    ctx.font = `bold 42px ${state.currentFont.split(',')[0].replace(/'/g, '')}`;
+    ctx.fillStyle = state.currentColor;
+
+    // Word wrap front message
+    const frontLines = wrapText(ctx, frontMessage, width - 80);
+    let y = 220;
+    frontLines.forEach(line => {
+        ctx.fillText(line, width / 2, y);
+        y += 50;
+    });
+
+    // Draw decorative heart
+    ctx.font = '80px Arial';
+    ctx.fillText('❤️', width / 2, y + 60);
+
+    // Draw inside message
+    ctx.font = '22px Arial';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    const msgLines = wrapText(ctx, mainMessage, width - 100);
+    y += 140;
+    msgLines.slice(0, 6).forEach(line => {
+        ctx.fillText(line, width / 2, y);
+        y += 32;
+    });
+
+    // Draw sign off
+    ctx.font = `italic 28px ${state.currentFont.split(',')[0].replace(/'/g, '')}`;
+    ctx.fillStyle = state.currentColor;
+    ctx.fillText(signOff, width / 2, height - 120);
+
+    // Draw sender name
+    if (senderName) {
+        ctx.font = `bold 26px ${state.currentFont.split(',')[0].replace(/'/g, '')}`;
+        ctx.fillText(senderName, width / 2, height - 80);
+    }
+
+    // Draw footer
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.fillText('Created with 💕 NOTE2U', width / 2, height - 35);
+
+    showLoading(false);
+    return canvas;
+}
+
+function getTemplateColors(template) {
+    const templates = {
+        'romantic-red': { primary: '#ff1744', secondary: '#d50000' },
+        'soft-pink': { primary: '#ff80ab', secondary: '#f8bbd0' },
+        'elegant-gold': { primary: '#ffd700', secondary: '#ff8f00' },
+        'purple-dream': { primary: '#9c27b0', secondary: '#7b1fa2' },
+        'sunset-love': { primary: '#ff5722', secondary: '#e91e63' },
+        'midnight-romance': { primary: '#1a237e', secondary: '#311b92' },
+        'rose-garden': { primary: '#e91e63', secondary: '#c2185b' },
+        'ocean-love': { primary: '#0097a7', secondary: '#006064' },
+        'forest-whisper': { primary: '#2e7d32', secondary: '#1b5e20' },
+        'cherry-blossom': { primary: '#f8bbd0', secondary: '#f48fb1' },
+        'neon-love': { primary: '#e040fb', secondary: '#7c4dff' },
+        'vintage-romance': { primary: '#8d6e63', secondary: '#5d4037' }
+    };
+    return templates[template] || templates['romantic-red'];
+}
+
+function wrapText(ctx, text, maxWidth) {
+    if (!text) return [];
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && currentLine) {
+            lines.push(currentLine);
+            currentLine = word;
+        } else {
+            currentLine = testLine;
+        }
+    });
+    if (currentLine) lines.push(currentLine);
+    return lines;
+}
+
+// Share as image
+async function shareAsImage() {
+    try {
+        const canvas = await generateCardImage();
+        const senderName = document.getElementById('senderName')?.value || 'Someone special';
+
+        // Convert to blob
+        canvas.toBlob(async (blob) => {
+            if (!blob) {
+                showToast('Could not generate image', true);
+                return;
+            }
+
+            const file = new File([blob], 'valentine-card.png', { type: 'image/png' });
+
+            // Check if Web Share API with files is supported (iOS Safari 15+)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: `Valentine's Card from ${senderName}`,
+                        text: `${senderName} sent you a Valentine's card! 💕`,
+                        files: [file]
+                    });
+                    document.getElementById('shareModal').classList.remove('active');
+                    showToast('Card image shared! 💕');
+                    createConfetti();
+                    trackInteraction('share_image');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        downloadImage(canvas);
+                    }
+                }
+            } else {
+                // Fallback: download the image
+                downloadImage(canvas);
+            }
+        }, 'image/png', 0.95);
+    } catch (err) {
+        console.error('Image generation failed:', err);
+        showToast('Could not create image. Try another share option.', true);
+    }
+}
+
+function downloadImage(canvas) {
+    const link = document.createElement('a');
+    link.download = 'valentine-card.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    document.getElementById('shareModal').classList.remove('active');
+    showToast('Card image downloaded! 📷');
+    trackInteraction('share_image_download');
 }
 
 // ============================================

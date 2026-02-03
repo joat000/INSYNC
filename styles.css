@@ -47,15 +47,30 @@ html {
     font-size: 16px;
     scroll-behavior: smooth;
     height: 100%;
+    /* Prevent zoom on input focus in iOS */
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
     font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     min-height: 100%;
+    min-height: -webkit-fill-available;
     color: var(--white);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    /* Mobile-first: ensure touch scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent pull-to-refresh */
+    overscroll-behavior-y: contain;
+}
+
+/* Force mobile layout on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    body {
+        /* Extra mobile-specific rules */
+        touch-action: manipulation;
+    }
 }
 
 /* Parallax Background */
@@ -2182,6 +2197,72 @@ body {
 .share-option-btn.copy-link:hover {
     background: rgba(88, 86, 214, 0.2);
     border-color: #5856D6;
+}
+
+/* Featured share option */
+.share-option-btn.featured {
+    background: linear-gradient(135deg, rgba(255, 64, 129, 0.3), rgba(255, 215, 0, 0.2));
+    border-color: var(--gold);
+    order: -1;
+}
+
+.share-option-btn.share-link:hover {
+    background: linear-gradient(135deg, rgba(255, 64, 129, 0.4), rgba(255, 215, 0, 0.3));
+    border-color: var(--primary-pink);
+}
+
+.share-option-btn.share-image:hover {
+    background: rgba(156, 39, 176, 0.2);
+    border-color: #9c27b0;
+}
+
+/* Share link container */
+.share-link-container {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+}
+
+.share-link-label {
+    font-size: 0.85rem;
+    color: var(--soft-pink);
+    margin-bottom: 10px;
+}
+
+.share-link-box {
+    display: flex;
+    gap: 10px;
+}
+
+.share-link-input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    font-family: inherit;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.copy-btn {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    background: var(--gradient-romantic);
+    color: white;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+.copy-btn:active {
+    transform: scale(0.95);
 }
 
 /* Share button styling */
