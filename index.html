@@ -2,21 +2,604 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>NOTE2U 💕</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>NOTE2U 💕 Valentine Card Creator</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            min-height: 100%;
+            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+        }
+
+        .app {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #ff6b9d;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+
+        /* Card */
+        .card-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 220px;
+            height: 300px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ff1744, #d50000);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            position: relative;
+        }
+
+        .card-front::before {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        .card-emoji {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .card-back {
+            background: linear-gradient(180deg, #fff5f5, #ffe4e9);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .card-to {
+            font-size: 0.9rem;
+            color: #c41e3a;
+            margin-bottom: 10px;
+        }
+
+        .card-to span {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+        }
+
+        .card-msg {
+            font-size: 0.9rem;
+            color: #c41e3a;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-sign {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.1rem;
+            color: #c41e3a;
+        }
+
+        .card-from {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #c41e3a;
+            margin-top: 5px;
+        }
+
+        .card-hint {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Editor */
+        .editor {
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #ff1744, #ff6b9d);
+            color: #fff;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* Form */
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.85rem;
+            color: #ffb6c1;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .field input, .field textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .field input:focus, .field textarea:focus {
+            outline: none;
+            border-color: #ff6b9d;
+        }
+
+        .field textarea {
+            resize: none;
+            min-height: 90px;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .field-row .field {
+            flex: 1;
+        }
+
+        /* Quick */
+        .quick-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .quick-section p {
+            font-size: 0.85rem;
+            color: #ffb6c1;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .quick-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .quick-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,107,157,0.25);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:active {
+            transform: scale(0.95);
+            background: rgba(255,107,157,0.4);
+        }
+
+        /* Themes */
+        .section-title {
+            font-size: 0.9rem;
+            color: #ffb6c1;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .themes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .theme-btn {
+            aspect-ratio: 1;
+            border: 3px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-btn.active {
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Emojis */
+        .emojis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .emoji-btn {
+            aspect-ratio: 1;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emoji-btn.active {
+            border-color: #ff6b9d;
+            background: rgba(255,107,157,0.25);
+        }
+
+        /* Stickers */
+        .stickers {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .sticker-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sticker-btn:active {
+            transform: scale(1.15);
+            background: rgba(255,107,157,0.3);
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,100,100,0.2);
+            color: #ff6b6b;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Sticker on card */
+        .stickers-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .placed-sticker {
+            position: absolute;
+            font-size: 1.3rem;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        /* Share Button */
+        .share-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 460px;
+            margin: 0 auto;
+            padding: 18px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #ff1744, #ff6b9d);
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255,23,68,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            z-index: 100;
+            transition: transform 0.2s;
+        }
+
+        .share-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(180deg, #1a1a2e, #16213e);
+            border-radius: 24px 24px 0 0;
+            padding: 25px;
+            padding-bottom: 35px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal h2 {
+            text-align: center;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+        }
+
+        .share-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .share-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 8px;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .share-item span {
+            font-size: 1.8rem;
+        }
+
+        .share-item:active {
+            transform: scale(0.95);
+            background: rgba(255,107,157,0.3);
+        }
+
+        .link-section {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+
+        .link-section p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 10px;
+        }
+
+        .link-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .link-row input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        .link-row button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff1744, #d50000);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(50px);
+            background: linear-gradient(135deg, #00c853, #69f0ae);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Desktop */
+        @media (min-width: 600px) {
+            .card {
+                width: 260px;
+                height: 360px;
+            }
+
+            .card-emoji {
+                font-size: 4rem;
+            }
+
+            .card-title {
+                font-size: 1.7rem;
+            }
+
+            .modal {
+                align-items: center;
+            }
+
+            .modal-box {
+                border-radius: 24px;
+                margin: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Floating Hearts -->
-    <div class="hearts-bg" id="heartsBg"></div>
-
     <div class="app">
         <!-- Header -->
         <header class="header">
@@ -25,164 +608,132 @@
         </header>
 
         <!-- Card Preview -->
-        <div class="card-container">
+        <div class="card-area">
             <div class="card" id="card">
-                <div class="card-inner" id="cardInner">
-                    <!-- Front -->
+                <div class="card-inner">
                     <div class="card-face card-front" id="cardFront">
-                        <div class="card-border"></div>
-                        <div class="card-emoji">💕</div>
+                        <div class="card-emoji" id="cardEmoji">💕</div>
                         <p class="card-title" id="cardTitle">Will You Be My Valentine?</p>
                         <div class="stickers-layer" id="stickersFront"></div>
                     </div>
-                    <!-- Inside -->
                     <div class="card-face card-back">
                         <p class="card-to">To: <span id="cardTo">My Love</span></p>
-                        <p class="card-message" id="cardMessage">Write something sweet...</p>
+                        <p class="card-msg" id="cardMsg">Write something sweet...</p>
                         <p class="card-sign" id="cardSign">Forever Yours,</p>
                         <p class="card-from" id="cardFrom">Your Name</p>
                         <div class="stickers-layer" id="stickersBack"></div>
                     </div>
                 </div>
             </div>
-            <p class="card-hint" id="cardHint">👆 Tap card to flip</p>
+            <p class="card-hint">👆 Tap card to flip</p>
         </div>
 
-        <!-- Editor Panel -->
+        <!-- Editor -->
         <div class="editor">
-            <!-- Step indicator -->
-            <div class="steps">
-                <button class="step active" data-step="1">1. Write</button>
-                <button class="step" data-step="2">2. Style</button>
-                <button class="step" data-step="3">3. Decorate</button>
+            <div class="tabs">
+                <button class="tab active" data-tab="write">✍️ Write</button>
+                <button class="tab" data-tab="style">🎨 Style</button>
+                <button class="tab" data-tab="decorate">✨ Decorate</button>
             </div>
 
-            <!-- Step 1: Write -->
-            <div class="step-content active" id="step1">
-                <div class="form-group">
+            <!-- Write Panel -->
+            <div class="panel active" id="writePanel">
+                <div class="field">
                     <label>To</label>
                     <input type="text" id="inputTo" placeholder="Their name">
                 </div>
-                <div class="form-group">
+                <div class="field">
                     <label>Front Message</label>
                     <input type="text" id="inputTitle" placeholder="Will You Be My Valentine?">
                 </div>
-                <div class="form-group">
+                <div class="field">
                     <label>Your Message</label>
-                    <textarea id="inputMessage" placeholder="Write something sweet..." rows="3"></textarea>
+                    <textarea id="inputMsg" placeholder="Write something sweet..."></textarea>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
+                <div class="field-row">
+                    <div class="field">
                         <label>Sign Off</label>
                         <input type="text" id="inputSign" placeholder="Forever Yours,">
                     </div>
-                    <div class="form-group">
+                    <div class="field">
                         <label>From</label>
                         <input type="text" id="inputFrom" placeholder="Your name">
                     </div>
                 </div>
-                <div class="quick-picks">
-                    <p class="label">Quick Templates</p>
+                <div class="quick-section">
+                    <p>Quick Templates</p>
                     <div class="quick-btns">
-                        <button data-title="Be Mine!" data-msg="You stole my heart and I never want it back. 💕">💘 Classic</button>
-                        <button data-title="I Love You!" data-msg="Every moment with you feels like a beautiful dream.">❤️ Sweet</button>
-                        <button data-title="Hey You!" data-msg="You're weird. I like it. Let's be weird together? 😄">😊 Funny</button>
+                        <button class="quick-btn" data-title="Be Mine!" data-msg="You stole my heart and I never want it back. 💕">💘 Classic</button>
+                        <button class="quick-btn" data-title="I Love You!" data-msg="Every moment with you feels like a beautiful dream.">❤️ Sweet</button>
+                        <button class="quick-btn" data-title="Hey You!" data-msg="You're weird. I like it. Let's be weird together? 😄">😊 Funny</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Step 2: Style -->
-            <div class="step-content" id="step2">
-                <p class="label">Choose Theme</p>
+            <!-- Style Panel -->
+            <div class="panel" id="stylePanel">
+                <p class="section-title">Choose Theme</p>
                 <div class="themes">
-                    <button class="theme active" data-theme="red" style="background: linear-gradient(135deg, #ff1744, #d50000)"></button>
-                    <button class="theme" data-theme="pink" style="background: linear-gradient(135deg, #ff80ab, #f48fb1)"></button>
-                    <button class="theme" data-theme="gold" style="background: linear-gradient(135deg, #ffd700, #ffa000)"></button>
-                    <button class="theme" data-theme="purple" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2)"></button>
-                    <button class="theme" data-theme="blue" style="background: linear-gradient(135deg, #2196f3, #1565c0)"></button>
-                    <button class="theme" data-theme="teal" style="background: linear-gradient(135deg, #00bcd4, #00838f)"></button>
-                    <button class="theme" data-theme="orange" style="background: linear-gradient(135deg, #ff9800, #e65100)"></button>
-                    <button class="theme" data-theme="green" style="background: linear-gradient(135deg, #4caf50, #2e7d32)"></button>
+                    <button class="theme-btn active" data-theme="red" style="background:linear-gradient(135deg,#ff1744,#d50000)"></button>
+                    <button class="theme-btn" data-theme="pink" style="background:linear-gradient(135deg,#ff80ab,#f48fb1)"></button>
+                    <button class="theme-btn" data-theme="gold" style="background:linear-gradient(135deg,#ffd700,#ffa000)"></button>
+                    <button class="theme-btn" data-theme="purple" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2)"></button>
+                    <button class="theme-btn" data-theme="blue" style="background:linear-gradient(135deg,#2196f3,#1565c0)"></button>
+                    <button class="theme-btn" data-theme="teal" style="background:linear-gradient(135deg,#00bcd4,#00838f)"></button>
+                    <button class="theme-btn" data-theme="orange" style="background:linear-gradient(135deg,#ff9800,#e65100)"></button>
+                    <button class="theme-btn" data-theme="green" style="background:linear-gradient(135deg,#4caf50,#2e7d32)"></button>
                 </div>
 
-                <p class="label">Card Emoji</p>
+                <p class="section-title">Card Emoji</p>
                 <div class="emojis">
-                    <button class="emoji active" data-emoji="💕">💕</button>
-                    <button class="emoji" data-emoji="❤️">❤️</button>
-                    <button class="emoji" data-emoji="💖">💖</button>
-                    <button class="emoji" data-emoji="💝">💝</button>
-                    <button class="emoji" data-emoji="💘">💘</button>
-                    <button class="emoji" data-emoji="🌹">🌹</button>
-                    <button class="emoji" data-emoji="🦋">🦋</button>
-                    <button class="emoji" data-emoji="✨">✨</button>
-                </div>
-
-                <p class="label">Font Style</p>
-                <div class="fonts">
-                    <button class="font active" data-font="cursive">Elegant</button>
-                    <button class="font" data-font="sans">Modern</button>
+                    <button class="emoji-btn active" data-emoji="💕">💕</button>
+                    <button class="emoji-btn" data-emoji="❤️">❤️</button>
+                    <button class="emoji-btn" data-emoji="💖">💖</button>
+                    <button class="emoji-btn" data-emoji="💝">💝</button>
+                    <button class="emoji-btn" data-emoji="💘">💘</button>
+                    <button class="emoji-btn" data-emoji="🌹">🌹</button>
+                    <button class="emoji-btn" data-emoji="🦋">🦋</button>
+                    <button class="emoji-btn" data-emoji="✨">✨</button>
                 </div>
             </div>
 
-            <!-- Step 3: Decorate -->
-            <div class="step-content" id="step3">
-                <p class="label">Add Stickers</p>
-                <p class="sublabel">Tap to add • Long press on card to remove</p>
+            <!-- Decorate Panel -->
+            <div class="panel" id="decoratePanel">
+                <p class="section-title">Add Stickers</p>
+                <p class="hint">Tap to add • Long press on card to remove</p>
                 <div class="stickers">
-                    <button data-sticker="❤️">❤️</button>
-                    <button data-sticker="💕">💕</button>
-                    <button data-sticker="💖">💖</button>
-                    <button data-sticker="💗">💗</button>
-                    <button data-sticker="💘">💘</button>
-                    <button data-sticker="💝">💝</button>
-                    <button data-sticker="🌹">🌹</button>
-                    <button data-sticker="🌸">🌸</button>
-                    <button data-sticker="✨">✨</button>
-                    <button data-sticker="⭐">⭐</button>
-                    <button data-sticker="🦋">🦋</button>
-                    <button data-sticker="🎀">🎀</button>
-                    <button data-sticker="💌">💌</button>
-                    <button data-sticker="🍫">🍫</button>
-                    <button data-sticker="🥰">🥰</button>
-                    <button data-sticker="😘">😘</button>
-                    <button data-sticker="💋">💋</button>
-                    <button data-sticker="🔥">🔥</button>
+                    <button class="sticker-btn" data-sticker="❤️">❤️</button>
+                    <button class="sticker-btn" data-sticker="💕">💕</button>
+                    <button class="sticker-btn" data-sticker="💖">💖</button>
+                    <button class="sticker-btn" data-sticker="💗">💗</button>
+                    <button class="sticker-btn" data-sticker="💘">💘</button>
+                    <button class="sticker-btn" data-sticker="💝">💝</button>
+                    <button class="sticker-btn" data-sticker="🌹">🌹</button>
+                    <button class="sticker-btn" data-sticker="🌸">🌸</button>
+                    <button class="sticker-btn" data-sticker="✨">✨</button>
+                    <button class="sticker-btn" data-sticker="⭐">⭐</button>
+                    <button class="sticker-btn" data-sticker="🦋">🦋</button>
+                    <button class="sticker-btn" data-sticker="🎀">🎀</button>
                 </div>
                 <button class="clear-btn" id="clearStickers">Clear All Stickers</button>
             </div>
         </div>
 
         <!-- Share Button -->
-        <button class="share-btn" id="shareBtn">
-            <span>💌</span> Share Your Card
-        </button>
+        <button class="share-btn" id="shareBtn">💌 Share Your Card</button>
     </div>
 
-    <!-- Share Modal -->
+    <!-- Modal -->
     <div class="modal" id="modal">
         <div class="modal-box">
             <button class="modal-close" id="modalClose">×</button>
             <h2>Share Your Card 💕</h2>
-
             <div class="share-grid">
-                <button class="share-item" id="shareNative">
-                    <span>📤</span>
-                    Share
-                </button>
-                <button class="share-item" id="shareWhatsApp">
-                    <span>💬</span>
-                    WhatsApp
-                </button>
-                <button class="share-item" id="shareSMS">
-                    <span>📱</span>
-                    SMS
-                </button>
-                <button class="share-item" id="shareEmail">
-                    <span>📧</span>
-                    Email
-                </button>
+                <button class="share-item" id="shareNative"><span>📤</span>Share</button>
+                <button class="share-item" id="shareWhatsApp"><span>💬</span>WhatsApp</button>
+                <button class="share-item" id="shareSMS"><span>📱</span>SMS</button>
+                <button class="share-item" id="shareEmail"><span>📧</span>Email</button>
             </div>
-
             <div class="link-section">
                 <p>Or copy link:</p>
                 <div class="link-row">
@@ -196,6 +747,261 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script src="script.js"></script>
+    <script>
+        // Themes
+        const themes = {
+            red: ['#ff1744', '#d50000'],
+            pink: ['#ff80ab', '#f48fb1'],
+            gold: ['#ffd700', '#ffa000'],
+            purple: ['#9c27b0', '#7b1fa2'],
+            blue: ['#2196f3', '#1565c0'],
+            teal: ['#00bcd4', '#00838f'],
+            orange: ['#ff9800', '#e65100'],
+            green: ['#4caf50', '#2e7d32']
+        };
+
+        // State
+        let currentTheme = 'red';
+        let currentEmoji = '💕';
+        let stickers = [];
+        let isFlipped = false;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initCard();
+            initTabs();
+            initInputs();
+            initQuickBtns();
+            initThemes();
+            initEmojis();
+            initStickers();
+            initShare();
+            loadSharedCard();
+        });
+
+        // Card flip
+        function initCard() {
+            document.getElementById('card').addEventListener('click', () => {
+                document.getElementById('card').classList.toggle('flipped');
+                isFlipped = !isFlipped;
+            });
+        }
+
+        // Tabs
+        function initTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + 'Panel').classList.add('active');
+                });
+            });
+        }
+
+        // Inputs
+        function initInputs() {
+            document.getElementById('inputTo').addEventListener('input', e => {
+                document.getElementById('cardTo').textContent = e.target.value || 'My Love';
+            });
+            document.getElementById('inputTitle').addEventListener('input', e => {
+                document.getElementById('cardTitle').textContent = e.target.value || 'Will You Be My Valentine?';
+            });
+            document.getElementById('inputMsg').addEventListener('input', e => {
+                document.getElementById('cardMsg').innerHTML = (e.target.value || 'Write something sweet...').replace(/\n/g, '<br>');
+            });
+            document.getElementById('inputSign').addEventListener('input', e => {
+                document.getElementById('cardSign').textContent = e.target.value || 'Forever Yours,';
+            });
+            document.getElementById('inputFrom').addEventListener('input', e => {
+                document.getElementById('cardFrom').textContent = e.target.value || 'Your Name';
+            });
+        }
+
+        // Quick buttons
+        function initQuickBtns() {
+            document.querySelectorAll('.quick-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('inputTitle').value = btn.dataset.title;
+                    document.getElementById('inputMsg').value = btn.dataset.msg;
+                    document.getElementById('cardTitle').textContent = btn.dataset.title;
+                    document.getElementById('cardMsg').textContent = btn.dataset.msg;
+                    toast('Template applied! ✨');
+                });
+            });
+        }
+
+        // Themes
+        function initThemes() {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentTheme = btn.dataset.theme;
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const [c1, c2] = themes[currentTheme];
+                    document.getElementById('cardFront').style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                    toast('Theme changed! 🎨');
+                });
+            });
+        }
+
+        // Emojis
+        function initEmojis() {
+            document.querySelectorAll('.emoji-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentEmoji = btn.dataset.emoji;
+                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('cardEmoji').textContent = currentEmoji;
+                });
+            });
+        }
+
+        // Stickers
+        function initStickers() {
+            document.querySelectorAll('.sticker-btn').forEach(btn => {
+                btn.addEventListener('click', () => addSticker(btn.dataset.sticker));
+            });
+            document.getElementById('clearStickers').addEventListener('click', () => {
+                document.getElementById('stickersFront').innerHTML = '';
+                document.getElementById('stickersBack').innerHTML = '';
+                stickers = [];
+                toast('Stickers cleared');
+            });
+        }
+
+        function addSticker(emoji) {
+            const layer = document.getElementById(isFlipped ? 'stickersBack' : 'stickersFront');
+            const el = document.createElement('div');
+            el.className = 'placed-sticker';
+            el.textContent = emoji;
+            const x = 10 + Math.random() * 70;
+            const y = 10 + Math.random() * 70;
+            el.style.left = x + '%';
+            el.style.top = y + '%';
+            stickers.push({ emoji, x, y, side: isFlipped ? 'back' : 'front' });
+
+            let timer;
+            el.addEventListener('touchstart', () => { timer = setTimeout(() => { el.remove(); toast('Sticker removed'); }, 500); });
+            el.addEventListener('touchend', () => clearTimeout(timer));
+            el.addEventListener('mousedown', () => { timer = setTimeout(() => { el.remove(); toast('Sticker removed'); }, 500); });
+            el.addEventListener('mouseup', () => clearTimeout(timer));
+
+            layer.appendChild(el);
+            toast('Sticker added! ✨');
+        }
+
+        // Share
+        function initShare() {
+            const modal = document.getElementById('modal');
+            document.getElementById('shareBtn').addEventListener('click', () => {
+                document.getElementById('linkInput').value = generateURL();
+                modal.classList.add('active');
+            });
+            document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+
+            // Native share
+            if (navigator.share) {
+                document.getElementById('shareNative').addEventListener('click', async () => {
+                    try {
+                        await navigator.share({ title: 'Valentine Card', text: getShareText(), url: document.getElementById('linkInput').value });
+                        modal.classList.remove('active');
+                    } catch (e) {}
+                });
+            } else {
+                document.getElementById('shareNative').style.display = 'none';
+            }
+
+            // WhatsApp
+            document.getElementById('shareWhatsApp').addEventListener('click', () => {
+                window.open('https://wa.me/?text=' + encodeURIComponent(getShareText() + '\n\n' + document.getElementById('linkInput').value), '_blank');
+                modal.classList.remove('active');
+            });
+
+            // SMS
+            document.getElementById('shareSMS').addEventListener('click', () => {
+                const text = getShareText() + ' ' + document.getElementById('linkInput').value;
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                window.location.href = isIOS ? 'sms:&body=' + encodeURIComponent(text) : 'sms:?body=' + encodeURIComponent(text);
+            });
+
+            // Email
+            document.getElementById('shareEmail').addEventListener('click', () => {
+                window.location.href = 'mailto:?subject=' + encodeURIComponent('Valentine Card for You! 💕') + '&body=' + encodeURIComponent(getShareText() + '\n\n' + document.getElementById('linkInput').value);
+            });
+
+            // Copy
+            document.getElementById('copyLink').addEventListener('click', () => {
+                navigator.clipboard.writeText(document.getElementById('linkInput').value).then(() => toast('Link copied! 📋'));
+            });
+        }
+
+        function getShareText() {
+            return (document.getElementById('inputFrom').value || 'Someone special') + ' sent you a Valentine\'s card! 💕';
+        }
+
+        function generateURL() {
+            const data = {
+                to: document.getElementById('inputTo').value,
+                title: document.getElementById('inputTitle').value,
+                msg: document.getElementById('inputMsg').value,
+                sign: document.getElementById('inputSign').value,
+                from: document.getElementById('inputFrom').value,
+                theme: currentTheme,
+                emoji: currentEmoji,
+                stickers: stickers
+            };
+            return window.location.origin + window.location.pathname + '?card=' + btoa(encodeURIComponent(JSON.stringify(data)));
+        }
+
+        // Load shared card
+        function loadSharedCard() {
+            const params = new URLSearchParams(window.location.search);
+            const cardData = params.get('card');
+            if (!cardData) return;
+
+            try {
+                const data = JSON.parse(decodeURIComponent(atob(cardData)));
+                if (data.to) { document.getElementById('inputTo').value = data.to; document.getElementById('cardTo').textContent = data.to; }
+                if (data.title) { document.getElementById('inputTitle').value = data.title; document.getElementById('cardTitle').textContent = data.title; }
+                if (data.msg) { document.getElementById('inputMsg').value = data.msg; document.getElementById('cardMsg').innerHTML = data.msg.replace(/\n/g, '<br>'); }
+                if (data.sign) { document.getElementById('inputSign').value = data.sign; document.getElementById('cardSign').textContent = data.sign; }
+                if (data.from) { document.getElementById('inputFrom').value = data.from; document.getElementById('cardFrom').textContent = data.from; }
+                if (data.theme && themes[data.theme]) {
+                    currentTheme = data.theme;
+                    const [c1, c2] = themes[data.theme];
+                    document.getElementById('cardFront').style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === data.theme));
+                }
+                if (data.emoji) {
+                    currentEmoji = data.emoji;
+                    document.getElementById('cardEmoji').textContent = data.emoji;
+                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('active', b.dataset.emoji === data.emoji));
+                }
+                if (data.stickers) {
+                    data.stickers.forEach(s => {
+                        const layer = document.getElementById(s.side === 'back' ? 'stickersBack' : 'stickersFront');
+                        const el = document.createElement('div');
+                        el.className = 'placed-sticker';
+                        el.textContent = s.emoji;
+                        el.style.left = s.x + '%';
+                        el.style.top = s.y + '%';
+                        layer.appendChild(el);
+                    });
+                    stickers = data.stickers;
+                }
+                toast('💌 Card loaded!');
+            } catch (e) {}
+        }
+
+        // Toast
+        function toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2500);
+        }
+    </script>
 </body>
 </html>
