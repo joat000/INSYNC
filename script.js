@@ -1,549 +1,328 @@
-// ============================================
-// NOTE2U - Valentine Card CREATOR
-// Create cards and share them
-// Mobile-first with live preview
-// ============================================
+// NOTE2U - Clean Card Creator
 
-// Card state
-const cardState = {
-    to: '',
-    from: '',
-    frontMessage: '',
-    message: '',
-    signOff: '',
-    theme: 'classic',
-    photo: null,
-    stickers: []
+// State
+const state = {
+    theme: 'red',
+    emoji: '💕',
+    font: 'cursive',
+    stickers: [],
+    isFlipped: false
 };
 
-// UI state
-let isFlipped = false;
+// Themes
+const themes = {
+    red: { primary: '#ff1744', secondary: '#d50000' },
+    pink: { primary: '#ff80ab', secondary: '#f48fb1' },
+    gold: { primary: '#ffd700', secondary: '#ffa000' },
+    purple: { primary: '#9c27b0', secondary: '#7b1fa2' },
+    blue: { primary: '#2196f3', secondary: '#1565c0' },
+    teal: { primary: '#00bcd4', secondary: '#00838f' },
+    orange: { primary: '#ff9800', secondary: '#e65100' },
+    green: { primary: '#4caf50', secondary: '#2e7d32' }
+};
 
-// ============================================
-// INITIALIZATION
-// ============================================
+// Init
 document.addEventListener('DOMContentLoaded', () => {
-    // Prevent iOS zoom issues
-    preventZoom();
-
-    // Initialize floating hearts
-    initFloatingHearts();
-
-    // Initialize preview toggles
-    initPreviewToggle();
-
-    // Initialize flip card
-    initFlipCard();
-
-    // Initialize editor tabs
-    initTabs();
-
-    // Initialize text inputs with live preview
-    initTextInputs();
-
-    // Initialize quick messages
-    initQuickMessages();
-
-    // Initialize themes
+    initHearts();
+    initCard();
+    initSteps();
+    initInputs();
+    initQuickPicks();
     initThemes();
-
-    // Initialize photo upload
-    initPhotoUpload();
-
-    // Initialize stickers
+    initEmojis();
+    initFonts();
     initStickers();
-
-    // Initialize share modal
-    initShareModal();
-
-    // Check if viewing shared card
-    checkSharedCard();
-
-    console.log('💕 NOTE2U Card Creator loaded!');
+    initShare();
+    loadSharedCard();
 });
 
-// ============================================
-// PREVENT ZOOM (iOS)
-// ============================================
-function preventZoom() {
-    // Prevent double-tap zoom
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', (e) => {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) {
-            e.preventDefault();
-        }
-        lastTouchEnd = now;
-    }, { passive: false });
-}
+// Floating Hearts
+function initHearts() {
+    const container = document.getElementById('heartsBg');
+    const hearts = ['❤️', '💕', '💖', '💗', '💘'];
 
-// ============================================
-// FLOATING HEARTS
-// ============================================
-function initFloatingHearts() {
-    const container = document.getElementById('floatingHearts');
-    if (!container) return;
-
-    const hearts = ['❤️', '💕', '💖', '💗', '💘', '💝'];
-    const count = window.innerWidth < 600 ? 10 : 15;
-
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < 12; i++) {
         const heart = document.createElement('div');
-        heart.className = 'floating-heart';
+        heart.className = 'float-heart';
         heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
         heart.style.left = Math.random() * 100 + '%';
-        heart.style.animationDelay = Math.random() * 12 + 's';
-        heart.style.animationDuration = (10 + Math.random() * 8) + 's';
-        heart.style.fontSize = (12 + Math.random() * 16) + 'px';
+        heart.style.animationDelay = Math.random() * 15 + 's';
+        heart.style.fontSize = (14 + Math.random() * 14) + 'px';
         container.appendChild(heart);
     }
 }
 
-// ============================================
-// PREVIEW TOGGLE (Envelope/Card)
-// ============================================
-function initPreviewToggle() {
-    const toggleBtns = document.querySelectorAll('.toggle-btn');
-    const envelopePreview = document.getElementById('envelopePreview');
-    const cardPreview = document.getElementById('cardPreview');
+// Card Flip
+function initCard() {
+    const card = document.getElementById('card');
+    const hint = document.getElementById('cardHint');
 
-    toggleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const view = btn.dataset.view;
+    card.addEventListener('click', () => {
+        card.classList.toggle('flipped');
+        state.isFlipped = !state.isFlipped;
+        hint.textContent = state.isFlipped ? '👆 Tap to see front' : '👆 Tap card to flip';
+    });
+}
 
-            toggleBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+// Steps Navigation
+function initSteps() {
+    const steps = document.querySelectorAll('.step');
+    const contents = document.querySelectorAll('.step-content');
 
-            if (view === 'envelope') {
-                envelopePreview.classList.remove('hidden');
-                cardPreview.classList.add('hidden');
-            } else {
-                envelopePreview.classList.add('hidden');
-                cardPreview.classList.remove('hidden');
-            }
+    steps.forEach(step => {
+        step.addEventListener('click', () => {
+            const num = step.dataset.step;
+
+            steps.forEach(s => s.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            step.classList.add('active');
+            document.getElementById('step' + num).classList.add('active');
         });
     });
 }
 
-// ============================================
-// FLIP CARD
-// ============================================
-function initFlipCard() {
-    const flipCard = document.getElementById('flipCard');
-    if (!flipCard) return;
-
-    flipCard.addEventListener('click', () => {
-        flipCard.classList.toggle('flipped');
-        isFlipped = !isFlipped;
-
-        // Update hint
-        const hint = document.querySelector('#cardPreview .preview-hint');
-        if (hint) {
-            hint.textContent = isFlipped ? 'Tap to see front' : 'Tap card to flip';
-        }
+// Text Inputs
+function initInputs() {
+    // To
+    document.getElementById('inputTo').addEventListener('input', (e) => {
+        document.getElementById('cardTo').textContent = e.target.value || 'My Love';
     });
-}
 
-// ============================================
-// EDITOR TABS
-// ============================================
-function initTabs() {
-    const tabs = document.querySelectorAll('.tab');
-    const panels = document.querySelectorAll('.tab-panel');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
-
-            tabs.forEach(t => t.classList.remove('active'));
-            panels.forEach(p => p.classList.remove('active'));
-
-            tab.classList.add('active');
-            document.getElementById(targetTab + 'Panel').classList.add('active');
-        });
+    // Title
+    document.getElementById('inputTitle').addEventListener('input', (e) => {
+        document.getElementById('cardTitle').textContent = e.target.value || 'Will You Be My Valentine?';
     });
-}
 
-// ============================================
-// TEXT INPUTS - Live Preview
-// ============================================
-function initTextInputs() {
-    // To field
-    const inputTo = document.getElementById('inputTo');
-    if (inputTo) {
-        inputTo.addEventListener('input', () => {
-            cardState.to = inputTo.value;
-            updatePreview('to', inputTo.value || 'My Love');
-        });
-    }
-
-    // Front message
-    const inputFront = document.getElementById('inputFront');
-    if (inputFront) {
-        inputFront.addEventListener('input', () => {
-            cardState.frontMessage = inputFront.value;
-            document.getElementById('frontMessage').textContent =
-                inputFront.value || 'Will You Be My Valentine?';
-        });
-    }
-
-    // Inside message
-    const inputMessage = document.getElementById('inputMessage');
-    if (inputMessage) {
-        inputMessage.addEventListener('input', () => {
-            cardState.message = inputMessage.value;
-            document.getElementById('messageDisplay').innerHTML =
-                (inputMessage.value || 'Your sweet message here...').replace(/\n/g, '<br>');
-        });
-    }
+    // Message
+    document.getElementById('inputMessage').addEventListener('input', (e) => {
+        document.getElementById('cardMessage').innerHTML = (e.target.value || 'Write something sweet...').replace(/\n/g, '<br>');
+    });
 
     // Sign off
-    const inputSignOff = document.getElementById('inputSignOff');
-    if (inputSignOff) {
-        inputSignOff.addEventListener('input', () => {
-            cardState.signOff = inputSignOff.value;
-            document.getElementById('signOffDisplay').textContent =
-                inputSignOff.value || 'Forever Yours,';
-        });
-    }
+    document.getElementById('inputSign').addEventListener('input', (e) => {
+        document.getElementById('cardSign').textContent = e.target.value || 'Forever Yours,';
+    });
 
-    // From field
-    const inputFrom = document.getElementById('inputFrom');
-    if (inputFrom) {
-        inputFrom.addEventListener('input', () => {
-            cardState.from = inputFrom.value;
-            document.getElementById('senderDisplay').textContent =
-                inputFrom.value || 'Your Name';
-        });
-    }
+    // From
+    document.getElementById('inputFrom').addEventListener('input', (e) => {
+        document.getElementById('cardFrom').textContent = e.target.value || 'Your Name';
+    });
 }
 
-function updatePreview(field, value) {
-    if (field === 'to') {
-        document.getElementById('envelopeTo').textContent = value;
-        document.getElementById('recipientDisplay').textContent = value;
-    }
-}
-
-// ============================================
-// QUICK MESSAGES
-// ============================================
-function initQuickMessages() {
-    const quickBtns = document.querySelectorAll('.quick-btn');
-
-    quickBtns.forEach(btn => {
+// Quick Picks
+function initQuickPicks() {
+    document.querySelectorAll('.quick-btns button').forEach(btn => {
         btn.addEventListener('click', () => {
-            const front = btn.dataset.front;
+            const title = btn.dataset.title;
             const msg = btn.dataset.msg;
 
-            const inputFront = document.getElementById('inputFront');
-            const inputMessage = document.getElementById('inputMessage');
+            document.getElementById('inputTitle').value = title;
+            document.getElementById('inputMessage').value = msg;
+            document.getElementById('cardTitle').textContent = title;
+            document.getElementById('cardMessage').textContent = msg;
 
-            if (inputFront && front) {
-                inputFront.value = front;
-                inputFront.dispatchEvent(new Event('input'));
-            }
-
-            if (inputMessage && msg) {
-                inputMessage.value = msg;
-                inputMessage.dispatchEvent(new Event('input'));
-            }
-
-            showToast('Message applied! 💕');
+            toast('Template applied! ✨');
         });
     });
 }
 
-// ============================================
-// THEMES
-// ============================================
+// Themes
 function initThemes() {
-    const themeBtns = document.querySelectorAll('.theme-btn');
-
-    themeBtns.forEach(btn => {
+    document.querySelectorAll('.theme').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.dataset.theme;
+            state.theme = theme;
 
-            themeBtns.forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.theme').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            // Apply theme to body
-            document.body.className = `theme-${theme}`;
-            cardState.theme = theme;
+            // Apply theme
+            const colors = themes[theme];
+            document.documentElement.style.setProperty('--primary', colors.primary);
+            document.documentElement.style.setProperty('--primary-dark', colors.secondary);
 
-            showToast('Theme applied! ✨');
+            toast('Theme changed! 🎨');
         });
     });
 }
 
-// ============================================
-// PHOTO UPLOAD
-// ============================================
-function initPhotoUpload() {
-    const uploadBtn = document.getElementById('uploadBtn');
-    const photoInput = document.getElementById('photoInput');
-    const removeBtn = document.getElementById('removePhotoBtn');
-    const cardPhoto = document.getElementById('cardPhoto');
-
-    if (uploadBtn && photoInput) {
-        uploadBtn.addEventListener('click', () => {
-            photoInput.click();
-        });
-
-        photoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Validate file
-            if (!file.type.startsWith('image/')) {
-                showToast('Please select an image', true);
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Image too large (max 5MB)', true);
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                cardState.photo = event.target.result;
-
-                // Update preview
-                cardPhoto.innerHTML = `<img src="${event.target.result}" alt="Photo">`;
-                cardPhoto.classList.add('has-image');
-
-                // Show remove button
-                removeBtn.classList.remove('hidden');
-
-                showToast('Photo added! 📷');
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    if (removeBtn) {
-        removeBtn.addEventListener('click', () => {
-            cardState.photo = null;
-            cardPhoto.innerHTML = '<span class="photo-placeholder">💕</span>';
-            cardPhoto.classList.remove('has-image');
-            removeBtn.classList.add('hidden');
-            photoInput.value = '';
-            showToast('Photo removed');
-        });
-    }
-}
-
-// ============================================
-// STICKERS
-// ============================================
-function initStickers() {
-    const stickerBtns = document.querySelectorAll('.sticker-btn');
-    const clearBtn = document.getElementById('clearStickers');
-
-    stickerBtns.forEach(btn => {
+// Emojis
+function initEmojis() {
+    document.querySelectorAll('.emoji').forEach(btn => {
         btn.addEventListener('click', () => {
-            const emoji = btn.dataset.sticker;
-            addSticker(emoji);
+            state.emoji = btn.dataset.emoji;
+
+            document.querySelectorAll('.emoji').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.querySelector('.card-emoji').textContent = state.emoji;
+        });
+    });
+}
+
+// Fonts
+function initFonts() {
+    document.querySelectorAll('.font').forEach(btn => {
+        btn.addEventListener('click', () => {
+            state.font = btn.dataset.font;
+
+            document.querySelectorAll('.font').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const isSans = state.font === 'sans';
+            document.getElementById('cardTitle').classList.toggle('sans', isSans);
+            document.getElementById('cardMessage').classList.toggle('sans', isSans);
+            document.getElementById('cardSign').classList.toggle('sans', isSans);
+        });
+    });
+}
+
+// Stickers
+function initStickers() {
+    document.querySelectorAll('.stickers button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            addSticker(btn.dataset.sticker);
         });
     });
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            clearAllStickers();
-        });
-    }
+    document.getElementById('clearStickers').addEventListener('click', () => {
+        document.getElementById('stickersFront').innerHTML = '';
+        document.getElementById('stickersBack').innerHTML = '';
+        state.stickers = [];
+        toast('Stickers cleared');
+    });
 }
 
 function addSticker(emoji) {
-    // Add to current visible side
-    const layerId = isFlipped ? 'stickersLayerBack' : 'stickersLayerFront';
+    const layerId = state.isFlipped ? 'stickersBack' : 'stickersFront';
     const layer = document.getElementById(layerId);
 
-    if (!layer) return;
-
     const sticker = document.createElement('div');
-    sticker.className = 'placed-sticker';
+    sticker.className = 'sticker';
     sticker.textContent = emoji;
 
-    // Random position
     const x = 10 + Math.random() * 70;
     const y = 10 + Math.random() * 70;
     sticker.style.left = x + '%';
     sticker.style.top = y + '%';
 
-    // Store in state
-    cardState.stickers.push({
-        emoji,
-        x,
-        y,
-        side: isFlipped ? 'back' : 'front'
-    });
+    // Store
+    state.stickers.push({ emoji, x, y, side: state.isFlipped ? 'back' : 'front' });
 
     // Long press to remove
-    let pressTimer;
-    const startPress = () => {
-        pressTimer = setTimeout(() => {
+    let timer;
+    const start = () => {
+        timer = setTimeout(() => {
             sticker.remove();
-            // Remove from state
-            const idx = cardState.stickers.findIndex(s =>
-                s.emoji === emoji && s.x === x && s.y === y
-            );
-            if (idx > -1) cardState.stickers.splice(idx, 1);
-            showToast('Sticker removed');
+            state.stickers = state.stickers.filter(s => !(s.emoji === emoji && s.x === x && s.y === y));
+            toast('Sticker removed');
         }, 500);
     };
+    const end = () => clearTimeout(timer);
 
-    sticker.addEventListener('touchstart', startPress);
-    sticker.addEventListener('mousedown', startPress);
-    sticker.addEventListener('touchend', () => clearTimeout(pressTimer));
-    sticker.addEventListener('mouseup', () => clearTimeout(pressTimer));
-    sticker.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+    sticker.addEventListener('touchstart', start);
+    sticker.addEventListener('mousedown', start);
+    sticker.addEventListener('touchend', end);
+    sticker.addEventListener('mouseup', end);
+    sticker.addEventListener('mouseleave', end);
 
     layer.appendChild(sticker);
-    showToast('Sticker added! ✨');
+    toast('Sticker added! ✨');
 }
 
-function clearAllStickers() {
-    document.getElementById('stickersLayerFront').innerHTML = '';
-    document.getElementById('stickersLayerBack').innerHTML = '';
-    cardState.stickers = [];
-    showToast('All stickers cleared');
-}
+// Share
+function initShare() {
+    const modal = document.getElementById('modal');
+    const linkInput = document.getElementById('linkInput');
 
-// ============================================
-// SHARE MODAL
-// ============================================
-function initShareModal() {
-    const shareBtn = document.getElementById('shareBtn');
-    const modal = document.getElementById('shareModal');
-    const closeBtn = document.getElementById('modalClose');
-    const shareLink = document.getElementById('shareLink');
+    // Open modal
+    document.getElementById('shareBtn').addEventListener('click', () => {
+        linkInput.value = generateURL();
+        modal.classList.add('active');
+    });
 
-    if (shareBtn) {
-        shareBtn.addEventListener('click', () => {
-            // Generate share URL
-            const url = generateShareURL();
-            if (shareLink) shareLink.value = url;
+    // Close modal
+    document.getElementById('modalClose').addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
 
-            modal.classList.add('active');
-        });
-    }
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+    });
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
-    }
-
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
-    }
-
-    // Share buttons
-    initShareButtons();
-}
-
-function generateShareURL() {
-    const data = {
-        to: cardState.to || 'My Love',
-        from: cardState.from || 'Someone Special',
-        front: cardState.frontMessage || 'Will You Be My Valentine?',
-        msg: cardState.message || 'Every moment with you is magical.',
-        sign: cardState.signOff || 'Forever Yours,',
-        theme: cardState.theme
-    };
-
-    // Add stickers if any
-    if (cardState.stickers.length > 0) {
-        data.stickers = cardState.stickers;
-    }
-
-    const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-    return `${window.location.origin}${window.location.pathname}?card=${encoded}`;
-}
-
-function initShareButtons() {
-    const shareUrl = () => document.getElementById('shareLink').value;
-    const shareText = () => `${cardState.from || 'Someone special'} sent you a Valentine's card! 💕`;
-
-    // Native Share (Web Share API)
+    // Native share
     const shareNative = document.getElementById('shareNative');
-    if (shareNative) {
-        if (navigator.share) {
-            shareNative.addEventListener('click', async () => {
-                try {
-                    await navigator.share({
-                        title: `Valentine's Card from ${cardState.from || 'Someone Special'}`,
-                        text: shareText(),
-                        url: shareUrl()
-                    });
-                    closeShareModal();
-                } catch (e) {
-                    // User cancelled
-                }
-            });
-        } else {
-            shareNative.style.display = 'none';
-        }
+    if (navigator.share) {
+        shareNative.addEventListener('click', async () => {
+            try {
+                await navigator.share({
+                    title: 'Valentine Card',
+                    text: getShareText(),
+                    url: linkInput.value
+                });
+                modal.classList.remove('active');
+            } catch (e) {}
+        });
+    } else {
+        shareNative.classList.add('hidden');
     }
 
     // WhatsApp
-    const shareWhatsApp = document.getElementById('shareWhatsApp');
-    if (shareWhatsApp) {
-        shareWhatsApp.addEventListener('click', () => {
-            const text = `${shareText()}\n\n${shareUrl()}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-            closeShareModal();
-        });
-    }
+    document.getElementById('shareWhatsApp').addEventListener('click', () => {
+        const text = getShareText() + '\n\n' + linkInput.value;
+        window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+        modal.classList.remove('active');
+    });
 
     // SMS
-    const shareSMS = document.getElementById('shareSMS');
-    if (shareSMS) {
-        shareSMS.addEventListener('click', () => {
-            const text = `${shareText()} ${shareUrl()}`;
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const smsUrl = isIOS
-                ? `sms:&body=${encodeURIComponent(text)}`
-                : `sms:?body=${encodeURIComponent(text)}`;
-            window.location.href = smsUrl;
-            closeShareModal();
-        });
-    }
+    document.getElementById('shareSMS').addEventListener('click', () => {
+        const text = getShareText() + ' ' + linkInput.value;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        window.location.href = isIOS
+            ? 'sms:&body=' + encodeURIComponent(text)
+            : 'sms:?body=' + encodeURIComponent(text);
+        modal.classList.remove('active');
+    });
 
     // Email
-    const shareEmail = document.getElementById('shareEmail');
-    if (shareEmail) {
-        shareEmail.addEventListener('click', () => {
-            const subject = `Valentine's Card from ${cardState.from || 'Someone Special'}`;
-            const body = `${shareText()}\n\nOpen your card here:\n${shareUrl()}`;
-            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            closeShareModal();
-        });
-    }
+    document.getElementById('shareEmail').addEventListener('click', () => {
+        const subject = 'Valentine Card for You! 💕';
+        const body = getShareText() + '\n\nOpen your card: ' + linkInput.value;
+        window.location.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        modal.classList.remove('active');
+    });
 
-    // Copy Link
-    const copyLink = document.getElementById('copyLink');
-    if (copyLink) {
-        copyLink.addEventListener('click', () => {
-            copyToClipboard(shareUrl());
-        });
-    }
+    // Copy link
+    document.getElementById('copyLink').addEventListener('click', () => {
+        copyText(linkInput.value);
+    });
 }
 
-function closeShareModal() {
-    document.getElementById('shareModal').classList.remove('active');
+function getShareText() {
+    const from = document.getElementById('inputFrom').value || 'Someone special';
+    return `${from} sent you a Valentine's card! 💕`;
 }
 
-// ============================================
-// CHECK FOR SHARED CARD (Viewer Mode)
-// ============================================
-function checkSharedCard() {
+function generateURL() {
+    const data = {
+        to: document.getElementById('inputTo').value,
+        title: document.getElementById('inputTitle').value,
+        msg: document.getElementById('inputMessage').value,
+        sign: document.getElementById('inputSign').value,
+        from: document.getElementById('inputFrom').value,
+        theme: state.theme,
+        emoji: state.emoji,
+        font: state.font,
+        stickers: state.stickers
+    };
+
+    const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+    return window.location.origin + window.location.pathname + '?card=' + encoded;
+}
+
+// Load Shared Card
+function loadSharedCard() {
     const params = new URLSearchParams(window.location.search);
     const cardData = params.get('card');
 
@@ -552,122 +331,103 @@ function checkSharedCard() {
     try {
         const data = JSON.parse(decodeURIComponent(atob(cardData)));
 
-        // Fill in the fields
+        // Text
         if (data.to) {
             document.getElementById('inputTo').value = data.to;
-            updatePreview('to', data.to);
-            cardState.to = data.to;
+            document.getElementById('cardTo').textContent = data.to;
         }
-
-        if (data.from) {
-            document.getElementById('inputFrom').value = data.from;
-            document.getElementById('senderDisplay').textContent = data.from;
-            cardState.from = data.from;
+        if (data.title) {
+            document.getElementById('inputTitle').value = data.title;
+            document.getElementById('cardTitle').textContent = data.title;
         }
-
-        if (data.front) {
-            document.getElementById('inputFront').value = data.front;
-            document.getElementById('frontMessage').textContent = data.front;
-            cardState.frontMessage = data.front;
-        }
-
         if (data.msg) {
             document.getElementById('inputMessage').value = data.msg;
-            document.getElementById('messageDisplay').innerHTML = data.msg.replace(/\n/g, '<br>');
-            cardState.message = data.msg;
+            document.getElementById('cardMessage').innerHTML = data.msg.replace(/\n/g, '<br>');
         }
-
         if (data.sign) {
-            document.getElementById('inputSignOff').value = data.sign;
-            document.getElementById('signOffDisplay').textContent = data.sign;
-            cardState.signOff = data.sign;
+            document.getElementById('inputSign').value = data.sign;
+            document.getElementById('cardSign').textContent = data.sign;
+        }
+        if (data.from) {
+            document.getElementById('inputFrom').value = data.from;
+            document.getElementById('cardFrom').textContent = data.from;
         }
 
-        if (data.theme) {
-            document.body.className = `theme-${data.theme}`;
-            cardState.theme = data.theme;
-            // Update theme buttons
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.theme === data.theme);
+        // Theme
+        if (data.theme && themes[data.theme]) {
+            state.theme = data.theme;
+            const colors = themes[data.theme];
+            document.documentElement.style.setProperty('--primary', colors.primary);
+            document.documentElement.style.setProperty('--primary-dark', colors.secondary);
+            document.querySelectorAll('.theme').forEach(b => {
+                b.classList.toggle('active', b.dataset.theme === data.theme);
             });
         }
 
-        // Restore stickers
+        // Emoji
+        if (data.emoji) {
+            state.emoji = data.emoji;
+            document.querySelector('.card-emoji').textContent = data.emoji;
+            document.querySelectorAll('.emoji').forEach(b => {
+                b.classList.toggle('active', b.dataset.emoji === data.emoji);
+            });
+        }
+
+        // Font
+        if (data.font) {
+            state.font = data.font;
+            const isSans = data.font === 'sans';
+            document.getElementById('cardTitle').classList.toggle('sans', isSans);
+            document.getElementById('cardMessage').classList.toggle('sans', isSans);
+            document.getElementById('cardSign').classList.toggle('sans', isSans);
+            document.querySelectorAll('.font').forEach(b => {
+                b.classList.toggle('active', b.dataset.font === data.font);
+            });
+        }
+
+        // Stickers
         if (data.stickers && data.stickers.length > 0) {
             data.stickers.forEach(s => {
-                const layerId = s.side === 'back' ? 'stickersLayerBack' : 'stickersLayerFront';
+                const layerId = s.side === 'back' ? 'stickersBack' : 'stickersFront';
                 const layer = document.getElementById(layerId);
-                if (layer) {
-                    const sticker = document.createElement('div');
-                    sticker.className = 'placed-sticker';
-                    sticker.textContent = s.emoji;
-                    sticker.style.left = s.x + '%';
-                    sticker.style.top = s.y + '%';
-                    layer.appendChild(sticker);
-                }
+                const sticker = document.createElement('div');
+                sticker.className = 'sticker';
+                sticker.textContent = s.emoji;
+                sticker.style.left = s.x + '%';
+                sticker.style.top = s.y + '%';
+                layer.appendChild(sticker);
             });
-            cardState.stickers = data.stickers;
+            state.stickers = data.stickers;
         }
 
-        // Switch to card view
-        document.querySelector('[data-view="card"]').click();
-
-        showToast('💌 Viewing shared card!');
+        toast('💌 Viewing shared card!');
 
     } catch (e) {
         console.log('Invalid card data');
     }
 }
 
-// ============================================
-// UTILITIES
-// ============================================
-function copyToClipboard(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast('Link copied! 📋');
-        }).catch(() => {
-            fallbackCopy(text);
-        });
+// Utilities
+function copyText(text) {
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => toast('Link copied! 📋'));
     } else {
-        fallbackCopy(text);
-    }
-}
-
-function fallbackCopy(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.select();
-
-    try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
         document.execCommand('copy');
-        showToast('Link copied! 📋');
-    } catch (e) {
-        showToast('Failed to copy', true);
+        document.body.removeChild(ta);
+        toast('Link copied! 📋');
     }
-
-    document.body.removeChild(textarea);
 }
 
-function showToast(message, isError = false) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-
-    toast.textContent = message;
-    toast.classList.toggle('error', isError);
-    toast.classList.add('active');
-
-    setTimeout(() => {
-        toast.classList.remove('active');
-    }, 2500);
-}
-
-function showLoading(show) {
-    const loading = document.getElementById('loading');
-    if (loading) {
-        loading.classList.toggle('active', show);
-    }
+function toast(msg, isError = false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.toggle('error', isError);
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
 }
