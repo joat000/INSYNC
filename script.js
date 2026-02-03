@@ -1,65 +1,71 @@
 // ============================================
-// NOTE2U - Valentine Card Viewer
-// Envelope + Flip Card with Smooth Animations
-// JSON-based content from URL or API
-// Cross-browser compatible
+// NOTE2U - Valentine Card CREATOR
+// Create cards and share them
+// Mobile-first with live preview
 // ============================================
 
-// Card data state
-let cardData = {
-    to: 'My Love',
-    from: 'Someone Special',
-    frontMessage: 'Will You Be My Valentine?',
-    message: 'Every moment with you is magical. You make my heart skip a beat.',
-    signOff: 'Forever Yours,',
-    theme: 'classic', // classic, blush, gold, purple, blue
+// Card state
+const cardState = {
+    to: '',
+    from: '',
+    frontMessage: '',
+    message: '',
+    signOff: '',
+    theme: 'classic',
+    photo: null,
     stickers: []
 };
 
-// App state
-const state = {
-    isEnvelopeOpen: false,
-    isCardFlipped: false,
-    heartsActive: false
-};
+// UI state
+let isFlipped = false;
 
 // ============================================
 // INITIALIZATION
 // ============================================
-document.addEventListener('DOMContentLoaded', async () => {
-    // Prevent zoom on iOS
-    preventIOSZoom();
-
-    // Fix 100vh issue
-    fixViewportHeight();
+document.addEventListener('DOMContentLoaded', () => {
+    // Prevent iOS zoom issues
+    preventZoom();
 
     // Initialize floating hearts
     initFloatingHearts();
 
-    // Load card data from URL params or JSON
-    await loadCardData();
+    // Initialize preview toggles
+    initPreviewToggle();
 
-    // Apply card data to UI
-    applyCardData();
-
-    // Initialize interactions
-    initEnvelope();
+    // Initialize flip card
     initFlipCard();
+
+    // Initialize editor tabs
+    initTabs();
+
+    // Initialize text inputs with live preview
+    initTextInputs();
+
+    // Initialize quick messages
+    initQuickMessages();
+
+    // Initialize themes
+    initThemes();
+
+    // Initialize photo upload
+    initPhotoUpload();
+
+    // Initialize stickers
+    initStickers();
+
+    // Initialize share modal
     initShareModal();
 
-    // Auto-open envelope after brief delay (looks nicer)
-    setTimeout(() => {
-        const hint = document.getElementById('tapHint');
-        if (hint) hint.style.opacity = '1';
-    }, 500);
+    // Check if viewing shared card
+    checkSharedCard();
 
-    console.log('💕 NOTE2U Card Viewer loaded!');
+    console.log('💕 NOTE2U Card Creator loaded!');
 });
 
 // ============================================
-// VIEWPORT FIXES
+// PREVENT ZOOM (iOS)
 // ============================================
-function preventIOSZoom() {
+function preventZoom() {
     // Prevent double-tap zoom
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
@@ -69,142 +75,6 @@ function preventIOSZoom() {
         }
         lastTouchEnd = now;
     }, { passive: false });
-
-    // Prevent pinch zoom
-    document.addEventListener('gesturestart', (e) => e.preventDefault());
-    document.addEventListener('gesturechange', (e) => e.preventDefault());
-}
-
-function fixViewportHeight() {
-    // Fix for mobile browser address bar
-    const setVH = () => {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    setVH();
-
-    // Only update on orientation change, not resize (prevents keyboard issues)
-    let lastWidth = window.innerWidth;
-    window.addEventListener('resize', () => {
-        // Only trigger on width change (orientation) not height (keyboard)
-        if (Math.abs(window.innerWidth - lastWidth) > 100) {
-            setVH();
-            lastWidth = window.innerWidth;
-        }
-    });
-
-    window.addEventListener('orientationchange', () => {
-        setTimeout(setVH, 100);
-    });
-}
-
-// ============================================
-// LOAD CARD DATA
-// ============================================
-async function loadCardData() {
-    const params = new URLSearchParams(window.location.search);
-
-    // Method 1: JSON URL parameter
-    const jsonUrl = params.get('json');
-    if (jsonUrl) {
-        try {
-            const response = await fetch(jsonUrl);
-            if (response.ok) {
-                const data = await response.json();
-                mergeCardData(data);
-                return;
-            }
-        } catch (e) {
-            console.log('Failed to load JSON from URL:', e);
-        }
-    }
-
-    // Method 2: Encoded card data in URL
-    const encodedCard = params.get('card');
-    if (encodedCard) {
-        try {
-            const decoded = JSON.parse(decodeURIComponent(atob(encodedCard)));
-            mergeCardData(decoded);
-            return;
-        } catch (e) {
-            console.log('Failed to decode card data:', e);
-        }
-    }
-
-    // Method 3: Individual URL parameters
-    if (params.has('to') || params.has('from') || params.has('message')) {
-        mergeCardData({
-            to: params.get('to'),
-            from: params.get('from'),
-            frontMessage: params.get('front'),
-            message: params.get('message'),
-            signOff: params.get('signoff'),
-            theme: params.get('theme')
-        });
-    }
-}
-
-function mergeCardData(data) {
-    if (!data) return;
-
-    if (data.to) cardData.to = data.to;
-    if (data.from) cardData.from = data.from;
-    if (data.frontMessage || data.front) cardData.frontMessage = data.frontMessage || data.front;
-    if (data.message || data.msg) cardData.message = data.message || data.msg;
-    if (data.signOff || data.sign) cardData.signOff = data.signOff || data.sign;
-    if (data.theme) cardData.theme = data.theme;
-    if (data.stickers) cardData.stickers = data.stickers;
-}
-
-function applyCardData() {
-    // Apply theme
-    document.body.className = `theme-${cardData.theme}`;
-
-    // Update envelope
-    const envelopeTo = document.getElementById('envelopeTo');
-    if (envelopeTo) envelopeTo.textContent = cardData.to;
-
-    // Update card front
-    const frontMessage = document.getElementById('frontMessage');
-    if (frontMessage) frontMessage.textContent = cardData.frontMessage;
-
-    // Update card inside
-    const recipientName = document.getElementById('recipientName');
-    if (recipientName) recipientName.textContent = cardData.to;
-
-    const mainMessage = document.getElementById('mainMessage');
-    if (mainMessage) mainMessage.innerHTML = cardData.message.replace(/\n/g, '<br>');
-
-    const signOff = document.getElementById('signOff');
-    if (signOff) signOff.textContent = cardData.signOff;
-
-    const senderName = document.getElementById('senderName');
-    if (senderName) senderName.textContent = cardData.from;
-
-    // Apply stickers if any
-    if (cardData.stickers && cardData.stickers.length > 0) {
-        applyStickers();
-    }
-}
-
-function applyStickers() {
-    const frontLayer = document.getElementById('decorationsFront');
-    const backLayer = document.getElementById('decorationsBack');
-
-    cardData.stickers.forEach(sticker => {
-        const el = document.createElement('div');
-        el.className = 'placed-sticker';
-        el.textContent = sticker.emoji;
-        el.style.left = sticker.x + '%';
-        el.style.top = sticker.y + '%';
-
-        if (sticker.side === 'back' && backLayer) {
-            backLayer.appendChild(el);
-        } else if (frontLayer) {
-            frontLayer.appendChild(el);
-        }
-    });
 }
 
 // ============================================
@@ -214,96 +84,331 @@ function initFloatingHearts() {
     const container = document.getElementById('floatingHearts');
     if (!container) return;
 
-    const hearts = ['❤️', '💕', '💖', '💗', '💘', '💝', '💓', '💞'];
-    const count = window.innerWidth < 768 ? 12 : 20;
+    const hearts = ['❤️', '💕', '💖', '💗', '💘', '💝'];
+    const count = window.innerWidth < 600 ? 10 : 15;
 
     for (let i = 0; i < count; i++) {
-        createHeart(container, hearts, i);
+        const heart = document.createElement('div');
+        heart.className = 'floating-heart';
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDelay = Math.random() * 12 + 's';
+        heart.style.animationDuration = (10 + Math.random() * 8) + 's';
+        heart.style.fontSize = (12 + Math.random() * 16) + 'px';
+        container.appendChild(heart);
     }
 }
 
-function createHeart(container, hearts, index) {
-    const heart = document.createElement('div');
-    heart.className = 'floating-heart';
-    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-    heart.style.left = Math.random() * 100 + '%';
-    heart.style.animationDelay = (Math.random() * 10) + 's';
-    heart.style.animationDuration = (8 + Math.random() * 6) + 's';
-    heart.style.fontSize = (14 + Math.random() * 18) + 'px';
-    container.appendChild(heart);
-}
-
-function activateHearts() {
-    if (state.heartsActive) return;
-    state.heartsActive = true;
-    document.body.classList.add('hearts-active');
-}
-
 // ============================================
-// ENVELOPE INTERACTION
+// PREVIEW TOGGLE (Envelope/Card)
 // ============================================
-function initEnvelope() {
-    const envelope = document.getElementById('envelope');
-    const envelopeView = document.getElementById('envelopeView');
-    const cardView = document.getElementById('cardView');
+function initPreviewToggle() {
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+    const envelopePreview = document.getElementById('envelopePreview');
+    const cardPreview = document.getElementById('cardPreview');
 
-    if (!envelope) return;
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
 
-    const openEnvelope = () => {
-        if (state.isEnvelopeOpen) return;
-        state.isEnvelopeOpen = true;
+            toggleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-        // Add opening animation class
-        envelope.classList.add('opening');
-
-        // Hide tap hint
-        const tapHint = document.getElementById('tapHint');
-        if (tapHint) tapHint.style.opacity = '0';
-
-        // Transition to card view after animation
-        setTimeout(() => {
-            envelopeView.classList.add('hidden');
-            cardView.classList.remove('hidden');
-
-            // Activate enhanced heart animation
-            activateHearts();
-        }, 1200);
-    };
-
-    // Touch and click support
-    envelope.addEventListener('click', openEnvelope);
-    envelope.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        openEnvelope();
+            if (view === 'envelope') {
+                envelopePreview.classList.remove('hidden');
+                cardPreview.classList.add('hidden');
+            } else {
+                envelopePreview.classList.add('hidden');
+                cardPreview.classList.remove('hidden');
+            }
+        });
     });
 }
 
 // ============================================
-// FLIP CARD INTERACTION
+// FLIP CARD
 // ============================================
 function initFlipCard() {
     const flipCard = document.getElementById('flipCard');
     if (!flipCard) return;
 
-    const toggleFlip = () => {
+    flipCard.addEventListener('click', () => {
         flipCard.classList.toggle('flipped');
-        state.isCardFlipped = !state.isCardFlipped;
+        isFlipped = !isFlipped;
 
         // Update hint
-        const flipHint = document.getElementById('flipHint');
-        if (flipHint) {
-            flipHint.textContent = state.isCardFlipped ? 'Tap to see front' : 'Tap card to flip';
-        }
-    };
-
-    flipCard.addEventListener('click', toggleFlip);
-    flipCard.addEventListener('touchend', (e) => {
-        // Prevent double-trigger
-        if (e.target.closest('.flip-card')) {
-            e.preventDefault();
-            toggleFlip();
+        const hint = document.querySelector('#cardPreview .preview-hint');
+        if (hint) {
+            hint.textContent = isFlipped ? 'Tap to see front' : 'Tap card to flip';
         }
     });
+}
+
+// ============================================
+// EDITOR TABS
+// ============================================
+function initTabs() {
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+
+            tab.classList.add('active');
+            document.getElementById(targetTab + 'Panel').classList.add('active');
+        });
+    });
+}
+
+// ============================================
+// TEXT INPUTS - Live Preview
+// ============================================
+function initTextInputs() {
+    // To field
+    const inputTo = document.getElementById('inputTo');
+    if (inputTo) {
+        inputTo.addEventListener('input', () => {
+            cardState.to = inputTo.value;
+            updatePreview('to', inputTo.value || 'My Love');
+        });
+    }
+
+    // Front message
+    const inputFront = document.getElementById('inputFront');
+    if (inputFront) {
+        inputFront.addEventListener('input', () => {
+            cardState.frontMessage = inputFront.value;
+            document.getElementById('frontMessage').textContent =
+                inputFront.value || 'Will You Be My Valentine?';
+        });
+    }
+
+    // Inside message
+    const inputMessage = document.getElementById('inputMessage');
+    if (inputMessage) {
+        inputMessage.addEventListener('input', () => {
+            cardState.message = inputMessage.value;
+            document.getElementById('messageDisplay').innerHTML =
+                (inputMessage.value || 'Your sweet message here...').replace(/\n/g, '<br>');
+        });
+    }
+
+    // Sign off
+    const inputSignOff = document.getElementById('inputSignOff');
+    if (inputSignOff) {
+        inputSignOff.addEventListener('input', () => {
+            cardState.signOff = inputSignOff.value;
+            document.getElementById('signOffDisplay').textContent =
+                inputSignOff.value || 'Forever Yours,';
+        });
+    }
+
+    // From field
+    const inputFrom = document.getElementById('inputFrom');
+    if (inputFrom) {
+        inputFrom.addEventListener('input', () => {
+            cardState.from = inputFrom.value;
+            document.getElementById('senderDisplay').textContent =
+                inputFrom.value || 'Your Name';
+        });
+    }
+}
+
+function updatePreview(field, value) {
+    if (field === 'to') {
+        document.getElementById('envelopeTo').textContent = value;
+        document.getElementById('recipientDisplay').textContent = value;
+    }
+}
+
+// ============================================
+// QUICK MESSAGES
+// ============================================
+function initQuickMessages() {
+    const quickBtns = document.querySelectorAll('.quick-btn');
+
+    quickBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const front = btn.dataset.front;
+            const msg = btn.dataset.msg;
+
+            const inputFront = document.getElementById('inputFront');
+            const inputMessage = document.getElementById('inputMessage');
+
+            if (inputFront && front) {
+                inputFront.value = front;
+                inputFront.dispatchEvent(new Event('input'));
+            }
+
+            if (inputMessage && msg) {
+                inputMessage.value = msg;
+                inputMessage.dispatchEvent(new Event('input'));
+            }
+
+            showToast('Message applied! 💕');
+        });
+    });
+}
+
+// ============================================
+// THEMES
+// ============================================
+function initThemes() {
+    const themeBtns = document.querySelectorAll('.theme-btn');
+
+    themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.dataset.theme;
+
+            themeBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Apply theme to body
+            document.body.className = `theme-${theme}`;
+            cardState.theme = theme;
+
+            showToast('Theme applied! ✨');
+        });
+    });
+}
+
+// ============================================
+// PHOTO UPLOAD
+// ============================================
+function initPhotoUpload() {
+    const uploadBtn = document.getElementById('uploadBtn');
+    const photoInput = document.getElementById('photoInput');
+    const removeBtn = document.getElementById('removePhotoBtn');
+    const cardPhoto = document.getElementById('cardPhoto');
+
+    if (uploadBtn && photoInput) {
+        uploadBtn.addEventListener('click', () => {
+            photoInput.click();
+        });
+
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image', true);
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image too large (max 5MB)', true);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                cardState.photo = event.target.result;
+
+                // Update preview
+                cardPhoto.innerHTML = `<img src="${event.target.result}" alt="Photo">`;
+                cardPhoto.classList.add('has-image');
+
+                // Show remove button
+                removeBtn.classList.remove('hidden');
+
+                showToast('Photo added! 📷');
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            cardState.photo = null;
+            cardPhoto.innerHTML = '<span class="photo-placeholder">💕</span>';
+            cardPhoto.classList.remove('has-image');
+            removeBtn.classList.add('hidden');
+            photoInput.value = '';
+            showToast('Photo removed');
+        });
+    }
+}
+
+// ============================================
+// STICKERS
+// ============================================
+function initStickers() {
+    const stickerBtns = document.querySelectorAll('.sticker-btn');
+    const clearBtn = document.getElementById('clearStickers');
+
+    stickerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const emoji = btn.dataset.sticker;
+            addSticker(emoji);
+        });
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            clearAllStickers();
+        });
+    }
+}
+
+function addSticker(emoji) {
+    // Add to current visible side
+    const layerId = isFlipped ? 'stickersLayerBack' : 'stickersLayerFront';
+    const layer = document.getElementById(layerId);
+
+    if (!layer) return;
+
+    const sticker = document.createElement('div');
+    sticker.className = 'placed-sticker';
+    sticker.textContent = emoji;
+
+    // Random position
+    const x = 10 + Math.random() * 70;
+    const y = 10 + Math.random() * 70;
+    sticker.style.left = x + '%';
+    sticker.style.top = y + '%';
+
+    // Store in state
+    cardState.stickers.push({
+        emoji,
+        x,
+        y,
+        side: isFlipped ? 'back' : 'front'
+    });
+
+    // Long press to remove
+    let pressTimer;
+    const startPress = () => {
+        pressTimer = setTimeout(() => {
+            sticker.remove();
+            // Remove from state
+            const idx = cardState.stickers.findIndex(s =>
+                s.emoji === emoji && s.x === x && s.y === y
+            );
+            if (idx > -1) cardState.stickers.splice(idx, 1);
+            showToast('Sticker removed');
+        }, 500);
+    };
+
+    sticker.addEventListener('touchstart', startPress);
+    sticker.addEventListener('mousedown', startPress);
+    sticker.addEventListener('touchend', () => clearTimeout(pressTimer));
+    sticker.addEventListener('mouseup', () => clearTimeout(pressTimer));
+    sticker.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+
+    layer.appendChild(sticker);
+    showToast('Sticker added! ✨');
+}
+
+function clearAllStickers() {
+    document.getElementById('stickersLayerFront').innerHTML = '';
+    document.getElementById('stickersLayerBack').innerHTML = '';
+    cardState.stickers = [];
+    showToast('All stickers cleared');
 }
 
 // ============================================
@@ -312,28 +417,25 @@ function initFlipCard() {
 function initShareModal() {
     const shareBtn = document.getElementById('shareBtn');
     const modal = document.getElementById('shareModal');
-    const modalClose = document.getElementById('modalClose');
+    const closeBtn = document.getElementById('modalClose');
     const shareLink = document.getElementById('shareLink');
 
-    // Generate share URL
-    const shareUrl = generateShareUrl();
-    if (shareLink) shareLink.value = shareUrl;
-
-    // Open modal
     if (shareBtn) {
         shareBtn.addEventListener('click', () => {
+            // Generate share URL
+            const url = generateShareURL();
+            if (shareLink) shareLink.value = url;
+
             modal.classList.add('active');
         });
     }
 
-    // Close modal
-    if (modalClose) {
-        modalClose.addEventListener('click', () => {
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
             modal.classList.remove('active');
         });
     }
 
-    // Close on backdrop click
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -343,46 +445,46 @@ function initShareModal() {
     }
 
     // Share buttons
-    initShareButtons(shareUrl);
+    initShareButtons();
 }
 
-function generateShareUrl() {
+function generateShareURL() {
     const data = {
-        to: cardData.to,
-        from: cardData.from,
-        front: cardData.frontMessage,
-        message: cardData.message,
-        sign: cardData.signOff,
-        theme: cardData.theme
+        to: cardState.to || 'My Love',
+        from: cardState.from || 'Someone Special',
+        front: cardState.frontMessage || 'Will You Be My Valentine?',
+        msg: cardState.message || 'Every moment with you is magical.',
+        sign: cardState.signOff || 'Forever Yours,',
+        theme: cardState.theme
     };
 
-    if (cardData.stickers && cardData.stickers.length > 0) {
-        data.stickers = cardData.stickers;
+    // Add stickers if any
+    if (cardState.stickers.length > 0) {
+        data.stickers = cardState.stickers;
     }
 
     const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
     return `${window.location.origin}${window.location.pathname}?card=${encoded}`;
 }
 
-function initShareButtons(shareUrl) {
-    const shareText = `${cardData.from} sent you a Valentine's card! 💕`;
-    const shareTitle = `Valentine's Card from ${cardData.from}`;
+function initShareButtons() {
+    const shareUrl = () => document.getElementById('shareLink').value;
+    const shareText = () => `${cardState.from || 'Someone special'} sent you a Valentine's card! 💕`;
 
     // Native Share (Web Share API)
     const shareNative = document.getElementById('shareNative');
     if (shareNative) {
         if (navigator.share) {
-            shareNative.classList.add('native-only');
             shareNative.addEventListener('click', async () => {
                 try {
                     await navigator.share({
-                        title: shareTitle,
-                        text: shareText,
-                        url: shareUrl
+                        title: `Valentine's Card from ${cardState.from || 'Someone Special'}`,
+                        text: shareText(),
+                        url: shareUrl()
                     });
-                    closeModal();
+                    closeShareModal();
                 } catch (e) {
-                    // User cancelled or error
+                    // User cancelled
                 }
             });
         } else {
@@ -394,10 +496,9 @@ function initShareButtons(shareUrl) {
     const shareWhatsApp = document.getElementById('shareWhatsApp');
     if (shareWhatsApp) {
         shareWhatsApp.addEventListener('click', () => {
-            const text = `${shareText}\n\n${shareUrl}`;
-            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
-            closeModal();
+            const text = `${shareText()}\n\n${shareUrl()}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            closeShareModal();
         });
     }
 
@@ -405,14 +506,13 @@ function initShareButtons(shareUrl) {
     const shareSMS = document.getElementById('shareSMS');
     if (shareSMS) {
         shareSMS.addEventListener('click', () => {
-            const text = `${shareText} ${shareUrl}`;
-            // Use different formats for iOS and Android
+            const text = `${shareText()} ${shareUrl()}`;
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             const smsUrl = isIOS
                 ? `sms:&body=${encodeURIComponent(text)}`
                 : `sms:?body=${encodeURIComponent(text)}`;
             window.location.href = smsUrl;
-            closeModal();
+            closeShareModal();
         });
     }
 
@@ -420,10 +520,10 @@ function initShareButtons(shareUrl) {
     const shareEmail = document.getElementById('shareEmail');
     if (shareEmail) {
         shareEmail.addEventListener('click', () => {
-            const subject = shareTitle;
-            const body = `${shareText}\n\nOpen your card here:\n${shareUrl}`;
+            const subject = `Valentine's Card from ${cardState.from || 'Someone Special'}`;
+            const body = `${shareText()}\n\nOpen your card here:\n${shareUrl()}`;
             window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            closeModal();
+            closeShareModal();
         });
     }
 
@@ -431,18 +531,96 @@ function initShareButtons(shareUrl) {
     const copyLink = document.getElementById('copyLink');
     if (copyLink) {
         copyLink.addEventListener('click', () => {
-            copyToClipboard(shareUrl);
+            copyToClipboard(shareUrl());
         });
     }
 }
 
-function closeModal() {
-    const modal = document.getElementById('shareModal');
-    if (modal) modal.classList.remove('active');
+function closeShareModal() {
+    document.getElementById('shareModal').classList.remove('active');
 }
 
 // ============================================
-// UTILITY FUNCTIONS
+// CHECK FOR SHARED CARD (Viewer Mode)
+// ============================================
+function checkSharedCard() {
+    const params = new URLSearchParams(window.location.search);
+    const cardData = params.get('card');
+
+    if (!cardData) return;
+
+    try {
+        const data = JSON.parse(decodeURIComponent(atob(cardData)));
+
+        // Fill in the fields
+        if (data.to) {
+            document.getElementById('inputTo').value = data.to;
+            updatePreview('to', data.to);
+            cardState.to = data.to;
+        }
+
+        if (data.from) {
+            document.getElementById('inputFrom').value = data.from;
+            document.getElementById('senderDisplay').textContent = data.from;
+            cardState.from = data.from;
+        }
+
+        if (data.front) {
+            document.getElementById('inputFront').value = data.front;
+            document.getElementById('frontMessage').textContent = data.front;
+            cardState.frontMessage = data.front;
+        }
+
+        if (data.msg) {
+            document.getElementById('inputMessage').value = data.msg;
+            document.getElementById('messageDisplay').innerHTML = data.msg.replace(/\n/g, '<br>');
+            cardState.message = data.msg;
+        }
+
+        if (data.sign) {
+            document.getElementById('inputSignOff').value = data.sign;
+            document.getElementById('signOffDisplay').textContent = data.sign;
+            cardState.signOff = data.sign;
+        }
+
+        if (data.theme) {
+            document.body.className = `theme-${data.theme}`;
+            cardState.theme = data.theme;
+            // Update theme buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === data.theme);
+            });
+        }
+
+        // Restore stickers
+        if (data.stickers && data.stickers.length > 0) {
+            data.stickers.forEach(s => {
+                const layerId = s.side === 'back' ? 'stickersLayerBack' : 'stickersLayerFront';
+                const layer = document.getElementById(layerId);
+                if (layer) {
+                    const sticker = document.createElement('div');
+                    sticker.className = 'placed-sticker';
+                    sticker.textContent = s.emoji;
+                    sticker.style.left = s.x + '%';
+                    sticker.style.top = s.y + '%';
+                    layer.appendChild(sticker);
+                }
+            });
+            cardState.stickers = data.stickers;
+        }
+
+        // Switch to card view
+        document.querySelector('[data-view="card"]').click();
+
+        showToast('💌 Viewing shared card!');
+
+    } catch (e) {
+        console.log('Invalid card data');
+    }
+}
+
+// ============================================
+// UTILITIES
 // ============================================
 function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -461,9 +639,7 @@ function fallbackCopy(text) {
     textarea.value = text;
     textarea.style.position = 'fixed';
     textarea.style.left = '-9999px';
-    textarea.style.top = '0';
     document.body.appendChild(textarea);
-    textarea.focus();
     textarea.select();
 
     try {
@@ -486,7 +662,7 @@ function showToast(message, isError = false) {
 
     setTimeout(() => {
         toast.classList.remove('active');
-    }, 3000);
+    }, 2500);
 }
 
 function showLoading(show) {
@@ -495,54 +671,3 @@ function showLoading(show) {
         loading.classList.toggle('active', show);
     }
 }
-
-// ============================================
-// JSON INTEGRATION EXAMPLE
-// ============================================
-/*
-To use this card viewer with JSON:
-
-Option 1: URL with encoded card data
------------------------------------------
-The card data is encoded in the URL:
-https://yoursite.com/card/?card=BASE64_ENCODED_JSON
-
-Example generating a link:
-const cardData = {
-    to: "Sarah",
-    from: "Mike",
-    front: "Be Mine!",
-    message: "You're the best thing that ever happened to me.",
-    sign: "All my love,",
-    theme: "blush"
-};
-const encoded = btoa(encodeURIComponent(JSON.stringify(cardData)));
-const url = `https://yoursite.com/card/?card=${encoded}`;
-
-
-Option 2: Direct URL parameters
------------------------------------------
-https://yoursite.com/card/?to=Sarah&from=Mike&message=I+love+you&theme=gold
-
-
-Option 3: External JSON file
------------------------------------------
-Host a JSON file and pass its URL:
-https://yoursite.com/card/?json=https://api.example.com/card/12345.json
-
-JSON file format:
-{
-    "to": "Sarah",
-    "from": "Mike",
-    "frontMessage": "Will You Be My Valentine?",
-    "message": "Every moment with you is magical.",
-    "signOff": "Forever Yours,",
-    "theme": "classic",
-    "stickers": [
-        { "emoji": "❤️", "x": 10, "y": 15, "side": "front" },
-        { "emoji": "💕", "x": 80, "y": 20, "side": "front" }
-    ]
-}
-
-Available themes: classic, blush, gold, purple, blue
-*/
