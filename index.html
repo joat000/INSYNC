@@ -8,705 +8,266 @@
     <meta name="theme-color" content="#ff1744">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="NOTE2U - Create beautiful, interactive Valentine's Day cards with photos, stickers, and heartfelt messages for your loved ones. Free online card maker.">
-    <meta name="keywords" content="valentine card, love card, valentine's day, card maker, greeting card, romantic card, free card creator, NOTE2U">
-    <meta name="author" content="NOTE2U">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="NOTE2U - Create beautiful Valentine's Day cards">
+    <title>NOTE2U - Valentine's Card Creator</title>
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://note2u.netlify.app/">
-    <meta property="og:title" content="NOTE2U - Create Beautiful Valentine's Cards">
-    <meta property="og:description" content="Create magical, interactive Valentine's Day cards for your special someone. Add photos, stickers, and heartfelt messages.">
-    <meta property="og:image" content="https://note2u.netlify.app/og-image.png">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://note2u.netlify.app/">
-    <meta name="twitter:title" content="NOTE2U - Create Beautiful Valentine's Cards">
-    <meta name="twitter:description" content="Create magical, interactive Valentine's Day cards for your special someone.">
-    <meta name="twitter:image" content="https://note2u.netlify.app/og-image.png">
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="icon" type="image/svg+xml" href="icon-192.svg">
-    <link rel="canonical" href="https://note2u.netlify.app/">
-
-    <title>NOTE2U - Valentine's Card Creator | Create Beautiful Love Cards</title>
-
-    <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Quicksand:wght@400;600&family=Sacramento&family=Satisfy&family=Allura&family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Floating Hearts Background -->
     <div class="floating-hearts" id="floatingHearts"></div>
 
-    <!-- 3D Background Layer -->
-    <div class="parallax-bg" id="parallaxBg"></div>
+    <!-- App Container - Split View Layout -->
+    <div class="app-container">
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo-container">
-                <h1 class="title">
-                    <span class="logo-heart left">💌</span>
-                    <span class="logo-text">
-                        <span class="logo-note">NOTE</span><span class="logo-2u">2U</span>
-                    </span>
-                    <span class="logo-heart right">💕</span>
-                </h1>
-                <div class="logo-tagline">Send Love, Create Memories</div>
-            </div>
-            <p class="subtitle">Create magical cards for your special someone</p>
-        </header>
-
-        <!-- Mobile Tab Bar -->
-        <div class="mobile-tab-bar" id="mobileTabBar">
-            <button class="mobile-tab active" data-tab="preview">
-                <span class="tab-icon">💌</span>
-                <span class="tab-label">Preview</span>
-            </button>
-            <button class="mobile-tab" data-tab="design">
-                <span class="tab-icon">🎨</span>
-                <span class="tab-label">Design</span>
-            </button>
-            <button class="mobile-tab" data-tab="content">
-                <span class="tab-icon">✍️</span>
-                <span class="tab-label">Message</span>
-            </button>
-            <button class="mobile-tab" data-tab="extras">
-                <span class="tab-icon">✨</span>
-                <span class="tab-label">Extras</span>
-            </button>
-        </div>
-
-        <!-- Mobile Live Preview - Always visible while editing -->
-        <div class="mobile-mini-preview" id="mobileMiniPreview">
-            <div class="mini-preview-card" id="miniPreviewCard">
-                <div class="mini-card-front" id="miniCardDisplay">
-                    <div class="mini-message">Your card preview</div>
+        <!-- ALWAYS VISIBLE: Live Preview Section (Top on Mobile) -->
+        <section class="preview-section" id="previewSection">
+            <div class="preview-header">
+                <span class="preview-title">💌 Live Preview</span>
+                <div class="view-toggle-mini">
+                    <button class="view-btn-mini active" data-view="envelope">✉️</button>
+                    <button class="view-btn-mini" data-view="card">💌</button>
                 </div>
             </div>
-            <div class="mini-preview-info">
-                <span class="mini-preview-label">✨ Live Preview</span>
-                <span class="mini-preview-hint">Tap card for full view</span>
-            </div>
-        </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Sidebar - Tools Panel (Desktop) -->
-            <aside class="tools-panel" id="toolsPanel">
-                <!-- Tab Navigation -->
-                <div class="tool-tabs desktop-only">
-                    <button class="tool-tab active" data-tab="design">🎨 Design</button>
-                    <button class="tool-tab" data-tab="content">✍️ Content</button>
-                    <button class="tool-tab" data-tab="extras">✨ Extras</button>
+            <div class="preview-content" id="previewContent">
+                <!-- Envelope View -->
+                <div class="envelope-wrapper" id="envelopeWrapper">
+                    <div class="envelope" id="envelope">
+                        <div class="envelope-flap">
+                            <div class="wax-seal">💕</div>
+                        </div>
+                        <div class="envelope-body">
+                            <div class="envelope-to">To: <span id="envelopeRecipient">My Love</span></div>
+                        </div>
+                    </div>
+                    <p class="tap-hint">👆 Tap to open!</p>
                 </div>
 
-                <!-- Design Tab -->
-                <div class="tab-content active" id="designTab">
-                    <!-- Template Selection -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">🎨</span> Card Themes
-                        </h3>
-                        <div class="templates-grid" id="templatesGrid">
-                            <div class="template-card active" data-template="romantic-red">
-                                <div class="template-preview romantic-red-preview"></div>
-                                <span>Passion</span>
-                            </div>
-                            <div class="template-card" data-template="soft-pink">
-                                <div class="template-preview soft-pink-preview"></div>
-                                <span>Blush</span>
-                            </div>
-                            <div class="template-card" data-template="elegant-gold">
-                                <div class="template-preview elegant-gold-preview"></div>
-                                <span>Luxury</span>
-                            </div>
-                            <div class="template-card" data-template="purple-dream">
-                                <div class="template-preview purple-dream-preview"></div>
-                                <span>Dream</span>
-                            </div>
-                            <div class="template-card" data-template="sunset-love">
-                                <div class="template-preview sunset-love-preview"></div>
-                                <span>Sunset</span>
-                            </div>
-                            <div class="template-card" data-template="midnight-romance">
-                                <div class="template-preview midnight-romance-preview"></div>
-                                <span>Midnight</span>
-                            </div>
-                            <div class="template-card" data-template="rose-garden">
-                                <div class="template-preview rose-garden-preview"></div>
-                                <span>Rose</span>
-                            </div>
-                            <div class="template-card" data-template="ocean-love">
-                                <div class="template-preview ocean-love-preview"></div>
-                                <span>Ocean</span>
-                            </div>
-                            <div class="template-card" data-template="forest-whisper">
-                                <div class="template-preview forest-whisper-preview"></div>
-                                <span>Forest</span>
-                            </div>
-                            <div class="template-card" data-template="cherry-blossom">
-                                <div class="template-preview cherry-blossom-preview"></div>
-                                <span>Sakura</span>
-                            </div>
-                            <div class="template-card" data-template="neon-love">
-                                <div class="template-preview neon-love-preview"></div>
-                                <span>Neon</span>
-                            </div>
-                            <div class="template-card" data-template="vintage-romance">
-                                <div class="template-preview vintage-romance-preview"></div>
-                                <span>Vintage</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3D Effects -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">🌀</span> 3D Effects
-                        </h3>
-                        <div class="effect-3d-options" id="effect3dOptions">
-                            <button class="effect-3d-btn active" data-effect="float">
-                                <span>🎈</span> Float
-                            </button>
-                            <button class="effect-3d-btn" data-effect="tilt">
-                                <span>📐</span> Tilt
-                            </button>
-                            <button class="effect-3d-btn" data-effect="pulse">
-                                <span>💓</span> Pulse
-                            </button>
-                            <button class="effect-3d-btn" data-effect="rotate">
-                                <span>🔄</span> Rotate
-                            </button>
-                            <button class="effect-3d-btn" data-effect="swing">
-                                <span>🎭</span> Swing
-                            </button>
-                            <button class="effect-3d-btn" data-effect="none">
-                                <span>⏹️</span> None
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Envelope Style -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">✉️</span> Envelope
-                        </h3>
-                        <div class="envelope-options" id="envelopeOptions">
-                            <button class="envelope-btn active" data-envelope="classic-red">
-                                <span class="env-preview classic-red-env"></span>
-                                Red
-                            </button>
-                            <button class="envelope-btn" data-envelope="pink-hearts">
-                                <span class="env-preview pink-hearts-env"></span>
-                                Pink
-                            </button>
-                            <button class="envelope-btn" data-envelope="golden-luxury">
-                                <span class="env-preview golden-luxury-env"></span>
-                                Gold
-                            </button>
-                            <button class="envelope-btn" data-envelope="vintage-love">
-                                <span class="env-preview vintage-love-env"></span>
-                                Vintage
-                            </button>
-                            <button class="envelope-btn" data-envelope="midnight-blue">
-                                <span class="env-preview midnight-blue-env"></span>
-                                Night
-                            </button>
-                            <button class="envelope-btn" data-envelope="rose-gold">
-                                <span class="env-preview rose-gold-env"></span>
-                                Rose
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Font Selection -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">🔤</span> Font
-                        </h3>
-                        <div class="font-options" id="fontOptions">
-                            <button class="font-btn active" data-font="'Dancing Script', cursive">Dancing</button>
-                            <button class="font-btn" data-font="'Great Vibes', cursive">Vibes</button>
-                            <button class="font-btn" data-font="'Pacifico', cursive">Pacifico</button>
-                            <button class="font-btn" data-font="'Sacramento', cursive">Sacramento</button>
-                            <button class="font-btn" data-font="'Cinzel', serif">Cinzel</button>
-                            <button class="font-btn" data-font="'Playfair Display', serif">Playfair</button>
-                        </div>
-                    </div>
-
-                    <!-- Text Color -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">🎨</span> Text Color
-                        </h3>
-                        <div class="color-options" id="colorOptions">
-                            <!-- Whites & Lights -->
-                            <button class="color-btn active" data-color="#ffffff" style="background: #ffffff;" title="White"></button>
-                            <button class="color-btn" data-color="#fff5f5" style="background: #fff5f5;" title="Snow"></button>
-                            <button class="color-btn" data-color="#ffe4e9" style="background: #ffe4e9;" title="Blush"></button>
-                            <!-- Reds & Pinks -->
-                            <button class="color-btn" data-color="#ff1744" style="background: #ff1744;" title="Red"></button>
-                            <button class="color-btn" data-color="#ff4081" style="background: #ff4081;" title="Pink"></button>
-                            <button class="color-btn" data-color="#e91e63" style="background: #e91e63;" title="Rose"></button>
-                            <button class="color-btn" data-color="#fd79a8" style="background: #fd79a8;" title="Soft Pink"></button>
-                            <button class="color-btn" data-color="#c41e3a" style="background: #c41e3a;" title="Deep Red"></button>
-                            <!-- Golds & Yellows -->
-                            <button class="color-btn" data-color="#ffd700" style="background: #ffd700;" title="Gold"></button>
-                            <button class="color-btn" data-color="#ffb347" style="background: #ffb347;" title="Peach"></button>
-                            <button class="color-btn" data-color="#f39c12" style="background: #f39c12;" title="Orange"></button>
-                            <!-- Purples & Blues -->
-                            <button class="color-btn" data-color="#9b59b6" style="background: #9b59b6;" title="Purple"></button>
-                            <button class="color-btn" data-color="#6c5ce7" style="background: #6c5ce7;" title="Violet"></button>
-                            <button class="color-btn" data-color="#a29bfe" style="background: #a29bfe;" title="Lavender"></button>
-                            <button class="color-btn" data-color="#3498db" style="background: #3498db;" title="Blue"></button>
-                            <button class="color-btn" data-color="#00cec9" style="background: #00cec9;" title="Teal"></button>
-                            <!-- Greens -->
-                            <button class="color-btn" data-color="#00b894" style="background: #00b894;" title="Mint"></button>
-                            <button class="color-btn" data-color="#55efc4" style="background: #55efc4;" title="Aqua"></button>
-                            <!-- Darks -->
-                            <button class="color-btn" data-color="#2d3436" style="background: #2d3436;" title="Charcoal"></button>
-                            <button class="color-btn" data-color="#636e72" style="background: #636e72;" title="Gray"></button>
-                        </div>
-                        <!-- Custom Color Picker -->
-                        <div class="custom-color-picker">
-                            <label class="color-picker-label">
-                                <span>Custom Color:</span>
-                                <input type="color" id="customColor" value="#ff4081">
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Content Tab -->
-                <div class="tab-content" id="contentTab">
-                    <!-- Text Options -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">✍️</span> Your Message
-                        </h3>
-                        <div class="text-options">
-                            <label class="input-label">To</label>
-                            <input type="text" id="recipientName" class="text-input" placeholder="My Love..." autocomplete="name">
-
-                            <label class="input-label">Front Message</label>
-                            <textarea id="frontMessage" class="text-input textarea" placeholder="Front greeting..." autocomplete="off">Will You Be My Valentine?</textarea>
-
-                            <label class="input-label">Inside Message</label>
-                            <textarea id="mainMessage" class="text-input textarea large" placeholder="Your heartfelt message..." autocomplete="off"></textarea>
-
-                            <label class="input-label">Sign Off</label>
-                            <input type="text" id="signOff" class="text-input" placeholder="Forever Yours..." autocomplete="off">
-
-                            <label class="input-label">From</label>
-                            <input type="text" id="senderName" class="text-input" placeholder="Your name..." autocomplete="name">
-                        </div>
-                    </div>
-
-                    <!-- Quick Messages -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">💡</span> Quick Messages
-                        </h3>
-                        <div class="quick-messages" id="quickMessages">
-                            <button class="quick-msg-btn" data-front="Be Mine!" data-msg="Every love story is beautiful, but ours is my favorite. Will you be my Valentine?">💕 Classic</button>
-                            <button class="quick-msg-btn" data-front="I Love You!" data-msg="You make my heart skip a beat every time I see you. Be mine, today and always.">❤️ Sweet</button>
-                            <button class="quick-msg-btn" data-front="Hey Cutie!" data-msg="You're the cheese to my macaroni! Be my Valentine, you adorable goofball!">😄 Fun</button>
-                            <button class="quick-msg-btn" data-front="Forever?" data-msg="Will you marry me and make me the happiest person alive?">💍 Propose</button>
-                            <button class="quick-msg-btn" data-front="My Soulmate" data-msg="In a world full of people, my heart chose you. You complete me in ways I never knew I needed.">🌟 Deep</button>
-                            <button class="quick-msg-btn" data-front="Always & Forever" data-msg="From the moment I met you, I knew you were the one. Let's write our forever story together.">📖 Romantic</button>
-                        </div>
-                    </div>
-
-                    <!-- Photo Upload with Editor -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">📷</span> Add Photo
-                        </h3>
-                        <div class="photo-upload-area">
-                            <input type="file" id="photoUpload" accept="image/*" hidden>
-                            <button class="photo-upload-btn" id="photoUploadBtn">
-                                <span class="upload-icon">📷</span>
-                                <span>Tap to Upload</span>
-                            </button>
-
-                            <!-- Photo Preview & Editor -->
-                            <div class="photo-editor" id="photoEditor">
-                                <div class="photo-editor-preview" id="photoEditorPreview">
-                                    <img id="uploadedPhoto" src="" alt="Your photo">
-                                    <div class="crop-overlay" id="cropOverlay"></div>
-                                </div>
-
-                                <!-- Photo Controls -->
-                                <div class="photo-controls">
-                                    <div class="control-group">
-                                        <label>Zoom</label>
-                                        <input type="range" id="photoZoom" min="100" max="300" value="100">
-                                    </div>
-                                    <div class="control-group">
-                                        <label>Position X</label>
-                                        <input type="range" id="photoPosX" min="-100" max="100" value="0">
-                                    </div>
-                                    <div class="control-group">
-                                        <label>Position Y</label>
-                                        <input type="range" id="photoPosY" min="-100" max="100" value="0">
-                                    </div>
-                                    <div class="control-group">
-                                        <label>Rotation</label>
-                                        <input type="range" id="photoRotation" min="-180" max="180" value="0">
-                                    </div>
-                                </div>
-
-                                <button class="remove-photo-btn" id="removePhoto">🗑️ Remove Photo</button>
-                            </div>
-
-                            <div class="photo-shape-options" id="photoShapeOptions">
-                                <button class="shape-btn active" data-shape="heart">❤️ Heart</button>
-                                <button class="shape-btn" data-shape="circle">⭕ Circle</button>
-                                <button class="shape-btn" data-shape="square">⬜ Square</button>
-                                <button class="shape-btn" data-shape="diamond">💎 Diamond</button>
-                                <button class="shape-btn" data-shape="hexagon">⬡ Hex</button>
-                            </div>
-
-                            <!-- Memories Gallery with Captions -->
-                            <div class="memories-gallery" id="memoriesGallery">
-                                <!-- Memory items will be added dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Extras Tab -->
-                <div class="tab-content" id="extrasTab">
-                    <!-- Decorations -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">✨</span> Stickers
-                        </h3>
-                        <div class="decoration-categories">
-                            <button class="deco-cat-btn active" data-category="hearts">❤️</button>
-                            <button class="deco-cat-btn" data-category="couples">💑</button>
-                            <button class="deco-cat-btn" data-category="flowers">🌹</button>
-                            <button class="deco-cat-btn" data-category="animals">🦋</button>
-                            <button class="deco-cat-btn" data-category="symbols">✨</button>
-                            <button class="deco-cat-btn" data-category="food">🍫</button>
-                        </div>
-                        <div class="decorations-grid" id="decorationsGrid">
-                            <!-- Hearts -->
-                            <button class="decoration-btn" data-decoration="❤️" data-category="hearts">❤️</button>
-                            <button class="decoration-btn" data-decoration="💕" data-category="hearts">💕</button>
-                            <button class="decoration-btn" data-decoration="💖" data-category="hearts">💖</button>
-                            <button class="decoration-btn" data-decoration="💗" data-category="hearts">💗</button>
-                            <button class="decoration-btn" data-decoration="💘" data-category="hearts">💘</button>
-                            <button class="decoration-btn" data-decoration="💝" data-category="hearts">💝</button>
-                            <button class="decoration-btn" data-decoration="💓" data-category="hearts">💓</button>
-                            <button class="decoration-btn" data-decoration="💞" data-category="hearts">💞</button>
-                            <button class="decoration-btn" data-decoration="🫀" data-category="hearts">🫀</button>
-                            <button class="decoration-btn" data-decoration="❣️" data-category="hearts">❣️</button>
-                            <button class="decoration-btn" data-decoration="♥️" data-category="hearts">♥️</button>
-                            <button class="decoration-btn" data-decoration="🩷" data-category="hearts">🩷</button>
-                            <!-- Couples & Love Birds -->
-                            <button class="decoration-btn love-birds-btn" data-decoration="🐦❤️🐦" data-category="couples" title="Love Birds">🐦❤️🐦</button>
-                            <button class="decoration-btn love-birds-btn" data-decoration="🕊️💕🕊️" data-category="couples" title="Doves in Love">🕊️💕🕊️</button>
-                            <button class="decoration-btn love-birds-btn" data-decoration="🦢🤍🦢" data-category="couples" title="Swan Love">🦢🤍🦢</button>
-                            <button class="decoration-btn" data-decoration="💑" data-category="couples">💑</button>
-                            <button class="decoration-btn" data-decoration="👩‍❤️‍👨" data-category="couples">👩‍❤️‍👨</button>
-                            <button class="decoration-btn" data-decoration="👩‍❤️‍💋‍👨" data-category="couples">👩‍❤️‍💋‍👨</button>
-                            <button class="decoration-btn" data-decoration="👫" data-category="couples">👫</button>
-                            <button class="decoration-btn" data-decoration="🫂" data-category="couples">🫂</button>
-                            <button class="decoration-btn" data-decoration="💏" data-category="couples">💏</button>
-                            <button class="decoration-btn" data-decoration="👩‍❤️‍👩" data-category="couples">👩‍❤️‍👩</button>
-                            <button class="decoration-btn" data-decoration="👨‍❤️‍👨" data-category="couples">👨‍❤️‍👨</button>
-                            <button class="decoration-btn" data-decoration="💍" data-category="couples">💍</button>
-                            <!-- Flowers -->
-                            <button class="decoration-btn" data-decoration="🌹" data-category="flowers">🌹</button>
-                            <button class="decoration-btn" data-decoration="🌸" data-category="flowers">🌸</button>
-                            <button class="decoration-btn" data-decoration="🌺" data-category="flowers">🌺</button>
-                            <button class="decoration-btn" data-decoration="🌷" data-category="flowers">🌷</button>
-                            <button class="decoration-btn" data-decoration="💐" data-category="flowers">💐</button>
-                            <button class="decoration-btn" data-decoration="🌻" data-category="flowers">🌻</button>
-                            <button class="decoration-btn" data-decoration="🌼" data-category="flowers">🌼</button>
-                            <button class="decoration-btn" data-decoration="🪻" data-category="flowers">🪻</button>
-                            <button class="decoration-btn" data-decoration="🪷" data-category="flowers">🪷</button>
-                            <button class="decoration-btn" data-decoration="🏵️" data-category="flowers">🏵️</button>
-                            <button class="decoration-btn" data-decoration="🌾" data-category="flowers">🌾</button>
-                            <button class="decoration-btn" data-decoration="🍀" data-category="flowers">🍀</button>
-                            <!-- Animals -->
-                            <button class="decoration-btn" data-decoration="🦋" data-category="animals">🦋</button>
-                            <button class="decoration-btn" data-decoration="🕊️" data-category="animals">🕊️</button>
-                            <button class="decoration-btn" data-decoration="🧸" data-category="animals">🧸</button>
-                            <button class="decoration-btn" data-decoration="🐰" data-category="animals">🐰</button>
-                            <button class="decoration-btn" data-decoration="🦢" data-category="animals">🦢</button>
-                            <button class="decoration-btn" data-decoration="🐻" data-category="animals">🐻</button>
-                            <button class="decoration-btn" data-decoration="🦄" data-category="animals">🦄</button>
-                            <button class="decoration-btn" data-decoration="🐦" data-category="animals">🐦</button>
-                            <button class="decoration-btn" data-decoration="🦜" data-category="animals">🦜</button>
-                            <button class="decoration-btn" data-decoration="🐈" data-category="animals">🐈</button>
-                            <button class="decoration-btn" data-decoration="🐕" data-category="animals">🐕</button>
-                            <button class="decoration-btn" data-decoration="🦔" data-category="animals">🦔</button>
-                            <!-- Symbols -->
-                            <button class="decoration-btn" data-decoration="⭐" data-category="symbols">⭐</button>
-                            <button class="decoration-btn" data-decoration="✨" data-category="symbols">✨</button>
-                            <button class="decoration-btn" data-decoration="💫" data-category="symbols">💫</button>
-                            <button class="decoration-btn" data-decoration="🎀" data-category="symbols">🎀</button>
-                            <button class="decoration-btn" data-decoration="💍" data-category="symbols">💍</button>
-                            <button class="decoration-btn" data-decoration="💋" data-category="symbols">💋</button>
-                            <button class="decoration-btn" data-decoration="🎁" data-category="symbols">🎁</button>
-                            <button class="decoration-btn" data-decoration="🎵" data-category="symbols">🎵</button>
-                            <button class="decoration-btn" data-decoration="🌙" data-category="symbols">🌙</button>
-                            <button class="decoration-btn" data-decoration="☀️" data-category="symbols">☀️</button>
-                            <!-- Food -->
-                            <button class="decoration-btn" data-decoration="🍫" data-category="food">🍫</button>
-                            <button class="decoration-btn" data-decoration="🍓" data-category="food">🍓</button>
-                            <button class="decoration-btn" data-decoration="🍰" data-category="food">🍰</button>
-                            <button class="decoration-btn" data-decoration="🧁" data-category="food">🧁</button>
-                            <button class="decoration-btn" data-decoration="🍪" data-category="food">🍪</button>
-                            <button class="decoration-btn" data-decoration="🍩" data-category="food">🍩</button>
-                            <button class="decoration-btn" data-decoration="🍭" data-category="food">🍭</button>
-                            <button class="decoration-btn" data-decoration="🍬" data-category="food">🍬</button>
-                            <button class="decoration-btn" data-decoration="🥂" data-category="food">🥂</button>
-                            <button class="decoration-btn" data-decoration="🍾" data-category="food">🍾</button>
-                        </div>
-                        <p class="decoration-hint">Tap to add • Long press to remove</p>
-                    </div>
-
-                    <!-- Special Effects -->
-                    <div class="tool-section">
-                        <h3 class="tool-title">
-                            <span class="icon">🎭</span> Effects
-                        </h3>
-                        <div class="effects-options">
-                            <label class="toggle-option">
-                                <input type="checkbox" id="sparkleEffect" checked>
-                                <span class="toggle-slider"></span>
-                                <span class="toggle-label">Sparkles ✨</span>
-                            </label>
-                            <label class="toggle-option">
-                                <input type="checkbox" id="heartBorder" checked>
-                                <span class="toggle-slider"></span>
-                                <span class="toggle-label">Hearts 💕</span>
-                            </label>
-                            <label class="toggle-option">
-                                <input type="checkbox" id="confettiOnOpen" checked>
-                                <span class="toggle-slider"></span>
-                                <span class="toggle-label">Confetti 🎊</span>
-                            </label>
-                            <label class="toggle-option">
-                                <input type="checkbox" id="glowEffect">
-                                <span class="toggle-slider"></span>
-                                <span class="toggle-label">Glow ✨</span>
-                            </label>
-                            <label class="toggle-option">
-                                <input type="checkbox" id="shadowEffect" checked>
-                                <span class="toggle-slider"></span>
-                                <span class="toggle-label">3D Shadow 🌑</span>
-                            </label>
-                        </div>
-                    </div>
-
-                </div>
-            </aside>
-
-            <!-- Card Preview Area -->
-            <main class="preview-area" id="previewArea">
-                <div class="view-toggle">
-                    <button class="view-btn active" data-view="envelope">✉️ Envelope</button>
-                    <button class="view-btn" data-view="card">💌 Card</button>
-                </div>
-
-                <!-- 3D Scene Container -->
-                <div class="scene-3d" id="scene3d">
-                    <!-- Envelope Container -->
-                    <div class="envelope-container" id="envelopeContainer">
-                        <div class="envelope" id="envelope">
-                            <div class="envelope-flap" id="envelopeFlap">
-                                <div class="wax-seal" id="waxSeal">💕</div>
-                            </div>
-                            <div class="envelope-front">
-                                <div class="envelope-address">
-                                    <span class="to-label">To:</span>
-                                    <span class="recipient-address" id="envelopeRecipient">My Love</span>
-                                </div>
-                                <div class="envelope-stamp">💌</div>
-                            </div>
-                            <div class="envelope-shadow"></div>
-                        </div>
-                        <p class="envelope-hint">👆 Tap to open!</p>
-                    </div>
-
-                    <!-- Card Container (Flip Card with 3D) -->
-                    <div class="card-container" id="cardContainer">
-                        <div class="flip-card card-3d" id="flipCard">
-                            <!-- Card Front -->
-                            <div class="flip-card-front" id="cardFront">
-                                <div class="card romantic-red" id="card">
-                                    <div class="card-shine"></div>
-                                    <div class="card-texture"></div>
-                                    <div class="heart-border" id="heartBorderOverlay">
-                                        <div class="corner-heart top-left">💕</div>
-                                        <div class="corner-heart top-right">💕</div>
-                                        <div class="corner-heart bottom-left">💕</div>
-                                        <div class="corner-heart bottom-right">💕</div>
-                                    </div>
-                                    <div class="sparkle-container" id="sparkleContainer"></div>
+                <!-- Card View -->
+                <div class="card-wrapper hidden" id="cardWrapper">
+                    <div class="flip-card" id="flipCard">
+                        <div class="flip-card-inner" id="flipCardInner">
+                            <!-- Front -->
+                            <div class="flip-card-front">
+                                <div class="card" id="card">
                                     <div class="card-photo" id="cardPhoto">
                                         <div class="photo-placeholder">📷</div>
                                     </div>
-                                    <div class="card-front-content" id="cardFrontContent">
+                                    <div class="card-content" id="cardFrontContent">
                                         <div class="front-message" id="displayFrontMessage">Will You Be My Valentine?</div>
                                     </div>
                                     <div class="decorations-layer" id="decorationsLayerFront"></div>
                                 </div>
                             </div>
-
-                            <!-- Card Inside -->
-                            <div class="flip-card-back" id="cardBack">
-                                <div class="card-inside" id="cardInside">
-                                    <div class="card-texture light"></div>
+                            <!-- Back -->
+                            <div class="flip-card-back">
+                                <div class="card-inside">
                                     <div class="inside-content" id="insideContent">
                                         <div class="recipient-name" id="displayRecipient">My Dearest Love</div>
-                                        <div class="main-message" id="displayMessage">
-                                            Every moment with you feels like a beautiful dream.<br>
-                                            You are my heart, my soul, my everything.<br>
-                                            Will you be my Valentine?
-                                        </div>
+                                        <div class="main-message" id="displayMessage">Every moment with you feels like a beautiful dream.</div>
                                         <div class="sign-off" id="displaySignOff">Forever Yours ❤️</div>
                                         <div class="sender-name" id="displaySender"></div>
                                     </div>
                                     <div class="decorations-layer" id="decorationsLayerBack"></div>
                                 </div>
                             </div>
-
-                            <!-- 3D Card Shadow -->
-                            <div class="card-3d-shadow"></div>
                         </div>
-                        <p class="card-hint">👆 Tap to flip!</p>
+                    </div>
+                    <p class="tap-hint">👆 Tap to flip!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Editor Section (Bottom on Mobile - Scrollable) -->
+        <section class="editor-section" id="editorSection">
+            <!-- Tab Navigation -->
+            <div class="editor-tabs">
+                <button class="editor-tab active" data-tab="message">✍️ Message</button>
+                <button class="editor-tab" data-tab="style">🎨 Style</button>
+                <button class="editor-tab" data-tab="extras">✨ Extras</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="editor-content" id="editorContent">
+
+                <!-- MESSAGE TAB -->
+                <div class="tab-panel active" id="messagePanel">
+                    <div class="input-group">
+                        <label>To</label>
+                        <input type="text" id="recipientName" placeholder="My Love..." autocomplete="off">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Front Message</label>
+                        <input type="text" id="frontMessage" value="Will You Be My Valentine?" autocomplete="off">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Inside Message</label>
+                        <textarea id="mainMessage" rows="3" placeholder="Write your heartfelt message..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Sign Off</label>
+                        <input type="text" id="signOff" placeholder="Forever Yours..." autocomplete="off">
+                    </div>
+
+                    <div class="input-group">
+                        <label>From</label>
+                        <input type="text" id="senderName" placeholder="Your name..." autocomplete="off">
+                    </div>
+
+                    <!-- Quick Messages -->
+                    <div class="quick-messages">
+                        <p class="section-label">Quick Messages</p>
+                        <div class="quick-btns">
+                            <button class="quick-btn" data-front="Be Mine!" data-msg="Every love story is beautiful, but ours is my favorite.">💕 Classic</button>
+                            <button class="quick-btn" data-front="I Love You!" data-msg="You make my heart skip a beat every time I see you.">❤️ Sweet</button>
+                            <button class="quick-btn" data-front="Hey Cutie!" data-msg="You're the cheese to my macaroni! Be my Valentine!">😄 Fun</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <button class="action-btn share-btn" id="shareBtn">
-                        <span class="btn-icon">📤</span>
-                        <span>Share</span>
-                    </button>
-                    <button class="action-btn reset-btn" id="resetBtn">
-                        <span class="btn-icon">🔄</span>
-                        <span>Reset</span>
-                    </button>
-                </div>
-            </main>
-        </div>
+                <!-- STYLE TAB -->
+                <div class="tab-panel" id="stylePanel">
+                    <!-- Templates -->
+                    <div class="style-section">
+                        <p class="section-label">Card Theme</p>
+                        <div class="templates-grid" id="templatesGrid">
+                            <button class="template-btn active" data-template="romantic-red" style="background: linear-gradient(135deg, #ff1744, #d50000)"></button>
+                            <button class="template-btn" data-template="soft-pink" style="background: linear-gradient(135deg, #ff80ab, #f8bbd0)"></button>
+                            <button class="template-btn" data-template="elegant-gold" style="background: linear-gradient(135deg, #ffd700, #ff8f00)"></button>
+                            <button class="template-btn" data-template="purple-dream" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2)"></button>
+                            <button class="template-btn" data-template="sunset-love" style="background: linear-gradient(135deg, #ff5722, #e91e63)"></button>
+                            <button class="template-btn" data-template="midnight-romance" style="background: linear-gradient(135deg, #1a237e, #311b92)"></button>
+                            <button class="template-btn" data-template="ocean-love" style="background: linear-gradient(135deg, #0097a7, #006064)"></button>
+                            <button class="template-btn" data-template="neon-love" style="background: linear-gradient(135deg, #e040fb, #7c4dff)"></button>
+                        </div>
+                    </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>💕 NOTE2U 💕</p>
-        </footer>
+                    <!-- Fonts -->
+                    <div class="style-section">
+                        <p class="section-label">Font Style</p>
+                        <div class="font-grid">
+                            <button class="font-btn active" data-font="'Dancing Script', cursive" style="font-family: 'Dancing Script'">Dancing</button>
+                            <button class="font-btn" data-font="'Great Vibes', cursive" style="font-family: 'Great Vibes'">Vibes</button>
+                            <button class="font-btn" data-font="'Pacifico', cursive" style="font-family: 'Pacifico'">Pacifico</button>
+                        </div>
+                    </div>
+
+                    <!-- Text Colors -->
+                    <div class="style-section">
+                        <p class="section-label">Text Color</p>
+                        <div class="color-grid">
+                            <button class="color-btn active" data-color="#ffffff" style="background: #ffffff"></button>
+                            <button class="color-btn" data-color="#ffd700" style="background: #ffd700"></button>
+                            <button class="color-btn" data-color="#ff80ab" style="background: #ff80ab"></button>
+                            <button class="color-btn" data-color="#ff1744" style="background: #ff1744"></button>
+                            <button class="color-btn" data-color="#e91e63" style="background: #e91e63"></button>
+                            <button class="color-btn" data-color="#9c27b0" style="background: #9c27b0"></button>
+                        </div>
+                    </div>
+
+                    <!-- Photo Upload -->
+                    <div class="style-section">
+                        <p class="section-label">Add Photo</p>
+                        <input type="file" id="photoUpload" accept="image/*" hidden>
+                        <button class="upload-btn" id="photoUploadBtn">📷 Upload Photo</button>
+                        <div class="photo-shapes hidden" id="photoShapes">
+                            <button class="shape-btn active" data-shape="heart">❤️</button>
+                            <button class="shape-btn" data-shape="circle">⭕</button>
+                            <button class="shape-btn" data-shape="square">⬜</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXTRAS TAB -->
+                <div class="tab-panel" id="extrasPanel">
+                    <!-- Stickers -->
+                    <div class="style-section">
+                        <p class="section-label">Add Stickers</p>
+                        <div class="stickers-grid" id="stickersGrid">
+                            <button class="sticker-btn" data-sticker="❤️">❤️</button>
+                            <button class="sticker-btn" data-sticker="💕">💕</button>
+                            <button class="sticker-btn" data-sticker="💖">💖</button>
+                            <button class="sticker-btn" data-sticker="💗">💗</button>
+                            <button class="sticker-btn" data-sticker="💘">💘</button>
+                            <button class="sticker-btn" data-sticker="💝">💝</button>
+                            <button class="sticker-btn" data-sticker="🌹">🌹</button>
+                            <button class="sticker-btn" data-sticker="🌸">🌸</button>
+                            <button class="sticker-btn" data-sticker="✨">✨</button>
+                            <button class="sticker-btn" data-sticker="⭐">⭐</button>
+                            <button class="sticker-btn" data-sticker="🦋">🦋</button>
+                            <button class="sticker-btn" data-sticker="🎀">🎀</button>
+                        </div>
+                        <p class="hint-text">Tap sticker to add • Long press to remove</p>
+                    </div>
+
+                    <!-- 3D Effects -->
+                    <div class="style-section">
+                        <p class="section-label">Card Animation</p>
+                        <div class="effect-grid">
+                            <button class="effect-btn active" data-effect="float">🎈 Float</button>
+                            <button class="effect-btn" data-effect="pulse">💓 Pulse</button>
+                            <button class="effect-btn" data-effect="none">⏹️ None</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons - Fixed at Bottom -->
+            <div class="action-bar">
+                <button class="action-btn share-btn" id="shareBtn">📤 Share Card</button>
+                <button class="action-btn reset-btn" id="resetBtn">🔄</button>
+            </div>
+        </section>
     </div>
 
     <!-- Share Modal -->
     <div class="modal" id="shareModal">
-        <div class="modal-content share-modal-content">
-            <button class="modal-close" id="shareModalClose">&times;</button>
-            <h2 class="modal-title">💌 Share Your Card</h2>
-
-            <div class="share-preview">
-                <p class="share-info">From: <strong id="shareFromName">You</strong></p>
-                <p class="share-info">To: <strong id="shareToName">Your Love</strong></p>
-            </div>
+        <div class="modal-content">
+            <button class="modal-close" id="shareModalClose">×</button>
+            <h2>💌 Share Your Card</h2>
 
             <div class="share-options">
-                <!-- Share Card Link (URL-based) -->
-                <button class="share-option-btn share-link featured" id="shareLinkBtn">
-                    <span class="share-icon">🔗</span>
-                    <span>Share Card Link</span>
-                    <span class="share-hint">Recipients can view your card!</span>
+                <button class="share-btn-option" id="shareLinkBtn">
+                    <span>🔗</span>
+                    <span>Share Link</span>
                 </button>
-
-                <!-- Share as Image (iOS Safari compatible) -->
-                <button class="share-option-btn share-image" id="shareImageBtn">
-                    <span class="share-icon">🖼️</span>
-                    <span>Share as Image</span>
-                    <span class="share-hint">Save or share card image</span>
+                <button class="share-btn-option" id="shareImageBtn">
+                    <span>🖼️</span>
+                    <span>Save Image</span>
                 </button>
-
-                <!-- Native Share (Android/iOS) -->
-                <button class="share-option-btn native-share" id="nativeShareBtn">
-                    <span class="share-icon">📤</span>
-                    <span>Share via Apps</span>
-                    <span class="share-hint">WhatsApp, Messages, etc.</span>
-                </button>
-
-                <!-- Copy Link -->
-                <button class="share-option-btn copy-link" id="copyLinkBtn">
-                    <span class="share-icon">📋</span>
-                    <span>Copy Message</span>
-                    <span class="share-hint">Paste anywhere</span>
-                </button>
-
-                <!-- WhatsApp Direct -->
-                <button class="share-option-btn whatsapp" id="whatsappBtn">
-                    <span class="share-icon">💬</span>
+                <button class="share-btn-option" id="whatsappBtn">
+                    <span>💬</span>
                     <span>WhatsApp</span>
-                    <span class="share-hint">Send directly</span>
                 </button>
-
-                <!-- SMS/Text -->
-                <button class="share-option-btn sms" id="smsBtn">
-                    <span class="share-icon">💬</span>
-                    <span>Text Message</span>
-                    <span class="share-hint">SMS</span>
-                </button>
-
-                <!-- Email -->
-                <button class="share-option-btn email" id="emailBtn">
-                    <span class="share-icon">📧</span>
-                    <span>Email</span>
-                    <span class="share-hint">Send via email</span>
+                <button class="share-btn-option" id="copyBtn">
+                    <span>📋</span>
+                    <span>Copy Text</span>
                 </button>
             </div>
 
-            <!-- Generated link display -->
-            <div class="share-link-container" id="shareLinkContainer" style="display: none;">
-                <p class="share-link-label">Your card link:</p>
-                <div class="share-link-box">
-                    <input type="text" id="generatedLink" class="share-link-input" readonly>
-                    <button class="copy-btn" id="copyGeneratedLink">📋 Copy</button>
-                </div>
+            <div class="share-link-box hidden" id="shareLinkBox">
+                <input type="text" id="generatedLink" readonly>
+                <button id="copyLinkBtn">Copy</button>
             </div>
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content success-content">
-            <div class="success-icon">💕</div>
-            <h2 class="modal-title">Card Sent!</h2>
-            <p class="success-message">Your love note is on its way!</p>
-            <button class="success-btn" id="successCloseBtn">Create Another</button>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="loading-heart">💕</div>
-            <p>Creating your card...</p>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
+    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- Hidden Canvas for Image Generation -->
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="loading-heart">💕</div>
+    </div>
+
+    <!-- Canvas for Image Export -->
     <canvas id="cardCanvas" style="display: none;"></canvas>
 
     <script src="script.js"></script>
