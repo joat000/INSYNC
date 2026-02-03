@@ -3,272 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="HandheldFriendly" content="true">
-    <meta name="MobileOptimized" content="width">
-    <meta name="theme-color" content="#ff1744">
+    <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="NOTE2U - Create beautiful Valentine's Day cards">
-    <title>NOTE2U - Valentine's Card Creator</title>
-
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title>NOTE2U - Valentine Card</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Floating Hearts Background -->
     <div class="floating-hearts" id="floatingHearts"></div>
 
-    <!-- App Container - Split View Layout -->
+    <!-- Main App Container -->
     <div class="app-container">
-
-        <!-- ALWAYS VISIBLE: Live Preview Section (Top on Mobile) -->
-        <section class="preview-section" id="previewSection">
-            <div class="preview-header">
-                <span class="preview-title">💌 Live Preview</span>
-                <div class="view-toggle-mini">
-                    <button class="view-btn-mini active" data-view="envelope">✉️</button>
-                    <button class="view-btn-mini" data-view="card">💌</button>
+        <!-- Envelope View (Initial) -->
+        <div class="envelope-view" id="envelopeView">
+            <div class="envelope" id="envelope">
+                <div class="envelope-flap">
+                    <span class="wax-seal">💝</span>
                 </div>
+                <div class="envelope-body">
+                    <p class="envelope-to">To: <span id="envelopeTo">My Love</span></p>
+                </div>
+                <div class="card-peek" id="cardPeek"></div>
             </div>
+            <p class="tap-hint" id="tapHint">Tap to open</p>
+        </div>
 
-            <div class="preview-content" id="previewContent">
-                <!-- Envelope View -->
-                <div class="envelope-wrapper" id="envelopeWrapper">
-                    <div class="envelope" id="envelope">
-                        <div class="envelope-flap">
-                            <div class="wax-seal">💕</div>
-                        </div>
-                        <div class="envelope-body">
-                            <div class="envelope-to">To: <span id="envelopeRecipient">My Love</span></div>
-                        </div>
-                    </div>
-                    <p class="tap-hint">👆 Tap to open!</p>
-                </div>
-
-                <!-- Card View -->
-                <div class="card-wrapper hidden" id="cardWrapper">
-                    <div class="flip-card" id="flipCard">
-                        <div class="flip-card-inner" id="flipCardInner">
-                            <!-- Front -->
-                            <div class="flip-card-front">
-                                <div class="card" id="card">
-                                    <div class="card-photo" id="cardPhoto">
-                                        <div class="photo-placeholder">📷</div>
-                                    </div>
-                                    <div class="card-content" id="cardFrontContent">
-                                        <div class="front-message" id="displayFrontMessage">Will You Be My Valentine?</div>
-                                    </div>
-                                    <div class="decorations-layer" id="decorationsLayerFront"></div>
-                                </div>
+        <!-- Card View (After envelope opens) -->
+        <div class="card-view hidden" id="cardView">
+            <div class="flip-card" id="flipCard">
+                <div class="flip-card-inner" id="flipCardInner">
+                    <!-- Card Front -->
+                    <div class="flip-card-front">
+                        <div class="card-front" id="cardFront">
+                            <div class="card-photo" id="cardPhoto">
+                                <span class="photo-placeholder">💕</span>
                             </div>
-                            <!-- Back -->
-                            <div class="flip-card-back">
-                                <div class="card-inside">
-                                    <div class="inside-content" id="insideContent">
-                                        <div class="recipient-name" id="displayRecipient">My Dearest Love</div>
-                                        <div class="main-message" id="displayMessage">Every moment with you feels like a beautiful dream.</div>
-                                        <div class="sign-off" id="displaySignOff">Forever Yours ❤️</div>
-                                        <div class="sender-name" id="displaySender"></div>
-                                    </div>
-                                    <div class="decorations-layer" id="decorationsLayerBack"></div>
-                                </div>
-                            </div>
+                            <p class="front-message" id="frontMessage">Will You Be My Valentine?</p>
+                            <div class="decorations-front" id="decorationsFront"></div>
                         </div>
                     </div>
-                    <p class="tap-hint">👆 Tap to flip!</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Editor Section (Bottom on Mobile - Scrollable) -->
-        <section class="editor-section" id="editorSection">
-            <!-- Tab Navigation -->
-            <div class="editor-tabs">
-                <button class="editor-tab active" data-tab="message">✍️ Message</button>
-                <button class="editor-tab" data-tab="style">🎨 Style</button>
-                <button class="editor-tab" data-tab="extras">✨ Extras</button>
-            </div>
-
-            <!-- Tab Contents -->
-            <div class="editor-content" id="editorContent">
-
-                <!-- MESSAGE TAB -->
-                <div class="tab-panel active" id="messagePanel">
-                    <div class="input-group">
-                        <label>To</label>
-                        <input type="text" id="recipientName" placeholder="My Love..." autocomplete="off">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Front Message</label>
-                        <input type="text" id="frontMessage" value="Will You Be My Valentine?" autocomplete="off">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Inside Message</label>
-                        <textarea id="mainMessage" rows="3" placeholder="Write your heartfelt message..."></textarea>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Sign Off</label>
-                        <input type="text" id="signOff" placeholder="Forever Yours..." autocomplete="off">
-                    </div>
-
-                    <div class="input-group">
-                        <label>From</label>
-                        <input type="text" id="senderName" placeholder="Your name..." autocomplete="off">
-                    </div>
-
-                    <!-- Quick Messages -->
-                    <div class="quick-messages">
-                        <p class="section-label">Quick Messages</p>
-                        <div class="quick-btns">
-                            <button class="quick-btn" data-front="Be Mine!" data-msg="Every love story is beautiful, but ours is my favorite.">💕 Classic</button>
-                            <button class="quick-btn" data-front="I Love You!" data-msg="You make my heart skip a beat every time I see you.">❤️ Sweet</button>
-                            <button class="quick-btn" data-front="Hey Cutie!" data-msg="You're the cheese to my macaroni! Be my Valentine!">😄 Fun</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- STYLE TAB -->
-                <div class="tab-panel" id="stylePanel">
-                    <!-- Templates -->
-                    <div class="style-section">
-                        <p class="section-label">Card Theme</p>
-                        <div class="templates-grid" id="templatesGrid">
-                            <button class="template-btn active" data-template="romantic-red" style="background: linear-gradient(135deg, #ff1744, #d50000)"></button>
-                            <button class="template-btn" data-template="soft-pink" style="background: linear-gradient(135deg, #ff80ab, #f8bbd0)"></button>
-                            <button class="template-btn" data-template="elegant-gold" style="background: linear-gradient(135deg, #ffd700, #ff8f00)"></button>
-                            <button class="template-btn" data-template="purple-dream" style="background: linear-gradient(135deg, #9c27b0, #7b1fa2)"></button>
-                            <button class="template-btn" data-template="sunset-love" style="background: linear-gradient(135deg, #ff5722, #e91e63)"></button>
-                            <button class="template-btn" data-template="midnight-romance" style="background: linear-gradient(135deg, #1a237e, #311b92)"></button>
-                            <button class="template-btn" data-template="ocean-love" style="background: linear-gradient(135deg, #0097a7, #006064)"></button>
-                            <button class="template-btn" data-template="neon-love" style="background: linear-gradient(135deg, #e040fb, #7c4dff)"></button>
-                        </div>
-                    </div>
-
-                    <!-- Fonts -->
-                    <div class="style-section">
-                        <p class="section-label">Font Style</p>
-                        <div class="font-grid">
-                            <button class="font-btn active" data-font="'Dancing Script', cursive" style="font-family: 'Dancing Script'">Dancing</button>
-                            <button class="font-btn" data-font="'Great Vibes', cursive" style="font-family: 'Great Vibes'">Vibes</button>
-                            <button class="font-btn" data-font="'Pacifico', cursive" style="font-family: 'Pacifico'">Pacifico</button>
-                        </div>
-                    </div>
-
-                    <!-- Text Colors -->
-                    <div class="style-section">
-                        <p class="section-label">Text Color</p>
-                        <div class="color-grid">
-                            <button class="color-btn active" data-color="#ffffff" style="background: #ffffff"></button>
-                            <button class="color-btn" data-color="#ffd700" style="background: #ffd700"></button>
-                            <button class="color-btn" data-color="#ff80ab" style="background: #ff80ab"></button>
-                            <button class="color-btn" data-color="#ff1744" style="background: #ff1744"></button>
-                            <button class="color-btn" data-color="#e91e63" style="background: #e91e63"></button>
-                            <button class="color-btn" data-color="#9c27b0" style="background: #9c27b0"></button>
-                        </div>
-                    </div>
-
-                    <!-- Photo Upload -->
-                    <div class="style-section">
-                        <p class="section-label">Add Photo</p>
-                        <input type="file" id="photoUpload" accept="image/*" hidden>
-                        <button class="upload-btn" id="photoUploadBtn">📷 Upload Photo</button>
-                        <div class="photo-shapes hidden" id="photoShapes">
-                            <button class="shape-btn active" data-shape="heart">❤️</button>
-                            <button class="shape-btn" data-shape="circle">⭕</button>
-                            <button class="shape-btn" data-shape="square">⬜</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- EXTRAS TAB -->
-                <div class="tab-panel" id="extrasPanel">
-                    <!-- Stickers -->
-                    <div class="style-section">
-                        <p class="section-label">Add Stickers</p>
-                        <div class="stickers-grid" id="stickersGrid">
-                            <button class="sticker-btn" data-sticker="❤️">❤️</button>
-                            <button class="sticker-btn" data-sticker="💕">💕</button>
-                            <button class="sticker-btn" data-sticker="💖">💖</button>
-                            <button class="sticker-btn" data-sticker="💗">💗</button>
-                            <button class="sticker-btn" data-sticker="💘">💘</button>
-                            <button class="sticker-btn" data-sticker="💝">💝</button>
-                            <button class="sticker-btn" data-sticker="🌹">🌹</button>
-                            <button class="sticker-btn" data-sticker="🌸">🌸</button>
-                            <button class="sticker-btn" data-sticker="✨">✨</button>
-                            <button class="sticker-btn" data-sticker="⭐">⭐</button>
-                            <button class="sticker-btn" data-sticker="🦋">🦋</button>
-                            <button class="sticker-btn" data-sticker="🎀">🎀</button>
-                        </div>
-                        <p class="hint-text">Tap sticker to add • Long press to remove</p>
-                    </div>
-
-                    <!-- 3D Effects -->
-                    <div class="style-section">
-                        <p class="section-label">Card Animation</p>
-                        <div class="effect-grid">
-                            <button class="effect-btn active" data-effect="float">🎈 Float</button>
-                            <button class="effect-btn" data-effect="pulse">💓 Pulse</button>
-                            <button class="effect-btn" data-effect="none">⏹️ None</button>
+                    <!-- Card Back (Inside) -->
+                    <div class="flip-card-back">
+                        <div class="card-inside">
+                            <p class="to-label">To:</p>
+                            <p class="recipient-name" id="recipientName">My Love</p>
+                            <p class="main-message" id="mainMessage">Every moment with you is magical. You make my heart skip a beat.</p>
+                            <p class="sign-off" id="signOff">Forever Yours,</p>
+                            <p class="sender-name" id="senderName">Someone Special</p>
+                            <div class="decorations-back" id="decorationsBack"></div>
                         </div>
                     </div>
                 </div>
             </div>
+            <p class="flip-hint" id="flipHint">Tap card to flip</p>
+        </div>
 
-            <!-- Action Buttons - Fixed at Bottom -->
-            <div class="action-bar">
-                <button class="action-btn share-btn" id="shareBtn">📤 Share Card</button>
-                <button class="action-btn reset-btn" id="resetBtn">🔄</button>
-            </div>
-        </section>
+        <!-- Share Button (Fixed at bottom) -->
+        <div class="share-bar" id="shareBar">
+            <button class="share-btn" id="shareBtn">
+                <span>💌</span>
+                <span>Share This Card</span>
+            </button>
+        </div>
     </div>
 
     <!-- Share Modal -->
     <div class="modal" id="shareModal">
         <div class="modal-content">
-            <button class="modal-close" id="shareModalClose">×</button>
-            <h2>💌 Share Your Card</h2>
-
+            <button class="modal-close" id="modalClose">×</button>
+            <h2>Share Your Card 💕</h2>
             <div class="share-options">
-                <button class="share-btn-option" id="shareLinkBtn">
-                    <span>🔗</span>
-                    <span>Share Link</span>
+                <button class="share-option" id="shareNative">
+                    <span>📤</span>
+                    <span>Share</span>
                 </button>
-                <button class="share-btn-option" id="shareImageBtn">
-                    <span>🖼️</span>
-                    <span>Save Image</span>
-                </button>
-                <button class="share-btn-option" id="whatsappBtn">
+                <button class="share-option" id="shareWhatsApp">
                     <span>💬</span>
                     <span>WhatsApp</span>
                 </button>
-                <button class="share-btn-option" id="copyBtn">
-                    <span>📋</span>
-                    <span>Copy Text</span>
+                <button class="share-option" id="shareSMS">
+                    <span>📱</span>
+                    <span>SMS</span>
+                </button>
+                <button class="share-option" id="shareEmail">
+                    <span>📧</span>
+                    <span>Email</span>
                 </button>
             </div>
-
-            <div class="share-link-box hidden" id="shareLinkBox">
-                <input type="text" id="generatedLink" readonly>
-                <button id="copyLinkBtn">Copy</button>
+            <div class="share-link-section">
+                <p class="link-label">Or copy link:</p>
+                <div class="link-box">
+                    <input type="text" id="shareLink" readonly>
+                    <button id="copyLink">Copy</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast -->
+    <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
-    <!-- Loading -->
+    <!-- Loading Spinner -->
     <div class="loading" id="loading">
         <div class="loading-heart">💕</div>
     </div>
-
-    <!-- Canvas for Image Export -->
-    <canvas id="cardCanvas" style="display: none;"></canvas>
 
     <script src="script.js"></script>
 </body>
