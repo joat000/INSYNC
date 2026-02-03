@@ -1724,14 +1724,10 @@ body {
     font-size: 1.3rem;
 }
 
-.share-btn {
-    background: linear-gradient(135deg, #25D366, #128C7E);
-    color: white;
-}
-
-.download-btn {
+.send-btn {
     background: var(--gradient-romantic);
     color: white;
+    flex: 2;
 }
 
 .reset-btn {
@@ -1740,6 +1736,107 @@ body {
 }
 
 .action-btn:active {
+    transform: scale(0.96);
+}
+
+/* Email Section */
+.email-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Send Modal Styles */
+.send-preview {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.send-info {
+    margin: 8px 0;
+    color: var(--soft-pink);
+}
+
+.send-info strong {
+    color: white;
+}
+
+.send-email {
+    font-size: 0.9rem;
+    color: var(--primary-pink);
+}
+
+.send-card-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--gradient-romantic);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.send-card-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(255, 64, 129, 0.4);
+}
+
+.send-card-btn:active {
+    transform: scale(0.98);
+}
+
+.send-note {
+    margin-top: 15px;
+    font-size: 0.8rem;
+    color: var(--soft-pink);
+    text-align: center;
+}
+
+/* Success Modal */
+.success-content {
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    animation: pulse 1s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.success-message {
+    color: var(--soft-pink);
+    margin-bottom: 20px;
+}
+
+.success-btn {
+    padding: 14px 30px;
+    background: var(--gradient-romantic);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.success-btn:active {
     transform: scale(0.96);
 }
 

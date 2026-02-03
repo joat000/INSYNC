@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#ff1744">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -306,6 +306,14 @@
 
                             <label class="input-label">From</label>
                             <input type="text" id="senderName" class="text-input" placeholder="Your name..." autocomplete="name">
+
+                            <div class="email-section">
+                                <label class="input-label">Your Email</label>
+                                <input type="email" id="senderEmail" class="text-input" placeholder="your@email.com" autocomplete="email">
+
+                                <label class="input-label">Recipient's Email</label>
+                                <input type="email" id="recipientEmail" class="text-input" placeholder="their@email.com" autocomplete="email">
+                            </div>
                         </div>
                     </div>
 
@@ -592,13 +600,9 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <button class="action-btn share-btn" id="shareBtn">
-                        <span class="btn-icon">📤</span>
-                        <span>Share</span>
-                    </button>
-                    <button class="action-btn download-btn" id="downloadBtn">
-                        <span class="btn-icon">📥</span>
-                        <span>Save</span>
+                    <button class="action-btn send-btn" id="sendEmailBtn">
+                        <span class="btn-icon">💌</span>
+                        <span>Send Card</span>
                     </button>
                     <button class="action-btn reset-btn" id="resetBtn">
                         <span class="btn-icon">🔄</span>
@@ -614,92 +618,33 @@
         </footer>
     </div>
 
-    <!-- Share Modal -->
-    <div class="modal" id="shareModal">
+    <!-- Send Email Modal -->
+    <div class="modal" id="sendModal">
         <div class="modal-content">
-            <button class="modal-close" id="shareModalClose">&times;</button>
-            <h2 class="modal-title">📤 Share Your Card</h2>
+            <button class="modal-close" id="sendModalClose">&times;</button>
+            <h2 class="modal-title">💌 Send Your Card</h2>
 
-            <!-- Native Share (Mobile) -->
-            <button class="native-share-btn" id="nativeShareBtn">
-                <span>📱</span> Share Now
+            <div class="send-preview">
+                <p class="send-info">From: <strong id="sendFromName">You</strong></p>
+                <p class="send-info">To: <strong id="sendToName">Your Love</strong></p>
+                <p class="send-info send-email">📧 <span id="sendToEmail">recipient@email.com</span></p>
+            </div>
+
+            <button class="send-card-btn" id="confirmSendBtn">
+                <span>💕</span> Send with Love
             </button>
 
-            <div class="share-divider"><span>or choose app</span></div>
-
-            <div class="share-options">
-                <button class="share-option" data-share="whatsapp">
-                    <span>💬</span>
-                    <span>WhatsApp</span>
-                </button>
-                <button class="share-option" data-share="telegram">
-                    <span>✈️</span>
-                    <span>Telegram</span>
-                </button>
-                <button class="share-option" data-share="facebook">
-                    <span>📘</span>
-                    <span>Facebook</span>
-                </button>
-                <button class="share-option" data-share="twitter">
-                    <span>🐦</span>
-                    <span>Twitter</span>
-                </button>
-                <button class="share-option" data-share="email">
-                    <span>📧</span>
-                    <span>Email</span>
-                </button>
-                <button class="share-option" data-share="sms">
-                    <span>💬</span>
-                    <span>SMS</span>
-                </button>
-            </div>
-
-            <div class="share-divider"><span>or copy link</span></div>
-
-            <div class="copy-link-section">
-                <input type="text" id="shareLinkInput" readonly value="" class="share-link-input">
-                <button class="copy-link-btn" id="copyLinkBtn">📋 Copy</button>
-            </div>
+            <p class="send-note">Your beautiful card will be emailed directly to your special someone!</p>
         </div>
     </div>
 
-    <!-- Download Modal -->
-    <div class="modal" id="downloadModal">
-        <div class="modal-content">
-            <button class="modal-close" id="downloadModalClose">&times;</button>
-            <h2 class="modal-title">📥 Save Your Card</h2>
-            <p class="modal-subtitle">Choose format</p>
-
-            <div class="download-options">
-                <button class="download-option featured" id="downloadHTML">
-                    <span class="format-icon">💌</span>
-                    <div class="format-info">
-                        <span class="format-name">Interactive Card</span>
-                        <span class="format-desc">Opens like real mail with 3D!</span>
-                    </div>
-                    <span class="format-badge">BEST</span>
-                </button>
-
-                <button class="download-option" id="downloadPNG">
-                    <span class="format-icon">🖼️</span>
-                    <div class="format-info">
-                        <span class="format-name">Image (PNG)</span>
-                        <span class="format-desc">High quality picture</span>
-                    </div>
-                </button>
-
-                <button class="download-option" id="downloadJPG">
-                    <span class="format-icon">📷</span>
-                    <div class="format-info">
-                        <span class="format-name">Image (JPG)</span>
-                        <span class="format-desc">Smaller file size</span>
-                    </div>
-                </button>
-            </div>
-
-            <div class="download-tip">
-                <p>💡 <strong>Tip:</strong> Interactive Card includes 3D effects!</p>
-            </div>
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content success-content">
+            <div class="success-icon">💕</div>
+            <h2 class="modal-title">Card Sent!</h2>
+            <p class="success-message">Your love note is on its way!</p>
+            <button class="success-btn" id="successCloseBtn">Create Another</button>
         </div>
     </div>
 
