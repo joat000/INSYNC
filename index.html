@@ -6,720 +6,337 @@
     <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>NOTE2U 💕 Valentine Card Creator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Pacifico&family=Lobster&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { min-height: 100%; font-family: 'Quicksand', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; }
 
-        html, body {
-            min-height: 100%;
-            font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-        }
-
-        .app {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 100px;
-        }
+        .app { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
 
         /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: #ff6b9d; }
+        .header p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
 
-        .header h1 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
-            color: #ff6b9d;
-        }
+        /* Envelope & Card Container */
+        .card-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
 
-        .header p {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.6);
-            margin-top: 5px;
-        }
+        /* Envelope */
+        .envelope { width: 240px; height: 160px; position: relative; cursor: pointer; transition: transform 0.3s; }
+        .envelope:hover { transform: scale(1.02); }
+        .envelope.hidden { display: none; }
+
+        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #e74c3c, #c0392b); border-radius: 0 0 12px 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .envelope-front { position: absolute; bottom: 0; width: 100%; height: 70%; background: linear-gradient(180deg, #ff6b6b, #ee5a5a); border-radius: 0 0 12px 12px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+        .envelope-front p { font-family: 'Dancing Script', cursive; font-size: 1.2rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(135deg, #ff6b6b, #e74c3c); clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 3; transform-origin: top center; transition: transform 0.6s ease; }
+        .envelope.opening .envelope-flap { transform: rotateX(180deg); }
+
+        .seal { position: absolute; top: 25%; left: 50%; transform: translateX(-50%); font-size: 2rem; z-index: 4; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); transition: opacity 0.3s, transform 0.3s; }
+        .envelope.opening .seal { opacity: 0; transform: translateX(-50%) scale(0); }
+
+        .tap-hint { margin-top: 15px; font-size: 0.85rem; color: rgba(255,255,255,0.5); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         /* Card */
-        .card-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+        .card-wrapper { display: none; }
+        .card-wrapper.visible { display: block; animation: cardReveal 0.8s ease; }
+        @keyframes cardReveal { from { opacity: 0; transform: translateY(-30px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        .card {
-            width: 220px;
-            height: 300px;
-            perspective: 1000px;
-            cursor: pointer;
-        }
+        .card { width: 240px; height: 340px; perspective: 1000px; cursor: pointer; margin: 0 auto; }
+        .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
+        .card.flipped .card-inner { transform: rotateY(180deg); }
 
-        .card-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-        }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
 
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
+        .card-front { background: linear-gradient(135deg, var(--card-color1, #ff1744), var(--card-color2, #d50000)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; position: relative; }
+        .card-front::before { content: ''; position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; }
 
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
+        .card-emoji { font-size: 3.5rem; margin-bottom: 15px; }
+        .card-title { font-size: 1.5rem; color: #fff; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,0.3); line-height: 1.3; }
 
-        .card-front {
-            background: linear-gradient(135deg, #ff1744, #d50000);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 25px;
-            position: relative;
-        }
+        .card-back { background: linear-gradient(180deg, #fff5f5, #ffe4e9); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; }
+        .card-to { font-size: 0.9rem; color: #c41e3a; margin-bottom: 8px; }
+        .card-to span { font-size: 1.3rem; }
+        .card-msg { font-size: 0.95rem; color: #c41e3a; line-height: 1.6; margin-bottom: 15px; flex: 1; display: flex; align-items: center; }
+        .card-sign { font-size: 1.1rem; color: #c41e3a; }
+        .card-from { font-size: 1rem; font-weight: 600; color: #c41e3a; margin-top: 5px; }
 
-        .card-front::before {
-            content: '';
-            position: absolute;
-            inset: 12px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 10px;
-        }
+        .stickers-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .placed-sticker { position: absolute; pointer-events: auto; cursor: move; user-select: none; }
 
-        .card-emoji {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-        }
+        .card-hint { margin-top: 12px; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center; }
 
-        .card-title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.5rem;
-            color: #fff;
-            text-align: center;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .card-back {
-            background: linear-gradient(180deg, #fff5f5, #ffe4e9);
-            transform: rotateY(180deg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 25px;
-            text-align: center;
-        }
-
-        .card-to {
-            font-size: 0.9rem;
-            color: #c41e3a;
-            margin-bottom: 10px;
-        }
-
-        .card-to span {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.3rem;
-        }
-
-        .card-msg {
-            font-size: 0.9rem;
-            color: #c41e3a;
-            line-height: 1.5;
-            margin-bottom: 15px;
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
-
-        .card-sign {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.1rem;
-            color: #c41e3a;
-        }
-
-        .card-from {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #c41e3a;
-            margin-top: 5px;
-        }
-
-        .card-hint {
-            margin-top: 12px;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.5);
-        }
+        /* Font classes */
+        .font-dancing { font-family: 'Dancing Script', cursive; }
+        .font-pacifico { font-family: 'Pacifico', cursive; }
+        .font-lobster { font-family: 'Lobster', cursive; }
+        .font-great-vibes { font-family: 'Great Vibes', cursive; }
+        .font-quicksand { font-family: 'Quicksand', sans-serif; }
 
         /* Editor */
-        .editor {
-            background: rgba(255,255,255,0.06);
-            border-radius: 20px;
-            padding: 20px;
-        }
+        .editor { background: rgba(255,255,255,0.06); border-radius: 20px; padding: 20px; }
+        .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { flex: 1; min-width: 70px; padding: 10px 8px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .tab.active { background: linear-gradient(135deg, #ff1744, #ff6b9d); color: #fff; }
 
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.6);
-            font-family: inherit;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab.active {
-            background: linear-gradient(135deg, #ff1744, #ff6b9d);
-            color: #fff;
-        }
-
-        .panel {
-            display: none;
-        }
-
-        .panel.active {
-            display: block;
-        }
+        .panel { display: none; }
+        .panel.active { display: block; }
 
         /* Form */
-        .field {
-            margin-bottom: 16px;
-        }
+        .field { margin-bottom: 14px; }
+        .field label { display: block; font-size: 0.8rem; color: #ffb6c1; margin-bottom: 6px; font-weight: 600; }
+        .field input, .field textarea { width: 100%; padding: 12px; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; background: rgba(255,255,255,0.08); color: #fff; font-family: inherit; font-size: 1rem; }
+        .field input:focus, .field textarea:focus { outline: none; border-color: #ff6b9d; }
+        .field textarea { resize: none; min-height: 80px; }
+        .field-row { display: flex; gap: 10px; }
+        .field-row .field { flex: 1; }
 
-        .field label {
-            display: block;
-            font-size: 0.85rem;
-            color: #ffb6c1;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
+        /* Sections */
+        .section-title { font-size: 0.85rem; color: #ffb6c1; margin-bottom: 12px; font-weight: 600; }
+        .hint { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 10px; }
 
-        .field input, .field textarea {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
+        /* Grids */
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+        .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
 
-        .field input:focus, .field textarea:focus {
-            outline: none;
-            border-color: #ff6b9d;
-        }
+        /* Buttons */
+        .color-btn { aspect-ratio: 1; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .color-btn.active { border-color: #fff; transform: scale(1.1); }
 
-        .field textarea {
-            resize: none;
-            min-height: 90px;
-        }
+        .emoji-btn, .sticker-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 10px; background: rgba(255,255,255,0.1); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .emoji-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.25); }
+        .sticker-btn:active { transform: scale(1.15); background: rgba(255,107,157,0.3); }
 
-        .field-row {
-            display: flex;
-            gap: 12px;
-        }
+        .font-btn { padding: 10px; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; background: transparent; color: #fff; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+        .font-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.2); }
 
-        .field-row .field {
-            flex: 1;
-        }
+        .size-btn { padding: 8px 12px; border: 2px solid rgba(255,255,255,0.15); border-radius: 8px; background: transparent; color: #fff; font-size: 0.8rem; cursor: pointer; }
+        .size-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.2); }
 
-        /* Quick */
-        .quick-section {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
+        .quick-btn { padding: 10px 14px; border: none; border-radius: 20px; background: rgba(255,107,157,0.25); color: #fff; font-family: inherit; font-size: 0.85rem; cursor: pointer; }
+        .quick-btn:active { transform: scale(0.95); }
 
-        .quick-section p {
-            font-size: 0.85rem;
-            color: #ffb6c1;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
+        .clear-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; background: rgba(255,100,100,0.2); color: #ff6b6b; font-family: inherit; font-size: 0.85rem; cursor: pointer; }
 
-        .quick-btns {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .quick-btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255,107,157,0.25);
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-btn:active {
-            transform: scale(0.95);
-            background: rgba(255,107,157,0.4);
-        }
-
-        /* Themes */
-        .section-title {
-            font-size: 0.9rem;
-            color: #ffb6c1;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .themes {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .theme-btn {
-            aspect-ratio: 1;
-            border: 3px solid transparent;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .theme-btn.active {
-            border-color: #fff;
-            transform: scale(1.1);
-        }
-
-        /* Emojis */
-        .emojis {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .emoji-btn {
-            aspect-ratio: 1;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.1);
-            font-size: 1.6rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .emoji-btn.active {
-            border-color: #ff6b9d;
-            background: rgba(255,107,157,0.25);
-        }
-
-        /* Stickers */
-        .stickers {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .sticker-btn {
-            aspect-ratio: 1;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sticker-btn:active {
-            transform: scale(1.15);
-            background: rgba(255,107,157,0.3);
-        }
-
-        .clear-btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,100,100,0.2);
-            color: #ff6b6b;
-            font-family: inherit;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        .hint {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.4);
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        /* Sticker on card */
-        .stickers-layer {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .placed-sticker {
-            position: absolute;
-            font-size: 1.3rem;
-            pointer-events: auto;
-            cursor: pointer;
-        }
+        /* Range Slider */
+        .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .slider-row label { font-size: 0.8rem; color: #ffb6c1; min-width: 80px; }
+        .slider-row input[type="range"] { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.2); -webkit-appearance: none; }
+        .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #ff6b9d; cursor: pointer; }
 
         /* Share Button */
-        .share-btn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            max-width: 460px;
-            margin: 0 auto;
-            padding: 18px;
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #ff1744, #ff6b9d);
-            color: #fff;
-            font-family: inherit;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(255,23,68,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            z-index: 100;
-            transition: transform 0.2s;
-        }
-
-        .share-btn:active {
-            transform: scale(0.98);
-        }
+        .share-btn { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 460px; margin: 0 auto; padding: 16px; border: none; border-radius: 50px; background: linear-gradient(135deg, #ff1744, #ff6b9d); color: #fff; font-family: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 25px rgba(255,23,68,0.5); display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 100; }
+        .share-btn:active { transform: scale(0.98); }
 
         /* Modal */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 1000;
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-box { width: 100%; max-width: 400px; background: linear-gradient(180deg, #1a1a2e, #16213e); border-radius: 24px 24px 0 0; padding: 25px; padding-bottom: 35px; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; font-size: 1.5rem; cursor: pointer; }
+        .modal h2 { text-align: center; font-size: 1.3rem; margin-bottom: 20px; }
+        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .share-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border: none; border-radius: 14px; background: rgba(255,255,255,0.08); color: #fff; font-family: inherit; font-size: 0.75rem; cursor: pointer; }
+        .share-item span { font-size: 1.6rem; }
+        .share-item:active { background: rgba(255,107,157,0.3); }
 
-        .modal.active {
-            display: flex;
-        }
+        .link-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .link-section p { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+        .link-row { display: flex; gap: 8px; }
+        .link-row input { flex: 1; padding: 10px; border: none; border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 0.8rem; }
+        .link-row button { padding: 10px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ff1744, #d50000); color: #fff; font-family: inherit; font-weight: 600; cursor: pointer; }
 
-        .modal-box {
-            width: 100%;
-            max-width: 400px;
-            background: linear-gradient(180deg, #1a1a2e, #16213e);
-            border-radius: 24px 24px 0 0;
-            padding: 25px;
-            padding-bottom: 35px;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 36px;
-            height: 36px;
-            border: none;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal h2 {
-            text-align: center;
-            font-size: 1.3rem;
-            margin-bottom: 25px;
-        }
-
-        .share-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .share-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 15px 8px;
-            border: none;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.08);
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .share-item span {
-            font-size: 1.8rem;
-        }
-
-        .share-item:active {
-            transform: scale(0.95);
-            background: rgba(255,107,157,0.3);
-        }
-
-        .link-section {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-        }
-
-        .link-section p {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 10px;
-        }
-
-        .link-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .link-row input {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.85rem;
-        }
-
-        .link-row button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #ff1744, #d50000);
-            color: #fff;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .card-id { text-align: center; margin-top: 12px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .card-id code { font-size: 1.1rem; color: #ff6b9d; letter-spacing: 2px; }
 
         /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%) translateY(50px);
-            background: linear-gradient(135deg, #00c853, #69f0ae);
-            color: #fff;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 2000;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(50px); background: linear-gradient(135deg, #00c853, #69f0ae); color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; pointer-events: none; white-space: nowrap; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
         /* Desktop */
         @media (min-width: 600px) {
-            .card {
-                width: 260px;
-                height: 360px;
-            }
-
-            .card-emoji {
-                font-size: 4rem;
-            }
-
-            .card-title {
-                font-size: 1.7rem;
-            }
-
-            .modal {
-                align-items: center;
-            }
-
-            .modal-box {
-                border-radius: 24px;
-                margin: 20px;
-            }
+            .envelope { width: 280px; height: 180px; }
+            .card { width: 280px; height: 400px; }
+            .card-emoji { font-size: 4rem; }
+            .card-title { font-size: 1.8rem; }
+            .modal { align-items: center; }
+            .modal-box { border-radius: 24px; margin: 20px; }
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
         <header class="header">
             <h1>NOTE2U</h1>
             <p>Create & Share Valentine Cards</p>
         </header>
 
-        <!-- Card Preview -->
         <div class="card-area">
-            <div class="card" id="card">
-                <div class="card-inner">
-                    <div class="card-face card-front" id="cardFront">
-                        <div class="card-emoji" id="cardEmoji">💕</div>
-                        <p class="card-title" id="cardTitle">Will You Be My Valentine?</p>
-                        <div class="stickers-layer" id="stickersFront"></div>
-                    </div>
-                    <div class="card-face card-back">
-                        <p class="card-to">To: <span id="cardTo">My Love</span></p>
-                        <p class="card-msg" id="cardMsg">Write something sweet...</p>
-                        <p class="card-sign" id="cardSign">Forever Yours,</p>
-                        <p class="card-from" id="cardFrom">Your Name</p>
-                        <div class="stickers-layer" id="stickersBack"></div>
+            <!-- Envelope -->
+            <div class="envelope" id="envelope">
+                <div class="envelope-back"></div>
+                <div class="envelope-flap"></div>
+                <div class="seal">💝</div>
+                <div class="envelope-front"><p>To: <span id="envTo">My Love</span></p></div>
+            </div>
+            <p class="tap-hint" id="tapHint">👆 Tap to open</p>
+
+            <!-- Card (hidden initially) -->
+            <div class="card-wrapper" id="cardWrapper">
+                <div class="card" id="card">
+                    <div class="card-inner">
+                        <div class="card-face card-front" id="cardFront">
+                            <div class="card-emoji" id="cardEmoji">💕</div>
+                            <p class="card-title font-dancing" id="cardTitle">Will You Be My Valentine?</p>
+                            <div class="stickers-layer" id="stickersFront"></div>
+                        </div>
+                        <div class="card-face card-back">
+                            <p class="card-to">To: <span class="font-dancing" id="cardTo">My Love</span></p>
+                            <p class="card-msg" id="cardMsg">Write something sweet...</p>
+                            <p class="card-sign font-dancing" id="cardSign">Forever Yours,</p>
+                            <p class="card-from" id="cardFrom">Your Name</p>
+                            <div class="stickers-layer" id="stickersBack"></div>
+                        </div>
                     </div>
                 </div>
+                <p class="card-hint">👆 Tap card to flip</p>
             </div>
-            <p class="card-hint">👆 Tap card to flip</p>
         </div>
 
-        <!-- Editor -->
         <div class="editor">
             <div class="tabs">
                 <button class="tab active" data-tab="write">✍️ Write</button>
                 <button class="tab" data-tab="style">🎨 Style</button>
+                <button class="tab" data-tab="font">Aa Font</button>
                 <button class="tab" data-tab="decorate">✨ Decorate</button>
             </div>
 
             <!-- Write Panel -->
             <div class="panel active" id="writePanel">
                 <div class="field">
-                    <label>To</label>
-                    <input type="text" id="inputTo" placeholder="Their name">
+                    <label>To (recipient)</label>
+                    <input type="text" id="inputTo" placeholder="Their name" maxlength="30">
                 </div>
                 <div class="field">
                     <label>Front Message</label>
-                    <input type="text" id="inputTitle" placeholder="Will You Be My Valentine?">
+                    <input type="text" id="inputTitle" placeholder="Will You Be My Valentine?" maxlength="60">
                 </div>
                 <div class="field">
-                    <label>Your Message</label>
-                    <textarea id="inputMsg" placeholder="Write something sweet..."></textarea>
+                    <label>Your Message Inside</label>
+                    <textarea id="inputMsg" placeholder="Write something sweet..." maxlength="500"></textarea>
                 </div>
                 <div class="field-row">
                     <div class="field">
                         <label>Sign Off</label>
-                        <input type="text" id="inputSign" placeholder="Forever Yours,">
+                        <input type="text" id="inputSign" placeholder="Forever Yours," maxlength="30">
                     </div>
                     <div class="field">
                         <label>From</label>
-                        <input type="text" id="inputFrom" placeholder="Your name">
+                        <input type="text" id="inputFrom" placeholder="Your name" maxlength="30">
                     </div>
                 </div>
-                <div class="quick-section">
-                    <p>Quick Templates</p>
-                    <div class="quick-btns">
-                        <button class="quick-btn" data-title="Be Mine!" data-msg="You stole my heart and I never want it back. 💕">💘 Classic</button>
-                        <button class="quick-btn" data-title="I Love You!" data-msg="Every moment with you feels like a beautiful dream.">❤️ Sweet</button>
-                        <button class="quick-btn" data-title="Hey You!" data-msg="You're weird. I like it. Let's be weird together? 😄">😊 Funny</button>
-                    </div>
+                <p class="section-title" style="margin-top:15px">Quick Templates</p>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    <button class="quick-btn" data-t="Be Mine!" data-m="You stole my heart and I never want it back. 💕">💘 Classic</button>
+                    <button class="quick-btn" data-t="I Love You!" data-m="Every moment with you feels like a beautiful dream. You mean everything to me.">❤️ Sweet</button>
+                    <button class="quick-btn" data-t="Hey You!" data-m="You're weird. I like it. Let's be weird together forever? 😄">😊 Funny</button>
+                    <button class="quick-btn" data-t="My Soulmate" data-m="In you, I found my best friend and my forever love. Happy Valentine's Day!">💖 Romantic</button>
                 </div>
             </div>
 
             <!-- Style Panel -->
             <div class="panel" id="stylePanel">
-                <p class="section-title">Choose Theme</p>
-                <div class="themes">
-                    <button class="theme-btn active" data-theme="red" style="background:linear-gradient(135deg,#ff1744,#d50000)"></button>
-                    <button class="theme-btn" data-theme="pink" style="background:linear-gradient(135deg,#ff80ab,#f48fb1)"></button>
-                    <button class="theme-btn" data-theme="gold" style="background:linear-gradient(135deg,#ffd700,#ffa000)"></button>
-                    <button class="theme-btn" data-theme="purple" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2)"></button>
-                    <button class="theme-btn" data-theme="blue" style="background:linear-gradient(135deg,#2196f3,#1565c0)"></button>
-                    <button class="theme-btn" data-theme="teal" style="background:linear-gradient(135deg,#00bcd4,#00838f)"></button>
-                    <button class="theme-btn" data-theme="orange" style="background:linear-gradient(135deg,#ff9800,#e65100)"></button>
-                    <button class="theme-btn" data-theme="green" style="background:linear-gradient(135deg,#4caf50,#2e7d32)"></button>
+                <p class="section-title">Card Color</p>
+                <div class="grid-4">
+                    <button class="color-btn active" data-c1="#ff1744" data-c2="#d50000" style="background:linear-gradient(135deg,#ff1744,#d50000)"></button>
+                    <button class="color-btn" data-c1="#ff80ab" data-c2="#f48fb1" style="background:linear-gradient(135deg,#ff80ab,#f48fb1)"></button>
+                    <button class="color-btn" data-c1="#e91e63" data-c2="#ad1457" style="background:linear-gradient(135deg,#e91e63,#ad1457)"></button>
+                    <button class="color-btn" data-c1="#9c27b0" data-c2="#7b1fa2" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2)"></button>
+                    <button class="color-btn" data-c1="#673ab7" data-c2="#512da8" style="background:linear-gradient(135deg,#673ab7,#512da8)"></button>
+                    <button class="color-btn" data-c1="#2196f3" data-c2="#1565c0" style="background:linear-gradient(135deg,#2196f3,#1565c0)"></button>
+                    <button class="color-btn" data-c1="#00bcd4" data-c2="#00838f" style="background:linear-gradient(135deg,#00bcd4,#00838f)"></button>
+                    <button class="color-btn" data-c1="#009688" data-c2="#00695c" style="background:linear-gradient(135deg,#009688,#00695c)"></button>
+                    <button class="color-btn" data-c1="#ffd700" data-c2="#ffa000" style="background:linear-gradient(135deg,#ffd700,#ffa000)"></button>
+                    <button class="color-btn" data-c1="#ff9800" data-c2="#e65100" style="background:linear-gradient(135deg,#ff9800,#e65100)"></button>
+                    <button class="color-btn" data-c1="#ff5722" data-c2="#d84315" style="background:linear-gradient(135deg,#ff5722,#d84315)"></button>
+                    <button class="color-btn" data-c1="#795548" data-c2="#4e342e" style="background:linear-gradient(135deg,#795548,#4e342e)"></button>
                 </div>
 
                 <p class="section-title">Card Emoji</p>
-                <div class="emojis">
-                    <button class="emoji-btn active" data-emoji="💕">💕</button>
-                    <button class="emoji-btn" data-emoji="❤️">❤️</button>
-                    <button class="emoji-btn" data-emoji="💖">💖</button>
-                    <button class="emoji-btn" data-emoji="💝">💝</button>
-                    <button class="emoji-btn" data-emoji="💘">💘</button>
-                    <button class="emoji-btn" data-emoji="🌹">🌹</button>
-                    <button class="emoji-btn" data-emoji="🦋">🦋</button>
-                    <button class="emoji-btn" data-emoji="✨">✨</button>
+                <div class="grid-5">
+                    <button class="emoji-btn active" data-e="💕">💕</button>
+                    <button class="emoji-btn" data-e="❤️">❤️</button>
+                    <button class="emoji-btn" data-e="💖">💖</button>
+                    <button class="emoji-btn" data-e="💝">💝</button>
+                    <button class="emoji-btn" data-e="💘">💘</button>
+                    <button class="emoji-btn" data-e="💗">💗</button>
+                    <button class="emoji-btn" data-e="🌹">🌹</button>
+                    <button class="emoji-btn" data-e="🦋">🦋</button>
+                    <button class="emoji-btn" data-e="✨">✨</button>
+                    <button class="emoji-btn" data-e="🌸">🌸</button>
+                </div>
+            </div>
+
+            <!-- Font Panel -->
+            <div class="panel" id="fontPanel">
+                <p class="section-title">Title Font</p>
+                <div class="grid-4" style="margin-bottom:15px">
+                    <button class="font-btn active" data-font="font-dancing" style="font-family:'Dancing Script'">Elegant</button>
+                    <button class="font-btn" data-font="font-pacifico" style="font-family:'Pacifico'">Pacifico</button>
+                    <button class="font-btn" data-font="font-lobster" style="font-family:'Lobster'">Lobster</button>
+                    <button class="font-btn" data-font="font-great-vibes" style="font-family:'Great Vibes'">Vibes</button>
+                </div>
+
+                <p class="section-title">Title Size</p>
+                <div class="slider-row">
+                    <label>Size</label>
+                    <input type="range" id="titleSize" min="1" max="2.2" step="0.1" value="1.5">
+                </div>
+
+                <p class="section-title">Message Size</p>
+                <div class="slider-row">
+                    <label>Size</label>
+                    <input type="range" id="msgSize" min="0.75" max="1.3" step="0.05" value="0.95">
                 </div>
             </div>
 
             <!-- Decorate Panel -->
             <div class="panel" id="decoratePanel">
                 <p class="section-title">Add Stickers</p>
-                <p class="hint">Tap to add • Long press on card to remove</p>
-                <div class="stickers">
-                    <button class="sticker-btn" data-sticker="❤️">❤️</button>
-                    <button class="sticker-btn" data-sticker="💕">💕</button>
-                    <button class="sticker-btn" data-sticker="💖">💖</button>
-                    <button class="sticker-btn" data-sticker="💗">💗</button>
-                    <button class="sticker-btn" data-sticker="💘">💘</button>
-                    <button class="sticker-btn" data-sticker="💝">💝</button>
-                    <button class="sticker-btn" data-sticker="🌹">🌹</button>
-                    <button class="sticker-btn" data-sticker="🌸">🌸</button>
-                    <button class="sticker-btn" data-sticker="✨">✨</button>
-                    <button class="sticker-btn" data-sticker="⭐">⭐</button>
-                    <button class="sticker-btn" data-sticker="🦋">🦋</button>
-                    <button class="sticker-btn" data-sticker="🎀">🎀</button>
+                <p class="hint">Tap to add • Drag to move • Long press to remove</p>
+                <div class="grid-6">
+                    <button class="sticker-btn" data-s="❤️">❤️</button>
+                    <button class="sticker-btn" data-s="💕">💕</button>
+                    <button class="sticker-btn" data-s="💖">💖</button>
+                    <button class="sticker-btn" data-s="💗">💗</button>
+                    <button class="sticker-btn" data-s="💘">💘</button>
+                    <button class="sticker-btn" data-s="💝">💝</button>
+                    <button class="sticker-btn" data-s="🌹">🌹</button>
+                    <button class="sticker-btn" data-s="🌸">🌸</button>
+                    <button class="sticker-btn" data-s="🌺">🌺</button>
+                    <button class="sticker-btn" data-s="🦋">🦋</button>
+                    <button class="sticker-btn" data-s="✨">✨</button>
+                    <button class="sticker-btn" data-s="⭐">⭐</button>
+                    <button class="sticker-btn" data-s="🎀">🎀</button>
+                    <button class="sticker-btn" data-s="💌">💌</button>
+                    <button class="sticker-btn" data-s="🍫">🍫</button>
+                    <button class="sticker-btn" data-s="💋">💋</button>
+                    <button class="sticker-btn" data-s="🥰">🥰</button>
+                    <button class="sticker-btn" data-s="😘">😘</button>
                 </div>
+
+                <p class="section-title">Sticker Size</p>
+                <div class="slider-row">
+                    <label>Size</label>
+                    <input type="range" id="stickerSize" min="1" max="3" step="0.25" value="1.5">
+                </div>
+
                 <button class="clear-btn" id="clearStickers">Clear All Stickers</button>
             </div>
         </div>
 
-        <!-- Share Button -->
         <button class="share-btn" id="shareBtn">💌 Share Your Card</button>
     </div>
 
@@ -728,7 +345,11 @@
         <div class="modal-box">
             <button class="modal-close" id="modalClose">×</button>
             <h2>Share Your Card 💕</h2>
-            <div class="share-grid">
+            <div class="card-id">
+                <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:5px">Your Card ID</p>
+                <code id="cardIdDisplay">------</code>
+            </div>
+            <div class="share-grid" style="margin-top:20px">
                 <button class="share-item" id="shareNative"><span>📤</span>Share</button>
                 <button class="share-item" id="shareWhatsApp"><span>💬</span>WhatsApp</button>
                 <button class="share-item" id="shareSMS"><span>📱</span>SMS</button>
@@ -744,40 +365,79 @@
         </div>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // Themes
-        const themes = {
-            red: ['#ff1744', '#d50000'],
-            pink: ['#ff80ab', '#f48fb1'],
-            gold: ['#ffd700', '#ffa000'],
-            purple: ['#9c27b0', '#7b1fa2'],
-            blue: ['#2196f3', '#1565c0'],
-            teal: ['#00bcd4', '#00838f'],
-            orange: ['#ff9800', '#e65100'],
-            green: ['#4caf50', '#2e7d32']
-        };
+        // KV Storage API endpoint (using jsonbin.io as free KV store)
+        const KV_API = 'https://api.jsonbin.io/v3/b';
+        const KV_KEY = '$2a$10$YOUR_API_KEY_HERE'; // Replace with actual key
 
         // State
-        let currentTheme = 'red';
-        let currentEmoji = '💕';
-        let stickers = [];
+        let state = {
+            to: '', title: '', msg: '', sign: '', from: '',
+            color1: '#ff1744', color2: '#d50000',
+            emoji: '💕', font: 'font-dancing',
+            titleSize: 1.5, msgSize: 0.95, stickerSize: 1.5,
+            stickers: []
+        };
         let isFlipped = false;
+        let cardId = null;
+        let envelopeOpened = false;
+
+        // Generate short ID
+        function generateId() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let id = '';
+            for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+            return id;
+        }
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
+            // Check if viewing shared card
+            const params = new URLSearchParams(window.location.search);
+            const sharedId = params.get('id') || params.get('card');
+
+            if (sharedId) {
+                if (sharedId.length === 6) {
+                    loadCardById(sharedId);
+                } else {
+                    loadCardFromData(sharedId);
+                }
+            }
+
+            initEnvelope();
             initCard();
             initTabs();
             initInputs();
             initQuickBtns();
-            initThemes();
+            initColors();
             initEmojis();
+            initFonts();
+            initSizes();
             initStickers();
             initShare();
-            loadSharedCard();
         });
+
+        // Envelope
+        function initEnvelope() {
+            const env = document.getElementById('envelope');
+            env.addEventListener('click', openEnvelope);
+        }
+
+        function openEnvelope() {
+            if (envelopeOpened) return;
+            envelopeOpened = true;
+
+            const env = document.getElementById('envelope');
+            env.classList.add('opening');
+            document.getElementById('tapHint').style.display = 'none';
+
+            setTimeout(() => {
+                env.classList.add('hidden');
+                document.getElementById('cardWrapper').classList.add('visible');
+            }, 800);
+        }
 
         // Card flip
         function initCard() {
@@ -801,20 +461,25 @@
 
         // Inputs
         function initInputs() {
-            document.getElementById('inputTo').addEventListener('input', e => {
-                document.getElementById('cardTo').textContent = e.target.value || 'My Love';
-            });
-            document.getElementById('inputTitle').addEventListener('input', e => {
-                document.getElementById('cardTitle').textContent = e.target.value || 'Will You Be My Valentine?';
-            });
-            document.getElementById('inputMsg').addEventListener('input', e => {
-                document.getElementById('cardMsg').innerHTML = (e.target.value || 'Write something sweet...').replace(/\n/g, '<br>');
-            });
-            document.getElementById('inputSign').addEventListener('input', e => {
-                document.getElementById('cardSign').textContent = e.target.value || 'Forever Yours,';
-            });
-            document.getElementById('inputFrom').addEventListener('input', e => {
-                document.getElementById('cardFrom').textContent = e.target.value || 'Your Name';
+            const inputs = [
+                ['inputTo', 'cardTo', 'envTo', 'to', 'My Love'],
+                ['inputTitle', 'cardTitle', null, 'title', 'Will You Be My Valentine?'],
+                ['inputMsg', 'cardMsg', null, 'msg', 'Write something sweet...'],
+                ['inputSign', 'cardSign', null, 'sign', 'Forever Yours,'],
+                ['inputFrom', 'cardFrom', null, 'from', 'Your Name']
+            ];
+
+            inputs.forEach(([inputId, cardId, envId, stateKey, placeholder]) => {
+                document.getElementById(inputId).addEventListener('input', e => {
+                    state[stateKey] = e.target.value;
+                    const el = document.getElementById(cardId);
+                    if (stateKey === 'msg') {
+                        el.innerHTML = (e.target.value || placeholder).replace(/\n/g, '<br>');
+                    } else {
+                        el.textContent = e.target.value || placeholder;
+                    }
+                    if (envId) document.getElementById(envId).textContent = e.target.value || placeholder;
+                });
             });
         }
 
@@ -822,50 +487,93 @@
         function initQuickBtns() {
             document.querySelectorAll('.quick-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    document.getElementById('inputTitle').value = btn.dataset.title;
-                    document.getElementById('inputMsg').value = btn.dataset.msg;
-                    document.getElementById('cardTitle').textContent = btn.dataset.title;
-                    document.getElementById('cardMsg').textContent = btn.dataset.msg;
+                    document.getElementById('inputTitle').value = btn.dataset.t;
+                    document.getElementById('inputMsg').value = btn.dataset.m;
+                    document.getElementById('cardTitle').textContent = btn.dataset.t;
+                    document.getElementById('cardMsg').textContent = btn.dataset.m;
+                    state.title = btn.dataset.t;
+                    state.msg = btn.dataset.m;
                     toast('Template applied! ✨');
                 });
             });
         }
 
-        // Themes
-        function initThemes() {
-            document.querySelectorAll('.theme-btn').forEach(btn => {
+        // Colors
+        function initColors() {
+            document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentTheme = btn.dataset.theme;
-                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    state.color1 = btn.dataset.c1;
+                    state.color2 = btn.dataset.c2;
+                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    const [c1, c2] = themes[currentTheme];
-                    document.getElementById('cardFront').style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-                    toast('Theme changed! 🎨');
+                    document.getElementById('cardFront').style.setProperty('--card-color1', state.color1);
+                    document.getElementById('cardFront').style.setProperty('--card-color2', state.color2);
+                    // Update envelope too
+                    document.querySelector('.envelope-back').style.background = `linear-gradient(180deg, ${state.color1}, ${state.color2})`;
+                    document.querySelector('.envelope-front').style.background = `linear-gradient(180deg, ${state.color1}, ${adjustColor(state.color1, 20)})`;
+                    document.querySelector('.envelope-flap').style.background = `linear-gradient(135deg, ${state.color1}, ${state.color2})`;
+                    toast('Color changed! 🎨');
                 });
             });
+        }
+
+        function adjustColor(hex, amt) {
+            let num = parseInt(hex.slice(1), 16);
+            let r = Math.min(255, (num >> 16) + amt);
+            let g = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+            let b = Math.min(255, (num & 0x0000FF) + amt);
+            return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
         }
 
         // Emojis
         function initEmojis() {
             document.querySelectorAll('.emoji-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentEmoji = btn.dataset.emoji;
+                    state.emoji = btn.dataset.e;
                     document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    document.getElementById('cardEmoji').textContent = currentEmoji;
+                    document.getElementById('cardEmoji').textContent = state.emoji;
                 });
+            });
+        }
+
+        // Fonts
+        function initFonts() {
+            document.querySelectorAll('.font-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.font = btn.dataset.font;
+                    document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const title = document.getElementById('cardTitle');
+                    title.className = 'card-title ' + state.font;
+                });
+            });
+        }
+
+        // Sizes
+        function initSizes() {
+            document.getElementById('titleSize').addEventListener('input', e => {
+                state.titleSize = e.target.value;
+                document.getElementById('cardTitle').style.fontSize = state.titleSize + 'rem';
+            });
+            document.getElementById('msgSize').addEventListener('input', e => {
+                state.msgSize = e.target.value;
+                document.getElementById('cardMsg').style.fontSize = state.msgSize + 'rem';
+            });
+            document.getElementById('stickerSize').addEventListener('input', e => {
+                state.stickerSize = e.target.value;
             });
         }
 
         // Stickers
         function initStickers() {
             document.querySelectorAll('.sticker-btn').forEach(btn => {
-                btn.addEventListener('click', () => addSticker(btn.dataset.sticker));
+                btn.addEventListener('click', () => addSticker(btn.dataset.s));
             });
             document.getElementById('clearStickers').addEventListener('click', () => {
                 document.getElementById('stickersFront').innerHTML = '';
                 document.getElementById('stickersBack').innerHTML = '';
-                stickers = [];
+                state.stickers = [];
                 toast('Stickers cleared');
             });
         }
@@ -875,17 +583,52 @@
             const el = document.createElement('div');
             el.className = 'placed-sticker';
             el.textContent = emoji;
-            const x = 10 + Math.random() * 70;
-            const y = 10 + Math.random() * 70;
+            el.style.fontSize = state.stickerSize + 'rem';
+
+            const x = 15 + Math.random() * 60;
+            const y = 15 + Math.random() * 60;
             el.style.left = x + '%';
             el.style.top = y + '%';
-            stickers.push({ emoji, x, y, side: isFlipped ? 'back' : 'front' });
 
+            const stickerData = { emoji, x, y, size: state.stickerSize, side: isFlipped ? 'back' : 'front' };
+            state.stickers.push(stickerData);
+
+            // Drag support
+            let isDragging = false;
+            let startX, startY, origX, origY;
+
+            el.addEventListener('touchstart', e => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                origX = parseFloat(el.style.left);
+                origY = parseFloat(el.style.top);
+            });
+
+            el.addEventListener('touchmove', e => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const dx = (e.touches[0].clientX - startX) / layer.offsetWidth * 100;
+                const dy = (e.touches[0].clientY - startY) / layer.offsetHeight * 100;
+                el.style.left = Math.max(0, Math.min(90, origX + dx)) + '%';
+                el.style.top = Math.max(0, Math.min(90, origY + dy)) + '%';
+                stickerData.x = parseFloat(el.style.left);
+                stickerData.y = parseFloat(el.style.top);
+            });
+
+            el.addEventListener('touchend', () => { isDragging = false; });
+
+            // Long press to remove
             let timer;
-            el.addEventListener('touchstart', () => { timer = setTimeout(() => { el.remove(); toast('Sticker removed'); }, 500); });
+            el.addEventListener('touchstart', () => {
+                timer = setTimeout(() => {
+                    el.remove();
+                    state.stickers = state.stickers.filter(s => s !== stickerData);
+                    toast('Sticker removed');
+                }, 600);
+            });
+            el.addEventListener('touchmove', () => clearTimeout(timer));
             el.addEventListener('touchend', () => clearTimeout(timer));
-            el.addEventListener('mousedown', () => { timer = setTimeout(() => { el.remove(); toast('Sticker removed'); }, 500); });
-            el.addEventListener('mouseup', () => clearTimeout(timer));
 
             layer.appendChild(el);
             toast('Sticker added! ✨');
@@ -894,10 +637,18 @@
         // Share
         function initShare() {
             const modal = document.getElementById('modal');
-            document.getElementById('shareBtn').addEventListener('click', () => {
-                document.getElementById('linkInput').value = generateURL();
+
+            document.getElementById('shareBtn').addEventListener('click', async () => {
+                // Generate card ID and save
+                if (!cardId) {
+                    cardId = generateId();
+                    await saveCard();
+                }
+                document.getElementById('cardIdDisplay').textContent = cardId;
+                document.getElementById('linkInput').value = window.location.origin + window.location.pathname + '?id=' + cardId;
                 modal.classList.add('active');
             });
+
             document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
             modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
 
@@ -916,14 +667,12 @@
             // WhatsApp
             document.getElementById('shareWhatsApp').addEventListener('click', () => {
                 window.open('https://wa.me/?text=' + encodeURIComponent(getShareText() + '\n\n' + document.getElementById('linkInput').value), '_blank');
-                modal.classList.remove('active');
             });
 
             // SMS
             document.getElementById('shareSMS').addEventListener('click', () => {
                 const text = getShareText() + ' ' + document.getElementById('linkInput').value;
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                window.location.href = isIOS ? 'sms:&body=' + encodeURIComponent(text) : 'sms:?body=' + encodeURIComponent(text);
+                window.location.href = /iPad|iPhone|iPod/.test(navigator.userAgent) ? 'sms:&body=' + encodeURIComponent(text) : 'sms:?body=' + encodeURIComponent(text);
             });
 
             // Email
@@ -938,64 +687,91 @@
         }
 
         function getShareText() {
-            return (document.getElementById('inputFrom').value || 'Someone special') + ' sent you a Valentine\'s card! 💕';
+            return (state.from || 'Someone special') + ' sent you a Valentine\'s card! 💕';
         }
 
-        function generateURL() {
-            const data = {
-                to: document.getElementById('inputTo').value,
-                title: document.getElementById('inputTitle').value,
-                msg: document.getElementById('inputMsg').value,
-                sign: document.getElementById('inputSign').value,
-                from: document.getElementById('inputFrom').value,
-                theme: currentTheme,
-                emoji: currentEmoji,
-                stickers: stickers
-            };
-            return window.location.origin + window.location.pathname + '?card=' + btoa(encodeURIComponent(JSON.stringify(data)));
-        }
+        // Save card to KV storage (using localStorage as fallback)
+        async function saveCard() {
+            const data = { ...state, id: cardId, created: Date.now() };
 
-        // Load shared card
-        function loadSharedCard() {
-            const params = new URLSearchParams(window.location.search);
-            const cardData = params.get('card');
-            if (!cardData) return;
-
+            // Try to save to localStorage (works offline)
             try {
-                const data = JSON.parse(decodeURIComponent(atob(cardData)));
-                if (data.to) { document.getElementById('inputTo').value = data.to; document.getElementById('cardTo').textContent = data.to; }
-                if (data.title) { document.getElementById('inputTitle').value = data.title; document.getElementById('cardTitle').textContent = data.title; }
-                if (data.msg) { document.getElementById('inputMsg').value = data.msg; document.getElementById('cardMsg').innerHTML = data.msg.replace(/\n/g, '<br>'); }
-                if (data.sign) { document.getElementById('inputSign').value = data.sign; document.getElementById('cardSign').textContent = data.sign; }
-                if (data.from) { document.getElementById('inputFrom').value = data.from; document.getElementById('cardFrom').textContent = data.from; }
-                if (data.theme && themes[data.theme]) {
-                    currentTheme = data.theme;
-                    const [c1, c2] = themes[data.theme];
-                    document.getElementById('cardFront').style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === data.theme));
-                }
-                if (data.emoji) {
-                    currentEmoji = data.emoji;
-                    document.getElementById('cardEmoji').textContent = data.emoji;
-                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('active', b.dataset.emoji === data.emoji));
-                }
-                if (data.stickers) {
-                    data.stickers.forEach(s => {
-                        const layer = document.getElementById(s.side === 'back' ? 'stickersBack' : 'stickersFront');
-                        const el = document.createElement('div');
-                        el.className = 'placed-sticker';
-                        el.textContent = s.emoji;
-                        el.style.left = s.x + '%';
-                        el.style.top = s.y + '%';
-                        layer.appendChild(el);
-                    });
-                    stickers = data.stickers;
-                }
-                toast('💌 Card loaded!');
+                const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
+                cards[cardId] = data;
+                localStorage.setItem('note2u_cards', JSON.stringify(cards));
             } catch (e) {}
+
+            // Also encode in URL as fallback
+            return data;
         }
 
-        // Toast
+        // Load card by ID
+        async function loadCardById(id) {
+            cardId = id;
+
+            // Try localStorage first
+            try {
+                const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
+                if (cards[id]) {
+                    applyCardData(cards[id]);
+                    return;
+                }
+            } catch (e) {}
+
+            // If not found, show error
+            toast('Card not found locally');
+        }
+
+        // Load card from encoded data
+        function loadCardFromData(encoded) {
+            try {
+                const data = JSON.parse(decodeURIComponent(atob(encoded)));
+                applyCardData(data);
+            } catch (e) {
+                toast('Invalid card data');
+            }
+        }
+
+        // Apply card data
+        function applyCardData(data) {
+            if (data.to) { document.getElementById('inputTo').value = data.to; document.getElementById('cardTo').textContent = data.to; document.getElementById('envTo').textContent = data.to; state.to = data.to; }
+            if (data.title) { document.getElementById('inputTitle').value = data.title; document.getElementById('cardTitle').textContent = data.title; state.title = data.title; }
+            if (data.msg) { document.getElementById('inputMsg').value = data.msg; document.getElementById('cardMsg').innerHTML = data.msg.replace(/\n/g, '<br>'); state.msg = data.msg; }
+            if (data.sign) { document.getElementById('inputSign').value = data.sign; document.getElementById('cardSign').textContent = data.sign; state.sign = data.sign; }
+            if (data.from) { document.getElementById('inputFrom').value = data.from; document.getElementById('cardFrom').textContent = data.from; state.from = data.from; }
+
+            if (data.color1 && data.color2) {
+                state.color1 = data.color1; state.color2 = data.color2;
+                document.getElementById('cardFront').style.setProperty('--card-color1', data.color1);
+                document.getElementById('cardFront').style.setProperty('--card-color2', data.color2);
+                document.querySelector('.envelope-back').style.background = `linear-gradient(180deg, ${data.color1}, ${data.color2})`;
+                document.querySelector('.envelope-front').style.background = `linear-gradient(180deg, ${data.color1}, ${adjustColor(data.color1, 20)})`;
+                document.querySelector('.envelope-flap').style.background = `linear-gradient(135deg, ${data.color1}, ${data.color2})`;
+            }
+
+            if (data.emoji) { state.emoji = data.emoji; document.getElementById('cardEmoji').textContent = data.emoji; }
+            if (data.font) { state.font = data.font; document.getElementById('cardTitle').className = 'card-title ' + data.font; }
+            if (data.titleSize) { state.titleSize = data.titleSize; document.getElementById('cardTitle').style.fontSize = data.titleSize + 'rem'; }
+            if (data.msgSize) { state.msgSize = data.msgSize; document.getElementById('cardMsg').style.fontSize = data.msgSize + 'rem'; }
+
+            if (data.stickers && data.stickers.length) {
+                data.stickers.forEach(s => {
+                    const layer = document.getElementById(s.side === 'back' ? 'stickersBack' : 'stickersFront');
+                    const el = document.createElement('div');
+                    el.className = 'placed-sticker';
+                    el.textContent = s.emoji;
+                    el.style.fontSize = (s.size || 1.5) + 'rem';
+                    el.style.left = s.x + '%';
+                    el.style.top = s.y + '%';
+                    layer.appendChild(el);
+                });
+                state.stickers = data.stickers;
+            }
+
+            cardId = data.id;
+            toast('💌 Card loaded!');
+        }
+
         function toast(msg) {
             const el = document.getElementById('toast');
             el.textContent = msg;
