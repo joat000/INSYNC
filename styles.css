@@ -275,19 +275,23 @@ body {
 /* Mobile Live Preview - Sticky at top while editing */
 .mobile-mini-preview {
     display: none;
+    position: -webkit-sticky; /* iOS Safari */
     position: sticky;
     top: 0;
     left: 0;
     right: 0;
     z-index: 100;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 10px;
+    padding: 10px 15px;
     border-bottom: 1px solid rgba(255, 64, 129, 0.3);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
     flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 15px;
+    /* iOS fix */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .mobile-mini-preview.active {
@@ -347,6 +351,13 @@ body {
     font-size: 0.65rem;
     color: var(--soft-pink);
     opacity: 0.8;
+}
+
+.mini-stickers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
 }
 
 /* Main Content */

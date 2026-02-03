@@ -431,19 +431,48 @@ function updateMiniPreview() {
     const miniCard = document.getElementById('miniCardDisplay');
     const miniMessage = miniCard?.querySelector('.mini-message');
     const card = document.getElementById('card');
+    const cardFront = document.querySelector('.card-front');
 
     if (!miniCard) return;
 
     // Update mini card background to match selected theme
-    const cardStyles = window.getComputedStyle(card);
-    miniCard.style.background = cardStyles.background || state.currentTemplate;
+    if (cardFront) {
+        const cardStyles = window.getComputedStyle(cardFront);
+        miniCard.style.background = cardStyles.background || cardStyles.backgroundColor;
+    }
 
     // Update mini message
     if (miniMessage) {
         const frontMsg = document.getElementById('frontMessage')?.value || 'Your card preview';
-        miniMessage.textContent = frontMsg.substring(0, 30) + (frontMsg.length > 30 ? '...' : '');
-        miniMessage.style.color = state.currentColor;
-        miniMessage.style.fontFamily = state.currentFont;
+        miniMessage.textContent = frontMsg.substring(0, 40) + (frontMsg.length > 40 ? '...' : '');
+        miniMessage.style.color = state.currentColor || '#ffffff';
+        miniMessage.style.fontFamily = state.currentFont || "'Dancing Script', cursive";
+    }
+
+    // Clone stickers to mini preview
+    const frontDecoLayer = document.getElementById('frontDecorationLayer');
+    let miniStickers = miniCard.querySelector('.mini-stickers');
+
+    if (!miniStickers) {
+        miniStickers = document.createElement('div');
+        miniStickers.className = 'mini-stickers';
+        miniCard.appendChild(miniStickers);
+    }
+
+    miniStickers.innerHTML = '';
+
+    if (frontDecoLayer) {
+        const stickers = frontDecoLayer.querySelectorAll('.placed-decoration');
+        stickers.forEach(sticker => {
+            const miniSticker = document.createElement('span');
+            miniSticker.textContent = sticker.textContent;
+            miniSticker.style.position = 'absolute';
+            // Scale down position to mini card size (roughly 1/4 scale)
+            miniSticker.style.left = (parseFloat(sticker.style.left) / 4) + 'px';
+            miniSticker.style.top = (parseFloat(sticker.style.top) / 4) + 'px';
+            miniSticker.style.fontSize = '0.5rem';
+            miniStickers.appendChild(miniSticker);
+        });
     }
 }
 
@@ -552,6 +581,7 @@ function initializeTemplates() {
         playSound('click');
         trackInteraction('template_change');
         autoSave();
+        updateMiniPreview();
     });
 }
 
@@ -579,6 +609,7 @@ function initializeEnvelopes() {
 
         playSound('click');
         autoSave();
+        updateMiniPreview();
     });
 }
 
@@ -739,6 +770,7 @@ function initializeFontOptions() {
 
         playSound('click');
         autoSave();
+        updateMiniPreview();
     });
 }
 
@@ -769,6 +801,7 @@ function initializeColorOptions() {
 
         playSound('click');
         autoSave();
+        updateMiniPreview();
     });
 
     // Custom color picker
@@ -781,6 +814,7 @@ function initializeColorOptions() {
             // Remove active from all preset buttons
             colorOptions.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
             autoSave();
+            updateMiniPreview();
         });
     }
 }
@@ -885,12 +919,18 @@ function addDecoration(emoji, layer) {
     layer.appendChild(decoration);
 
     // Remove animation after it completes
-    setTimeout(() => decoration.style.animation = '', 500);
+    setTimeout(() => {
+        decoration.style.animation = '';
+        updateMiniPreview();
+    }, 500);
 }
 
 function removeDecoration(decoration) {
     decoration.style.animation = 'pop 0.3s ease-out';
-    setTimeout(() => decoration.remove(), 300);
+    setTimeout(() => {
+        decoration.remove();
+        updateMiniPreview();
+    }, 300);
     playSound('pop');
 }
 
@@ -926,6 +966,7 @@ function handleDragEnd() {
     if (draggedDecoration) {
         draggedDecoration.classList.remove('dragging');
         draggedDecoration = null;
+        updateMiniPreview();
     }
     clearTimeout(longPressTimer);
 }
@@ -977,6 +1018,7 @@ function handleTouchEnd() {
     if (draggedDecoration) {
         draggedDecoration.classList.remove('dragging');
         draggedDecoration = null;
+        updateMiniPreview();
     }
 }
 
@@ -1073,6 +1115,7 @@ function initializePhotoMemories() {
                 showToast(`Photo ${state.photoMemories.length} added! 📷`);
                 trackInteraction('photo_upload');
                 autoSave();
+                updateMiniPreview();
             };
             reader.readAsDataURL(file);
         });
