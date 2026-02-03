@@ -2089,6 +2089,111 @@ body {
     text-align: center;
 }
 
+/* Share Modal Styles */
+.share-modal-content {
+    max-width: 400px;
+}
+
+.share-preview {
+    text-align: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.share-info {
+    margin: 5px 0;
+    color: var(--soft-pink);
+}
+
+.share-info strong {
+    color: var(--white);
+}
+
+.share-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.share-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 16px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+}
+
+.share-option-btn:hover,
+.share-option-btn:active {
+    background: rgba(255, 64, 129, 0.2);
+    border-color: var(--primary-pink);
+    transform: scale(0.98);
+}
+
+.share-option-btn .share-icon {
+    font-size: 1.8rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.share-option-btn span:nth-child(2) {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.share-option-btn .share-hint {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    font-weight: 400;
+}
+
+/* Platform-specific colors */
+.share-option-btn.native-share {
+    background: linear-gradient(135deg, rgba(255, 64, 129, 0.2), rgba(156, 39, 176, 0.2));
+    border-color: var(--primary-pink);
+}
+
+.share-option-btn.whatsapp:hover {
+    background: rgba(37, 211, 102, 0.2);
+    border-color: #25D366;
+}
+
+.share-option-btn.sms:hover {
+    background: rgba(52, 199, 89, 0.2);
+    border-color: #34C759;
+}
+
+.share-option-btn.email:hover {
+    background: rgba(255, 149, 0, 0.2);
+    border-color: #FF9500;
+}
+
+.share-option-btn.copy-link:hover {
+    background: rgba(88, 86, 214, 0.2);
+    border-color: #5856D6;
+}
+
+/* Share button styling */
+.share-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.share-btn:hover,
+.share-btn:active {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
 /* Loading Overlay */
 .loading-overlay {
     display: none;

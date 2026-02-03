@@ -306,14 +306,6 @@
 
                             <label class="input-label">From</label>
                             <input type="text" id="senderName" class="text-input" placeholder="Your name..." autocomplete="name">
-
-                            <div class="email-section">
-                                <label class="input-label">Your Email</label>
-                                <input type="email" id="senderEmail" class="text-input" placeholder="your@email.com" autocomplete="email">
-
-                                <label class="input-label">Recipient's Email</label>
-                                <input type="email" id="recipientEmail" class="text-input" placeholder="their@email.com" autocomplete="email">
-                            </div>
                         </div>
                     </div>
 
@@ -600,9 +592,9 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <button class="action-btn send-btn" id="sendEmailBtn">
-                        <span class="btn-icon">💌</span>
-                        <span>Send Card</span>
+                    <button class="action-btn share-btn" id="shareBtn">
+                        <span class="btn-icon">📤</span>
+                        <span>Share</span>
                     </button>
                     <button class="action-btn reset-btn" id="resetBtn">
                         <span class="btn-icon">🔄</span>
@@ -618,23 +610,53 @@
         </footer>
     </div>
 
-    <!-- Send Email Modal -->
-    <div class="modal" id="sendModal">
-        <div class="modal-content">
-            <button class="modal-close" id="sendModalClose">&times;</button>
-            <h2 class="modal-title">💌 Send Your Card</h2>
+    <!-- Share Modal -->
+    <div class="modal" id="shareModal">
+        <div class="modal-content share-modal-content">
+            <button class="modal-close" id="shareModalClose">&times;</button>
+            <h2 class="modal-title">💌 Share Your Card</h2>
 
-            <div class="send-preview">
-                <p class="send-info">From: <strong id="sendFromName">You</strong></p>
-                <p class="send-info">To: <strong id="sendToName">Your Love</strong></p>
-                <p class="send-info send-email">📧 <span id="sendToEmail">recipient@email.com</span></p>
+            <div class="share-preview">
+                <p class="share-info">From: <strong id="shareFromName">You</strong></p>
+                <p class="share-info">To: <strong id="shareToName">Your Love</strong></p>
             </div>
 
-            <button class="send-card-btn" id="confirmSendBtn">
-                <span>💕</span> Send with Love
-            </button>
+            <div class="share-options">
+                <!-- Native Share (Android/iOS) -->
+                <button class="share-option-btn native-share" id="nativeShareBtn">
+                    <span class="share-icon">📤</span>
+                    <span>Share via Apps</span>
+                    <span class="share-hint">WhatsApp, Messages, etc.</span>
+                </button>
 
-            <p class="send-note">Your beautiful card will be emailed directly to your special someone!</p>
+                <!-- Copy Link -->
+                <button class="share-option-btn copy-link" id="copyLinkBtn">
+                    <span class="share-icon">📋</span>
+                    <span>Copy Message</span>
+                    <span class="share-hint">Paste anywhere</span>
+                </button>
+
+                <!-- WhatsApp Direct -->
+                <button class="share-option-btn whatsapp" id="whatsappBtn">
+                    <span class="share-icon">💬</span>
+                    <span>WhatsApp</span>
+                    <span class="share-hint">Send directly</span>
+                </button>
+
+                <!-- SMS/Text -->
+                <button class="share-option-btn sms" id="smsBtn">
+                    <span class="share-icon">💬</span>
+                    <span>Text Message</span>
+                    <span class="share-hint">SMS</span>
+                </button>
+
+                <!-- Email -->
+                <button class="share-option-btn email" id="emailBtn">
+                    <span class="share-icon">📧</span>
+                    <span>Email</span>
+                    <span class="share-hint">Send via email</span>
+                </button>
+            </div>
         </div>
     </div>
 

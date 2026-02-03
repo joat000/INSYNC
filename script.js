@@ -1479,12 +1479,12 @@ function initializeFlipCard() {
 // ============================================
 
 function initializeActionButtons() {
-    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    const shareBtn = document.getElementById('shareBtn');
     const resetBtn = document.getElementById('resetBtn');
 
-    if (sendEmailBtn) {
-        sendEmailBtn.addEventListener('click', () => {
-            openSendModal();
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            openShareModal();
         });
     }
 
@@ -1497,37 +1497,23 @@ function initializeActionButtons() {
     }
 }
 
-function openSendModal() {
+function openShareModal() {
     const senderName = document.getElementById('senderName')?.value || 'Someone special';
     const recipientName = document.getElementById('recipientName')?.value || 'Your Love';
-    const senderEmail = document.getElementById('senderEmail')?.value || '';
-    const recipientEmail = document.getElementById('recipientEmail')?.value || '';
-
-    // Validate emails
-    if (!senderEmail || !recipientEmail) {
-        showToast('Please enter both email addresses! 📧');
-        // Switch to content tab on mobile
-        if (DeviceInfo.isMobile) {
-            switchMobileTab('content');
-        }
-        return;
-    }
-
-    if (!isValidEmail(senderEmail) || !isValidEmail(recipientEmail)) {
-        showToast('Please enter valid email addresses! 📧');
-        return;
-    }
 
     // Update modal with details
-    document.getElementById('sendFromName').textContent = senderName;
-    document.getElementById('sendToName').textContent = recipientName;
-    document.getElementById('sendToEmail').textContent = recipientEmail;
+    const shareFromName = document.getElementById('shareFromName');
+    const shareToName = document.getElementById('shareToName');
+    if (shareFromName) shareFromName.textContent = senderName;
+    if (shareToName) shareToName.textContent = recipientName;
 
-    document.getElementById('sendModal').classList.add('active');
-}
+    // Show/hide native share button based on support
+    const nativeShareBtn = document.getElementById('nativeShareBtn');
+    if (nativeShareBtn) {
+        nativeShareBtn.style.display = navigator.share ? 'flex' : 'none';
+    }
 
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    document.getElementById('shareModal').classList.add('active');
 }
 
 // ============================================
@@ -1535,23 +1521,41 @@ function isValidEmail(email) {
 // ============================================
 
 function initializeModals() {
-    // Send modal
-    const sendModal = document.getElementById('sendModal');
-    const sendModalClose = document.getElementById('sendModalClose');
-    const confirmSendBtn = document.getElementById('confirmSendBtn');
+    // Share modal
+    const shareModal = document.getElementById('shareModal');
+    const shareModalClose = document.getElementById('shareModalClose');
 
-    if (sendModalClose) {
-        sendModalClose.addEventListener('click', () => sendModal.classList.remove('active'));
+    if (shareModalClose) {
+        shareModalClose.addEventListener('click', () => shareModal.classList.remove('active'));
     }
 
-    if (sendModal) {
-        sendModal.addEventListener('click', (e) => {
-            if (e.target === sendModal) sendModal.classList.remove('active');
+    if (shareModal) {
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) shareModal.classList.remove('active');
         });
     }
 
-    if (confirmSendBtn) {
-        confirmSendBtn.addEventListener('click', sendCardByEmail);
+    // Share option buttons
+    const nativeShareBtn = document.getElementById('nativeShareBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    const smsBtn = document.getElementById('smsBtn');
+    const emailBtn = document.getElementById('emailBtn');
+
+    if (nativeShareBtn) {
+        nativeShareBtn.addEventListener('click', shareNative);
+    }
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', copyCardMessage);
+    }
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', shareWhatsApp);
+    }
+    if (smsBtn) {
+        smsBtn.addEventListener('click', shareSMS);
+    }
+    if (emailBtn) {
+        emailBtn.addEventListener('click', shareEmail);
     }
 
     // Success modal
@@ -1582,51 +1586,130 @@ function initializeModals() {
 }
 
 // ============================================
-// Email Sending Functionality
+// Universal Share System
+// Works on Android, iOS, and Desktop
 // ============================================
 
-function sendCardByEmail() {
+function getCardMessage() {
     const senderName = document.getElementById('senderName')?.value || 'Someone special';
     const recipientName = document.getElementById('recipientName')?.value || 'My Love';
-    const senderEmail = document.getElementById('senderEmail')?.value;
-    const recipientEmail = document.getElementById('recipientEmail')?.value;
     const frontMessage = document.getElementById('frontMessage')?.value || 'Will You Be My Valentine?';
     const mainMessage = document.getElementById('mainMessage')?.value || '';
     const signOff = document.getElementById('signOff')?.value || 'Forever Yours';
 
-    // Close send modal
-    document.getElementById('sendModal').classList.remove('active');
+    return `Dear ${recipientName},
 
-    // Create mailto link with card content
-    const subject = encodeURIComponent(`💕 A Valentine's Card from ${senderName}`);
-    const body = encodeURIComponent(
-`Dear ${recipientName},
+${senderName} has sent you a Valentine's card!
 
-${senderName} has sent you a beautiful Valentine's card!
-
-💌 "${frontMessage}"
+"${frontMessage}"
 
 ${mainMessage}
 
 ${signOff},
 ${senderName}
 
----
-This card was created with love on NOTE2U 💕
-From: ${senderEmail}`
-    );
+Created with love on NOTE2U`;
+}
 
-    const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+// Native Share API (Android & iOS)
+async function shareNative() {
+    const message = getCardMessage();
+    const senderName = document.getElementById('senderName')?.value || 'Someone special';
 
-    // Open email client
-    window.location.href = mailtoLink;
+    try {
+        await navigator.share({
+            title: `Valentine's Card from ${senderName}`,
+            text: message
+        });
 
-    // Show success after a delay
-    setTimeout(() => {
-        document.getElementById('successModal').classList.add('active');
-    }, 1000);
+        document.getElementById('shareModal').classList.remove('active');
+        showToast('Shared successfully! 💕');
+        createConfetti();
+        trackInteraction('share_native');
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            console.log('Share failed:', err);
+            showToast('Share cancelled', true);
+        }
+    }
+}
 
-    trackInteraction('email_sent');
+// Copy message to clipboard
+async function copyCardMessage() {
+    const message = getCardMessage();
+
+    try {
+        await navigator.clipboard.writeText(message);
+        document.getElementById('shareModal').classList.remove('active');
+        showToast('Message copied! Paste it anywhere 💕');
+        trackInteraction('share_copy');
+    } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = message;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            document.getElementById('shareModal').classList.remove('active');
+            showToast('Message copied! Paste it anywhere 💕');
+            trackInteraction('share_copy');
+        } catch (e) {
+            showToast('Could not copy. Please try again.', true);
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+// Share via WhatsApp
+function shareWhatsApp() {
+    const message = getCardMessage();
+    const encodedMessage = encodeURIComponent(message);
+
+    // Use WhatsApp API URL (works on both mobile and desktop)
+    const whatsappUrl = DeviceInfo.isMobile
+        ? `whatsapp://send?text=${encodedMessage}`
+        : `https://web.whatsapp.com/send?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+
+    document.getElementById('shareModal').classList.remove('active');
+    showToast('Opening WhatsApp... 💬');
+    trackInteraction('share_whatsapp');
+}
+
+// Share via SMS
+function shareSMS() {
+    const message = getCardMessage();
+    const encodedMessage = encodeURIComponent(message);
+
+    // SMS URL format differs between iOS and Android
+    const smsUrl = DeviceInfo.isIOS
+        ? `sms:&body=${encodedMessage}`
+        : `sms:?body=${encodedMessage}`;
+
+    window.location.href = smsUrl;
+
+    document.getElementById('shareModal').classList.remove('active');
+    showToast('Opening Messages... 💬');
+    trackInteraction('share_sms');
+}
+
+// Share via Email
+function shareEmail() {
+    const senderName = document.getElementById('senderName')?.value || 'Someone special';
+    const message = getCardMessage();
+
+    const subject = encodeURIComponent(`A Valentine's Card from ${senderName}`);
+    const body = encodeURIComponent(message);
+
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+
+    document.getElementById('shareModal').classList.remove('active');
+    showToast('Opening Email... 📧');
+    trackInteraction('share_email');
 }
 
 // ============================================
