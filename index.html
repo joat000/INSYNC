@@ -110,7 +110,8 @@
         .color-btn.active { border-color: #fff; transform: scale(1.1); }
 
         .emoji-btn, .sticker-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 10px; background: rgba(255,255,255,0.1); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .emoji-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.25); }
+        .emoji-btn.active, .seal-emoji-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.25); }
+        .seal-emoji-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 10px; background: rgba(255,255,255,0.1); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .sticker-btn:active { transform: scale(1.15); background: rgba(255,107,157,0.3); }
 
         .font-btn { padding: 10px; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; background: transparent; color: #fff; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
@@ -181,7 +182,7 @@
             <div class="envelope" id="envelope">
                 <div class="envelope-back"></div>
                 <div class="envelope-flap"></div>
-                <div class="seal">💝</div>
+                <div class="seal" id="envSeal">💝</div>
                 <div class="envelope-front"><p>To: <span id="envTo">My Love</span></p></div>
             </div>
             <p class="tap-hint" id="tapHint">👆 Tap to open</p>
@@ -285,6 +286,20 @@
                     <button class="emoji-btn" data-e="✨">✨</button>
                     <button class="emoji-btn" data-e="🌸">🌸</button>
                 </div>
+
+                <p class="section-title">Envelope Seal</p>
+                <div class="grid-5">
+                    <button class="seal-emoji-btn active" data-s="💝">💝</button>
+                    <button class="seal-emoji-btn" data-s="💌">💌</button>
+                    <button class="seal-emoji-btn" data-s="💕">💕</button>
+                    <button class="seal-emoji-btn" data-s="❤️">❤️</button>
+                    <button class="seal-emoji-btn" data-s="💖">💖</button>
+                    <button class="seal-emoji-btn" data-s="💘">💘</button>
+                    <button class="seal-emoji-btn" data-s="🌹">🌹</button>
+                    <button class="seal-emoji-btn" data-s="🦋">🦋</button>
+                    <button class="seal-emoji-btn" data-s="✨">✨</button>
+                    <button class="seal-emoji-btn" data-s="🎀">🎀</button>
+                </div>
             </div>
 
             <!-- Font Panel -->
@@ -380,7 +395,7 @@
         let state = {
             to: '', title: '', msg: '', sign: '', from: '',
             color1: '#ff1744', color2: '#d50000',
-            emoji: '💕', font: 'font-dancing',
+            emoji: '💕', sealEmoji: '💝', font: 'font-dancing',
             titleSize: 1.5, msgSize: 0.95, stickerSize: 1.5,
             stickers: []
         };
@@ -560,6 +575,17 @@
                     btn.classList.add('active');
                     document.getElementById('cardEmoji').textContent = state.emoji;
                     toast('Emoji changed! ' + state.emoji);
+                });
+            });
+
+            // Seal emojis
+            document.querySelectorAll('.seal-emoji-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.sealEmoji = btn.dataset.s;
+                    document.querySelectorAll('.seal-emoji-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('envSeal').textContent = state.sealEmoji;
+                    toast('Seal changed! ' + state.sealEmoji);
                 });
             });
         }
@@ -795,6 +821,7 @@
             }
 
             if (data.emoji) { state.emoji = data.emoji; document.getElementById('cardEmoji').textContent = data.emoji; }
+            if (data.sealEmoji) { state.sealEmoji = data.sealEmoji; document.getElementById('envSeal').textContent = data.sealEmoji; }
             if (data.font) { state.font = data.font; document.getElementById('cardTitle').className = 'card-title ' + data.font; }
             if (data.titleSize) { state.titleSize = data.titleSize; document.getElementById('cardTitle').style.fontSize = data.titleSize + 'rem'; }
             if (data.msgSize) { state.msgSize = data.msgSize; document.getElementById('cardMsg').style.fontSize = data.msgSize + 'rem'; }
