@@ -243,6 +243,10 @@
                     <button class="quick-btn" data-t="I Love You!" data-m="Every moment with you feels like a beautiful dream. You mean everything to me.">❤️ Sweet</button>
                     <button class="quick-btn" data-t="Hey You!" data-m="You're weird. I like it. Let's be weird together forever? 😄">😊 Funny</button>
                     <button class="quick-btn" data-t="My Soulmate" data-m="In you, I found my best friend and my forever love. Happy Valentine's Day!">💖 Romantic</button>
+                    <button class="quick-btn" data-t="You + Me" data-m="Like coffee and mornings, we just belong together. Be my Valentine?">☕ Cute</button>
+                    <button class="quick-btn" data-t="Forever & Always" data-m="My heart knew you were the one from the very first moment. I love you endlessly.">💍 Deep</button>
+                    <button class="quick-btn" data-t="To My Love" data-m="You make ordinary days feel magical. Thank you for being you.">✨ Simple</button>
+                    <button class="quick-btn" data-t="Crazy About You" data-m="I fall for you a little more every single day. You're my favorite person!">🥰 Playful</button>
                 </div>
             </div>
 
@@ -379,6 +383,7 @@
         let isFlipped = false;
         let cardId = null;
         let envelopeOpened = false;
+        let viewOnly = false;
 
         // Generate short ID
         function generateId() {
@@ -395,6 +400,10 @@
             const sharedId = params.get('id') || params.get('card');
 
             if (sharedId) {
+                viewOnly = true;
+                document.querySelector('.editor').style.display = 'none';
+                document.getElementById('shareBtn').style.display = 'none';
+                document.querySelector('.app').style.paddingBottom = '20px';
                 if (sharedId.length === 6) {
                     loadCardById(sharedId);
                 } else {
