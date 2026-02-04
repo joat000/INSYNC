@@ -423,7 +423,13 @@
                 document.querySelector('.editor').style.display = 'none';
                 document.getElementById('shareBtn').style.display = 'none';
                 document.querySelector('.app').style.paddingBottom = '20px';
-                loadCardFromData(sharedId);
+
+                // Check if it's a 6-char ID (server) or encoded data (legacy)
+                if (sharedId.length === 6) {
+                    loadCardById(sharedId);
+                } else {
+                    loadCardFromData(sharedId);
+                }
             }
 
             initEnvelope();
@@ -693,10 +699,25 @@
                     cardId = generateId();
                 }
 
-                // Encode card data in URL
+                // Save card to server
                 const cardData = { ...state, id: cardId };
-                const encoded = btoa(encodeURIComponent(JSON.stringify(cardData)));
-                const longUrl = window.location.origin + window.location.pathname + '?card=' + encoded;
+                document.getElementById('cardIdDisplay').textContent = cardId;
+                document.getElementById('linkInput').value = 'Saving card...';
+                modal.classList.add('active');
+
+                try {
+                    const saveRes = await fetch('/.netlify/functions/save-card', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cardData)
+                    });
+                    if (!saveRes.ok) throw new Error('Save failed');
+                } catch (e) {
+                    console.error('Save error:', e);
+                }
+
+                // Create short share URL with just ID
+                const longUrl = window.location.origin + window.location.pathname + '?id=' + cardId;
 
                 document.getElementById('cardIdDisplay').textContent = cardId;
                 document.getElementById('linkInput').value = 'Shortening link...';
@@ -760,7 +781,23 @@
             return (state.from || 'Someone special') + ' sent you a Valentine\'s card! 💕';
         }
 
-        // Load card from encoded data
+        // Load card by ID from server
+        async function loadCardById(id) {
+            try {
+                const res = await fetch('/.netlify/functions/get-card?id=' + encodeURIComponent(id));
+                if (res.ok) {
+                    const data = await res.json();
+                    applyCardData(data);
+                } else {
+                    toast('Card not found');
+                }
+            } catch (e) {
+                console.error('Load error:', e);
+                toast('Failed to load card');
+            }
+        }
+
+        // Load card from encoded data (legacy URLs)
         function loadCardFromData(encoded) {
             try {
                 const data = JSON.parse(decodeURIComponent(atob(encoded)));
