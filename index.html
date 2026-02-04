@@ -368,10 +368,6 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // KV Storage API endpoint (using jsonbin.io as free KV store)
-        const KV_API = 'https://api.jsonbin.io/v3/b';
-        const KV_KEY = '$2a$10$YOUR_API_KEY_HERE'; // Replace with actual key
-
         // State
         let state = {
             to: '', title: '', msg: '', sign: '', from: '',
@@ -690,18 +686,27 @@
             return (state.from || 'Someone special') + ' sent you a Valentine\'s card! 💕';
         }
 
-        // Save card to KV storage (using localStorage as fallback)
+        // Save card to KV storage
         async function saveCard() {
             const data = { ...state, id: cardId, created: Date.now() };
 
-            // Try to save to localStorage (works offline)
+            // Save to Netlify KV
             try {
-                const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
-                cards[cardId] = data;
-                localStorage.setItem('note2u_cards', JSON.stringify(cards));
-            } catch (e) {}
+                const res = await fetch('/.netlify/functions/save-card', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Save failed');
+            } catch (e) {
+                // Fallback to localStorage
+                try {
+                    const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
+                    cards[cardId] = data;
+                    localStorage.setItem('note2u_cards', JSON.stringify(cards));
+                } catch (e2) {}
+            }
 
-            // Also encode in URL as fallback
             return data;
         }
 
@@ -709,7 +714,17 @@
         async function loadCardById(id) {
             cardId = id;
 
-            // Try localStorage first
+            // Try Netlify KV first
+            try {
+                const res = await fetch('/.netlify/functions/get-card?id=' + encodeURIComponent(id));
+                if (res.ok) {
+                    const data = await res.json();
+                    applyCardData(data);
+                    return;
+                }
+            } catch (e) {}
+
+            // Fallback to localStorage
             try {
                 const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
                 if (cards[id]) {
@@ -718,8 +733,7 @@
                 }
             } catch (e) {}
 
-            // If not found, show error
-            toast('Card not found locally');
+            toast('Card not found');
         }
 
         // Load card from encoded data
