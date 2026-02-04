@@ -716,28 +716,10 @@
                     console.error('Save error:', e);
                 }
 
-                // Create short share URL with just ID
-                const longUrl = window.location.origin + window.location.pathname + '?id=' + cardId;
-
-                document.getElementById('cardIdDisplay').textContent = cardId;
-                document.getElementById('linkInput').value = 'Shortening link...';
-                modal.classList.add('active');
-
-                // Try to shorten URL
-                try {
-                    const res = await fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(longUrl));
-                    if (res.ok) {
-                        const shortUrl = await res.text();
-                        document.getElementById('linkInput').value = shortUrl;
-                        toast('Short link ready! 💌');
-                    } else {
-                        throw new Error('Shorten failed');
-                    }
-                } catch (e) {
-                    // Fallback to long URL
-                    document.getElementById('linkInput').value = longUrl;
-                    toast('Card ready to share! 💌');
-                }
+                // Create share URL with just ID
+                const shareUrl = window.location.origin + window.location.pathname + '?id=' + cardId;
+                document.getElementById('linkInput').value = shareUrl;
+                toast('Card ready to share! 💌');
             });
 
             document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
