@@ -805,11 +805,32 @@
 
         // Apply card data
         function applyCardData(data) {
-            if (data.to) { document.getElementById('inputTo').value = data.to; document.getElementById('cardTo').textContent = data.to; document.getElementById('envTo').textContent = data.to; state.to = data.to; }
-            if (data.title) { document.getElementById('inputTitle').value = data.title; document.getElementById('cardTitle').textContent = data.title; state.title = data.title; }
-            if (data.msg) { document.getElementById('inputMsg').value = data.msg; document.getElementById('cardMsg').innerHTML = data.msg.replace(/\n/g, '<br>'); state.msg = data.msg; }
-            if (data.sign) { document.getElementById('inputSign').value = data.sign; document.getElementById('cardSign').textContent = data.sign; state.sign = data.sign; }
-            if (data.from) { document.getElementById('inputFrom').value = data.from; document.getElementById('cardFrom').textContent = data.from; state.from = data.from; }
+            const toVal = data.to || 'My Love';
+            const titleVal = data.title || 'Will You Be My Valentine?';
+            const msgVal = data.msg || 'A special message for you...';
+            const signVal = data.sign || 'Forever Yours,';
+            const fromVal = data.from || 'Someone Special';
+
+            document.getElementById('inputTo').value = data.to || '';
+            document.getElementById('cardTo').textContent = toVal;
+            document.getElementById('envTo').textContent = toVal;
+            state.to = data.to || '';
+
+            document.getElementById('inputTitle').value = data.title || '';
+            document.getElementById('cardTitle').textContent = titleVal;
+            state.title = data.title || '';
+
+            document.getElementById('inputMsg').value = data.msg || '';
+            document.getElementById('cardMsg').innerHTML = msgVal.replace(/\n/g, '<br>');
+            state.msg = data.msg || '';
+
+            document.getElementById('inputSign').value = data.sign || '';
+            document.getElementById('cardSign').textContent = signVal;
+            state.sign = data.sign || '';
+
+            document.getElementById('inputFrom').value = data.from || '';
+            document.getElementById('cardFrom').textContent = fromVal;
+            state.from = data.from || '';
 
             if (data.color1 && data.color2) {
                 state.color1 = data.color1; state.color2 = data.color2;
