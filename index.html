@@ -423,11 +423,7 @@
                 document.querySelector('.editor').style.display = 'none';
                 document.getElementById('shareBtn').style.display = 'none';
                 document.querySelector('.app').style.paddingBottom = '20px';
-                if (sharedId.length === 6) {
-                    loadCardById(sharedId);
-                } else {
-                    loadCardFromData(sharedId);
-                }
+                loadCardFromData(sharedId);
             }
 
             initEnvelope();
@@ -692,14 +688,20 @@
             const modal = document.getElementById('modal');
 
             document.getElementById('shareBtn').addEventListener('click', async () => {
-                // Generate card ID and save
+                // Generate card ID
                 if (!cardId) {
                     cardId = generateId();
-                    await saveCard();
                 }
+
+                // Encode card data in URL
+                const cardData = { ...state, id: cardId };
+                const encoded = btoa(encodeURIComponent(JSON.stringify(cardData)));
+                const shareUrl = window.location.origin + window.location.pathname + '?card=' + encoded;
+
                 document.getElementById('cardIdDisplay').textContent = cardId;
-                document.getElementById('linkInput').value = window.location.origin + window.location.pathname + '?id=' + cardId;
+                document.getElementById('linkInput').value = shareUrl;
                 modal.classList.add('active');
+                toast('Card ready to share! 💌');
             });
 
             document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
@@ -741,72 +743,6 @@
 
         function getShareText() {
             return (state.from || 'Someone special') + ' sent you a Valentine\'s card! 💕';
-        }
-
-        // Save card to KV storage
-        async function saveCard() {
-            const data = { ...state, id: cardId, created: Date.now() };
-
-            // Save to Netlify KV
-            try {
-                const res = await fetch('/.netlify/functions/save-card', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (!res.ok) {
-                    const err = await res.json();
-                    console.error('Save error:', err);
-                    throw new Error('Save failed');
-                }
-                toast('Card saved! 💾');
-            } catch (e) {
-                console.error('Save failed:', e);
-                toast('Saving locally...');
-                // Fallback to localStorage
-                try {
-                    const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
-                    cards[cardId] = data;
-                    localStorage.setItem('note2u_cards', JSON.stringify(cards));
-                } catch (e2) {}
-            }
-
-            return data;
-        }
-
-        // Load card by ID
-        async function loadCardById(id) {
-            cardId = id;
-
-            // Try Netlify KV first
-            try {
-                const res = await fetch('/.netlify/functions/get-card?id=' + encodeURIComponent(id));
-                if (res.ok) {
-                    const data = await res.json();
-                    console.log('Loaded card data:', data);
-                    applyCardData(data);
-                    return;
-                } else {
-                    const err = await res.json();
-                    console.error('Load error:', err);
-                }
-            } catch (e) {
-                console.error('Fetch error:', e);
-            }
-
-            // Fallback to localStorage
-            try {
-                const cards = JSON.parse(localStorage.getItem('note2u_cards') || '{}');
-                if (cards[id]) {
-                    console.log('Loaded from localStorage:', cards[id]);
-                    applyCardData(cards[id]);
-                    return;
-                }
-            } catch (e) {
-                console.error('localStorage error:', e);
-            }
-
-            toast('Card not found');
         }
 
         // Load card from encoded data
