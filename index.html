@@ -35,20 +35,20 @@
             100% { transform: translateY(-100vh) rotate(360deg) scale(0.5); opacity: 0; }
         }
 
-        /* Sparkle effect */
+        /* Sparkle effect - Pastel colors */
         .sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
-        .sparkle { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; animation: sparkle 3s ease-in-out infinite; }
-        .sparkle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
-        .sparkle:nth-child(2) { left: 20%; top: 60%; animation-delay: 0.5s; }
-        .sparkle:nth-child(3) { left: 30%; top: 40%; animation-delay: 1s; }
-        .sparkle:nth-child(4) { left: 50%; top: 80%; animation-delay: 1.5s; }
-        .sparkle:nth-child(5) { left: 70%; top: 30%; animation-delay: 2s; }
-        .sparkle:nth-child(6) { left: 80%; top: 70%; animation-delay: 2.5s; }
-        .sparkle:nth-child(7) { left: 90%; top: 50%; animation-delay: 0.3s; }
-        .sparkle:nth-child(8) { left: 40%; top: 15%; animation-delay: 1.2s; }
+        .sparkle { position: absolute; width: 5px; height: 5px; border-radius: 50%; animation: sparkle 3s ease-in-out infinite; }
+        .sparkle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; background: #F8C8DC; box-shadow: 0 0 10px #F8C8DC; }
+        .sparkle:nth-child(2) { left: 20%; top: 60%; animation-delay: 0.5s; background: #E8D0F1; box-shadow: 0 0 10px #E8D0F1; }
+        .sparkle:nth-child(3) { left: 30%; top: 40%; animation-delay: 1s; background: #CDECF9; box-shadow: 0 0 10px #CDECF9; }
+        .sparkle:nth-child(4) { left: 50%; top: 80%; animation-delay: 1.5s; background: #FFD8C0; box-shadow: 0 0 10px #FFD8C0; }
+        .sparkle:nth-child(5) { left: 70%; top: 30%; animation-delay: 2s; background: #D0F0EA; box-shadow: 0 0 10px #D0F0EA; }
+        .sparkle:nth-child(6) { left: 80%; top: 70%; animation-delay: 2.5s; background: #FFF7E6; box-shadow: 0 0 10px #FFF7E6; }
+        .sparkle:nth-child(7) { left: 90%; top: 50%; animation-delay: 0.3s; background: #E6E0FF; box-shadow: 0 0 10px #E6E0FF; }
+        .sparkle:nth-child(8) { left: 40%; top: 15%; animation-delay: 1.2s; background: #FFF2CC; box-shadow: 0 0 10px #FFF2CC; }
         @keyframes sparkle {
             0%, 100% { opacity: 0; transform: scale(0); }
-            50% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.2); }
         }
 
         .app { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
@@ -100,17 +100,19 @@
         .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .card.flipped .card-inner { transform: rotateY(180deg); }
 
-        .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 40px rgba(248,200,220,0.2); }
 
-        .card-front { background: linear-gradient(135deg, var(--card-color1, #ff1744), var(--card-color2, #d50000)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; position: relative; }
-        .card-front::before { content: ''; position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; animation: borderGlow 3s ease infinite; }
-        @keyframes borderGlow { 0%, 100% { border-color: rgba(255,255,255,0.3); } 50% { border-color: rgba(255,255,255,0.5); } }
+        .card-front { background: linear-gradient(135deg, var(--card-color1, #F8C8DC), var(--card-color2, #FFB6C1)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; position: relative; }
+        .card-front::before { content: ''; position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; animation: borderGlow 3s ease infinite; box-shadow: inset 0 0 20px rgba(255,255,255,0.1); }
+        .card-front::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 50%); pointer-events: none; }
+        @keyframes borderGlow { 0%, 100% { border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 20px rgba(255,255,255,0.1); } 50% { border-color: rgba(255,255,255,0.7); box-shadow: inset 0 0 30px rgba(255,255,255,0.2); } }
 
         .card-emoji { font-size: 3.8rem; margin-bottom: 15px; animation: floatEmoji 3s ease infinite; }
         @keyframes floatEmoji { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .card-title { font-size: 1.5rem; color: #fff; text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,0.4); line-height: 1.3; }
 
-        .card-back { background: linear-gradient(180deg, #fff5f5, #ffe4e9); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; }
+        .card-back { background: linear-gradient(180deg, #FFF7F8, #FFF0F5, #FFEEF2); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; position: relative; }
+        .card-back::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(248,200,220,0.3) 0%, transparent 60%); pointer-events: none; }
         .card-to { font-size: 0.9rem; color: #c41e3a; margin-bottom: 8px; }
         .card-to span { font-size: 1.3rem; }
         .card-msg { font-size: 0.95rem; color: #c41e3a; line-height: 1.7; margin-bottom: 15px; flex: 1; display: flex; align-items: center; }
@@ -240,16 +242,54 @@
         .immersive-overlay.active { display: flex; animation: immersiveFadeIn 0.6s ease; }
         @keyframes immersiveFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Story-ready Mode - 9:16 vertical ratio */
+        .story-mode { position: fixed; inset: 0; z-index: 600; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 0; overflow: hidden; }
+        .story-mode.active { display: flex; }
+        .story-mode .story-bg { position: absolute; inset: 0; background: linear-gradient(180deg, #F8C8DC 0%, #E8D0F1 25%, #CDECF9 50%, #D0F0EA 75%, #FFF7E6 100%); background-size: 100% 400%; animation: pastelFlow 12s ease infinite; }
+        @keyframes pastelFlow { 0%, 100% { background-position: 0% 0%; } 50% { background-position: 0% 100%; } }
+        .story-mode .story-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.5) 0%, transparent 60%); pointer-events: none; animation: storyGlow 4s ease infinite; }
+        @keyframes storyGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+        .story-mode .story-sparkles { position: absolute; inset: 0; pointer-events: none; }
+        .story-mode .story-sparkle { position: absolute; width: 6px; height: 6px; background: rgba(255,255,255,0.9); border-radius: 50%; animation: storySpark 2s ease-in-out infinite; }
+        .story-mode .story-sparkle:nth-child(1) { left: 10%; top: 15%; animation-delay: 0s; }
+        .story-mode .story-sparkle:nth-child(2) { left: 85%; top: 20%; animation-delay: 0.3s; }
+        .story-mode .story-sparkle:nth-child(3) { left: 20%; top: 75%; animation-delay: 0.6s; }
+        .story-mode .story-sparkle:nth-child(4) { left: 80%; top: 70%; animation-delay: 0.9s; }
+        .story-mode .story-sparkle:nth-child(5) { left: 50%; top: 10%; animation-delay: 1.2s; }
+        .story-mode .story-sparkle:nth-child(6) { left: 30%; top: 85%; animation-delay: 1.5s; }
+        @keyframes storySpark { 0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(180deg); } }
+        .story-mode .story-card { width: 280px; height: 390px; perspective: 1200px; z-index: 1; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15)); }
+        .story-mode .story-card .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
+        .story-mode .story-card .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 0 50px rgba(248,200,220,0.3); }
+        .story-mode .story-card .card-front { background: linear-gradient(135deg, var(--card-color1, #F8C8DC), var(--card-color2, #E8D0F1)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; position: relative; }
+        .story-mode .story-card .card-front::before { content: ''; position: absolute; inset: 14px; border: 2px solid rgba(255,255,255,0.5); border-radius: 14px; }
+        .story-mode .story-card .card-front::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 50%); pointer-events: none; }
+        .story-mode .story-card .card-emoji { font-size: 4rem; margin-bottom: 20px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        .story-mode .story-card .card-title { font-size: 1.6rem; color: #fff; text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,0.2); line-height: 1.3; }
+        .story-mode .story-card .card-back { background: linear-gradient(180deg, #FFF7F8, #FFF0F5); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; }
+        .story-mode .story-footer { position: absolute; bottom: 40px; text-align: center; z-index: 2; }
+        .story-mode .story-footer p { font-size: 0.85rem; color: rgba(100,80,90,0.7); margin-bottom: 8px; }
+        .story-mode .story-footer .brand { font-family: 'Dancing Script', cursive; font-size: 1.1rem; color: rgba(200,150,170,0.8); }
+        .story-mode .story-close { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border: none; border-radius: 50%; background: rgba(255,255,255,0.3); color: rgba(100,80,90,0.8); font-size: 1.3rem; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); transition: all 0.3s; }
+        .story-mode .story-close:hover { background: rgba(255,255,255,0.5); transform: scale(1.1); }
+
+        /* Story-ready button */
+        .story-ready-btn { width: 100%; margin-top: 15px; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #F8C8DC, #E8D0F1); color: #6b5b6e; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 4px 15px rgba(248,200,220,0.4); }
+        .story-ready-btn:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(248,200,220,0.6); }
+        .story-ready-btn:active { transform: scale(0.98); }
+
         .immersive-card { width: 300px; height: 420px; perspective: 1200px; cursor: pointer; }
         .immersive-card .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .immersive-card.flipped .card-inner { transform: rotateY(180deg); }
-        .immersive-card .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
-        .immersive-card .card-front { background: linear-gradient(135deg, var(--card-color1, #ff1744), var(--card-color2, #d50000)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; position: relative; }
-        .immersive-card .card-front::before { content: ''; position: absolute; inset: 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 14px; }
+        .immersive-card .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.4), 0 0 60px rgba(248,200,220,0.3); }
+        .immersive-card .card-front { background: linear-gradient(135deg, var(--card-color1, #F8C8DC), var(--card-color2, #E8D0F1)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; position: relative; }
+        .immersive-card .card-front::before { content: ''; position: absolute; inset: 14px; border: 2px solid rgba(255,255,255,0.5); border-radius: 14px; animation: borderGlow 3s ease infinite; }
+        .immersive-card .card-front::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.35) 0%, transparent 50%); pointer-events: none; }
         .immersive-card .card-emoji { font-size: 4.5rem; margin-bottom: 20px; animation: emojiEntrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards; }
         @keyframes emojiEntrance { 0% { opacity: 0; transform: scale(0) rotate(-30deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
         .immersive-card .card-title { font-size: 1.8rem; color: #fff; text-align: center; text-shadow: 0 3px 12px rgba(0,0,0,0.4); line-height: 1.3; }
-        .immersive-card .card-back { background: linear-gradient(180deg, #fff5f5, #ffe4e9); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .immersive-card .card-back { background: linear-gradient(180deg, #FFF7F8, #FFF0F5, #FFEEF2); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; position: relative; }
+        .immersive-card .card-back::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(248,200,220,0.25) 0%, transparent 60%); pointer-events: none; }
         .immersive-card .card-to { font-size: 1rem; color: #c41e3a; margin-bottom: 10px; opacity: 0; }
         .immersive-card .card-to span { font-size: 1.5rem; }
         .immersive-card .card-msg { font-size: 1.05rem; color: #c41e3a; line-height: 1.8; margin-bottom: 20px; flex: 1; display: flex; align-items: center; opacity: 0; }
@@ -404,38 +444,33 @@
 
             <!-- Style Panel -->
             <div class="panel" id="stylePanel">
-                <p class="section-title">Card Color</p>
+                <p class="section-title">Dreamy Pastels ✨</p>
                 <div class="grid-4">
-                    <!-- Classic Love -->
-                    <button class="color-btn active" data-c1="#ff1744" data-c2="#d50000" style="background:linear-gradient(135deg,#ff1744,#d50000)"></button>
+                    <!-- Soft Pastels - Dreamy & Romantic -->
+                    <button class="color-btn active" data-c1="#F8C8DC" data-c2="#FFB6C1" style="background:linear-gradient(135deg,#F8C8DC,#FFB6C1)"></button>
+                    <button class="color-btn" data-c1="#E8D0F1" data-c2="#DDA0DD" style="background:linear-gradient(135deg,#E8D0F1,#DDA0DD)"></button>
+                    <button class="color-btn" data-c1="#FFD8C0" data-c2="#FFDAB9" style="background:linear-gradient(135deg,#FFD8C0,#FFDAB9)"></button>
+                    <button class="color-btn" data-c1="#CDECF9" data-c2="#B0E0E6" style="background:linear-gradient(135deg,#CDECF9,#B0E0E6)"></button>
+                    <button class="color-btn" data-c1="#D0F0EA" data-c2="#B2DFDB" style="background:linear-gradient(135deg,#D0F0EA,#B2DFDB)"></button>
+                    <button class="color-btn" data-c1="#FFF7E6" data-c2="#FFECD2" style="background:linear-gradient(135deg,#FFF7E6,#FFECD2)"></button>
+                    <button class="color-btn" data-c1="#E6E0FF" data-c2="#D4C4FB" style="background:linear-gradient(135deg,#E6E0FF,#D4C4FB)"></button>
+                    <button class="color-btn" data-c1="#FFF2CC" data-c2="#FFE5B4" style="background:linear-gradient(135deg,#FFF2CC,#FFE5B4)"></button>
+                    <!-- Pastel Blends -->
+                    <button class="color-btn" data-c1="#F8C8DC" data-c2="#E6E0FF" style="background:linear-gradient(135deg,#F8C8DC,#E6E0FF)"></button>
+                    <button class="color-btn" data-c1="#CDECF9" data-c2="#F8C8DC" style="background:linear-gradient(135deg,#CDECF9,#F8C8DC)"></button>
+                    <button class="color-btn" data-c1="#D0F0EA" data-c2="#E8D0F1" style="background:linear-gradient(135deg,#D0F0EA,#E8D0F1)"></button>
+                    <button class="color-btn" data-c1="#FFD8C0" data-c2="#F8C8DC" style="background:linear-gradient(135deg,#FFD8C0,#F8C8DC)"></button>
+                </div>
+                <p class="section-title">Classic Love ❤️</p>
+                <div class="grid-4">
+                    <button class="color-btn" data-c1="#ff1744" data-c2="#d50000" style="background:linear-gradient(135deg,#ff1744,#d50000)"></button>
                     <button class="color-btn" data-c1="#ff80ab" data-c2="#f48fb1" style="background:linear-gradient(135deg,#ff80ab,#f48fb1)"></button>
                     <button class="color-btn" data-c1="#e91e63" data-c2="#ad1457" style="background:linear-gradient(135deg,#e91e63,#ad1457)"></button>
                     <button class="color-btn" data-c1="#ff6b9d" data-c2="#ff1744" style="background:linear-gradient(135deg,#ff6b9d,#ff1744)"></button>
-                    <!-- Pastels -->
-                    <button class="color-btn" data-c1="#ffb6c1" data-c2="#ffc0cb" style="background:linear-gradient(135deg,#ffb6c1,#ffc0cb)"></button>
-                    <button class="color-btn" data-c1="#dda0dd" data-c2="#e6b3e6" style="background:linear-gradient(135deg,#dda0dd,#e6b3e6)"></button>
-                    <button class="color-btn" data-c1="#b0e0e6" data-c2="#add8e6" style="background:linear-gradient(135deg,#b0e0e6,#add8e6)"></button>
-                    <button class="color-btn" data-c1="#ffe4e1" data-c2="#fff0f5" style="background:linear-gradient(135deg,#ffe4e1,#fff0f5)"></button>
-                    <!-- Rich Colors -->
                     <button class="color-btn" data-c1="#9c27b0" data-c2="#7b1fa2" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2)"></button>
                     <button class="color-btn" data-c1="#673ab7" data-c2="#512da8" style="background:linear-gradient(135deg,#673ab7,#512da8)"></button>
-                    <button class="color-btn" data-c1="#2196f3" data-c2="#1565c0" style="background:linear-gradient(135deg,#2196f3,#1565c0)"></button>
-                    <button class="color-btn" data-c1="#00bcd4" data-c2="#00838f" style="background:linear-gradient(135deg,#00bcd4,#00838f)"></button>
-                    <!-- Warm & Gold -->
                     <button class="color-btn" data-c1="#ffd700" data-c2="#ffb300" style="background:linear-gradient(135deg,#ffd700,#ffb300)"></button>
-                    <button class="color-btn" data-c1="#ff9800" data-c2="#e65100" style="background:linear-gradient(135deg,#ff9800,#e65100)"></button>
-                    <button class="color-btn" data-c1="#ff5722" data-c2="#d84315" style="background:linear-gradient(135deg,#ff5722,#d84315)"></button>
-                    <button class="color-btn" data-c1="#e91e63" data-c2="#ff5722" style="background:linear-gradient(135deg,#e91e63,#ff5722)"></button>
-                    <!-- Neon & Electric -->
-                    <button class="color-btn" data-c1="#ff0080" data-c2="#7928ca" style="background:linear-gradient(135deg,#ff0080,#7928ca)"></button>
-                    <button class="color-btn" data-c1="#00ff87" data-c2="#60efff" style="background:linear-gradient(135deg,#00ff87,#60efff)"></button>
-                    <button class="color-btn" data-c1="#f093fb" data-c2="#f5576c" style="background:linear-gradient(135deg,#f093fb,#f5576c)"></button>
-                    <button class="color-btn" data-c1="#4facfe" data-c2="#00f2fe" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"></button>
-                    <!-- Elegant -->
-                    <button class="color-btn" data-c1="#c9a227" data-c2="#8b6914" style="background:linear-gradient(135deg,#c9a227,#8b6914)"></button>
-                    <button class="color-btn" data-c1="#c0c0c0" data-c2="#808080" style="background:linear-gradient(135deg,#c0c0c0,#808080)"></button>
                     <button class="color-btn" data-c1="#b76e79" data-c2="#8b4557" style="background:linear-gradient(135deg,#b76e79,#8b4557)"></button>
-                    <button class="color-btn" data-c1="#2c3e50" data-c2="#1a252f" style="background:linear-gradient(135deg,#2c3e50,#1a252f)"></button>
                 </div>
 
                 <p class="section-title">Card Emoji</p>
@@ -601,6 +636,7 @@
                 <button class="share-item" id="shareSMS"><span>📱</span>SMS</button>
                 <button class="share-item" id="shareEmail"><span>📧</span>Email</button>
             </div>
+            <button class="story-ready-btn" id="storyReadyBtn">📸 Story-ready</button>
             <div class="link-section">
                 <p>Or copy link:</p>
                 <div class="link-row">
@@ -613,11 +649,44 @@
 
     <div class="toast" id="toast"></div>
 
+    <!-- Story-ready Mode Overlay -->
+    <div class="story-mode" id="storyMode">
+        <div class="story-bg"></div>
+        <div class="story-glow"></div>
+        <div class="story-sparkles">
+            <div class="story-sparkle"></div>
+            <div class="story-sparkle"></div>
+            <div class="story-sparkle"></div>
+            <div class="story-sparkle"></div>
+            <div class="story-sparkle"></div>
+            <div class="story-sparkle"></div>
+        </div>
+        <div class="story-card" id="storyCard">
+            <div class="card-inner">
+                <div class="card-face card-front" id="storyFront">
+                    <div class="card-emoji" id="storyEmoji">💕</div>
+                    <p class="card-title font-dancing" id="storyTitle">Will You Be My Valentine?</p>
+                </div>
+                <div class="card-face card-back" id="storyBack">
+                    <p class="card-to">To: <span class="font-dancing" id="storyTo">My Love</span></p>
+                    <p class="card-msg" id="storyMsg">Write something sweet...</p>
+                    <p class="card-sign font-dancing" id="storySign">Forever Yours,</p>
+                    <p class="card-from" id="storyFrom">Your Name</p>
+                </div>
+            </div>
+        </div>
+        <div class="story-footer">
+            <p>Someone made this for you 💌</p>
+            <span class="brand">note2u</span>
+        </div>
+        <button class="story-close" id="storyClose">✕</button>
+    </div>
+
     <script>
-        // State
+        // State - Default to dreamy pastel
         let state = {
             to: '', title: '', msg: '', sign: '', from: '',
-            color1: '#ff1744', color2: '#d50000',
+            color1: '#F8C8DC', color2: '#FFB6C1',
             emoji: '💕', sealEmoji: '💝', font: 'font-dancing',
             titleSize: 1.5, msgSize: 0.95, stickerSize: 1.5,
             stickers: []
@@ -1185,6 +1254,47 @@
             el.classList.add('show');
             setTimeout(() => el.classList.remove('show'), 2500);
         }
+
+        // Story-ready Mode
+        function initStoryMode() {
+            const storyBtn = document.getElementById('storyReadyBtn');
+            const storyMode = document.getElementById('storyMode');
+            const storyClose = document.getElementById('storyClose');
+
+            if (storyBtn) {
+                storyBtn.addEventListener('click', () => {
+                    // Apply current card data to story card
+                    const storyFront = document.getElementById('storyFront');
+                    storyFront.style.setProperty('--card-color1', state.color1);
+                    storyFront.style.setProperty('--card-color2', state.color2);
+
+                    document.getElementById('storyEmoji').textContent = state.emoji || '💕';
+                    document.getElementById('storyTitle').textContent = state.title || 'Will You Be My Valentine?';
+                    document.getElementById('storyTitle').className = 'card-title ' + (state.font || 'font-dancing');
+                    document.getElementById('storyTo').textContent = state.to || 'My Love';
+                    document.getElementById('storyMsg').innerHTML = (state.msg || 'A special message for you...').replace(/\n/g, '<br>');
+                    document.getElementById('storySign').textContent = state.sign || 'Forever Yours,';
+                    document.getElementById('storyFrom').textContent = state.from || 'Someone Special';
+
+                    // Show story mode
+                    storyMode.classList.add('active');
+                    document.getElementById('modal').classList.remove('active');
+                    toast('Screenshot ready! 📸');
+                });
+            }
+
+            if (storyClose) {
+                storyClose.addEventListener('click', () => {
+                    storyMode.classList.remove('active');
+                });
+            }
+        }
+
+        // Initialize story mode when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... existing init code runs first ...
+            setTimeout(initStoryMode, 100);
+        });
     </script>
 </body>
 </html>
