@@ -11,9 +11,45 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { min-height: 100%; font-family: 'Quicksand', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; overflow-x: hidden; }
 
-        /* Ambient Background */
-        .ambient-bg { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%); background-size: 400% 400%; animation: ambientFlow 20s ease infinite; z-index: -1; }
+        /* Ambient Background with Floating Hearts */
+        .ambient-bg { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%); background-size: 400% 400%; animation: ambientFlow 20s ease infinite; z-index: -1; overflow: hidden; }
         @keyframes ambientFlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+        /* Floating Hearts */
+        .floating-hearts { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .heart { position: absolute; font-size: 1.5rem; opacity: 0.15; animation: floatUp 15s linear infinite; }
+        .heart:nth-child(1) { left: 5%; animation-delay: 0s; animation-duration: 12s; }
+        .heart:nth-child(2) { left: 15%; animation-delay: 2s; animation-duration: 14s; font-size: 1rem; }
+        .heart:nth-child(3) { left: 25%; animation-delay: 4s; animation-duration: 16s; }
+        .heart:nth-child(4) { left: 35%; animation-delay: 1s; animation-duration: 13s; font-size: 2rem; }
+        .heart:nth-child(5) { left: 45%; animation-delay: 3s; animation-duration: 15s; }
+        .heart:nth-child(6) { left: 55%; animation-delay: 5s; animation-duration: 11s; font-size: 1.2rem; }
+        .heart:nth-child(7) { left: 65%; animation-delay: 2.5s; animation-duration: 14s; }
+        .heart:nth-child(8) { left: 75%; animation-delay: 0.5s; animation-duration: 17s; font-size: 1.8rem; }
+        .heart:nth-child(9) { left: 85%; animation-delay: 3.5s; animation-duration: 12s; }
+        .heart:nth-child(10) { left: 95%; animation-delay: 1.5s; animation-duration: 16s; font-size: 1.3rem; }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg) scale(1); opacity: 0; }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% { transform: translateY(-100vh) rotate(360deg) scale(0.5); opacity: 0; }
+        }
+
+        /* Sparkle effect */
+        .sparkles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+        .sparkle { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; animation: sparkle 3s ease-in-out infinite; }
+        .sparkle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { left: 20%; top: 60%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { left: 30%; top: 40%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { left: 50%; top: 80%; animation-delay: 1.5s; }
+        .sparkle:nth-child(5) { left: 70%; top: 30%; animation-delay: 2s; }
+        .sparkle:nth-child(6) { left: 80%; top: 70%; animation-delay: 2.5s; }
+        .sparkle:nth-child(7) { left: 90%; top: 50%; animation-delay: 0.3s; }
+        .sparkle:nth-child(8) { left: 40%; top: 15%; animation-delay: 1.2s; }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 0.8; transform: scale(1); }
+        }
 
         .app { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
         .app.view-mode { padding-bottom: 20px; }
@@ -255,6 +291,32 @@
 <body>
     <div class="ambient-bg"></div>
 
+    <!-- Floating Hearts Background -->
+    <div class="floating-hearts">
+        <div class="heart">💕</div>
+        <div class="heart">❤️</div>
+        <div class="heart">💖</div>
+        <div class="heart">💗</div>
+        <div class="heart">💘</div>
+        <div class="heart">💝</div>
+        <div class="heart">💓</div>
+        <div class="heart">💞</div>
+        <div class="heart">💕</div>
+        <div class="heart">❤️</div>
+    </div>
+
+    <!-- Sparkles -->
+    <div class="sparkles">
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+    </div>
+
     <div class="app" id="app">
         <header class="header">
             <h1>NOTE2U</h1>
@@ -344,18 +406,36 @@
             <div class="panel" id="stylePanel">
                 <p class="section-title">Card Color</p>
                 <div class="grid-4">
+                    <!-- Classic Love -->
                     <button class="color-btn active" data-c1="#ff1744" data-c2="#d50000" style="background:linear-gradient(135deg,#ff1744,#d50000)"></button>
                     <button class="color-btn" data-c1="#ff80ab" data-c2="#f48fb1" style="background:linear-gradient(135deg,#ff80ab,#f48fb1)"></button>
                     <button class="color-btn" data-c1="#e91e63" data-c2="#ad1457" style="background:linear-gradient(135deg,#e91e63,#ad1457)"></button>
+                    <button class="color-btn" data-c1="#ff6b9d" data-c2="#ff1744" style="background:linear-gradient(135deg,#ff6b9d,#ff1744)"></button>
+                    <!-- Pastels -->
+                    <button class="color-btn" data-c1="#ffb6c1" data-c2="#ffc0cb" style="background:linear-gradient(135deg,#ffb6c1,#ffc0cb)"></button>
+                    <button class="color-btn" data-c1="#dda0dd" data-c2="#e6b3e6" style="background:linear-gradient(135deg,#dda0dd,#e6b3e6)"></button>
+                    <button class="color-btn" data-c1="#b0e0e6" data-c2="#add8e6" style="background:linear-gradient(135deg,#b0e0e6,#add8e6)"></button>
+                    <button class="color-btn" data-c1="#ffe4e1" data-c2="#fff0f5" style="background:linear-gradient(135deg,#ffe4e1,#fff0f5)"></button>
+                    <!-- Rich Colors -->
                     <button class="color-btn" data-c1="#9c27b0" data-c2="#7b1fa2" style="background:linear-gradient(135deg,#9c27b0,#7b1fa2)"></button>
                     <button class="color-btn" data-c1="#673ab7" data-c2="#512da8" style="background:linear-gradient(135deg,#673ab7,#512da8)"></button>
                     <button class="color-btn" data-c1="#2196f3" data-c2="#1565c0" style="background:linear-gradient(135deg,#2196f3,#1565c0)"></button>
                     <button class="color-btn" data-c1="#00bcd4" data-c2="#00838f" style="background:linear-gradient(135deg,#00bcd4,#00838f)"></button>
-                    <button class="color-btn" data-c1="#009688" data-c2="#00695c" style="background:linear-gradient(135deg,#009688,#00695c)"></button>
-                    <button class="color-btn" data-c1="#ffd700" data-c2="#ffa000" style="background:linear-gradient(135deg,#ffd700,#ffa000)"></button>
+                    <!-- Warm & Gold -->
+                    <button class="color-btn" data-c1="#ffd700" data-c2="#ffb300" style="background:linear-gradient(135deg,#ffd700,#ffb300)"></button>
                     <button class="color-btn" data-c1="#ff9800" data-c2="#e65100" style="background:linear-gradient(135deg,#ff9800,#e65100)"></button>
                     <button class="color-btn" data-c1="#ff5722" data-c2="#d84315" style="background:linear-gradient(135deg,#ff5722,#d84315)"></button>
-                    <button class="color-btn" data-c1="#795548" data-c2="#4e342e" style="background:linear-gradient(135deg,#795548,#4e342e)"></button>
+                    <button class="color-btn" data-c1="#e91e63" data-c2="#ff5722" style="background:linear-gradient(135deg,#e91e63,#ff5722)"></button>
+                    <!-- Neon & Electric -->
+                    <button class="color-btn" data-c1="#ff0080" data-c2="#7928ca" style="background:linear-gradient(135deg,#ff0080,#7928ca)"></button>
+                    <button class="color-btn" data-c1="#00ff87" data-c2="#60efff" style="background:linear-gradient(135deg,#00ff87,#60efff)"></button>
+                    <button class="color-btn" data-c1="#f093fb" data-c2="#f5576c" style="background:linear-gradient(135deg,#f093fb,#f5576c)"></button>
+                    <button class="color-btn" data-c1="#4facfe" data-c2="#00f2fe" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"></button>
+                    <!-- Elegant -->
+                    <button class="color-btn" data-c1="#c9a227" data-c2="#8b6914" style="background:linear-gradient(135deg,#c9a227,#8b6914)"></button>
+                    <button class="color-btn" data-c1="#c0c0c0" data-c2="#808080" style="background:linear-gradient(135deg,#c0c0c0,#808080)"></button>
+                    <button class="color-btn" data-c1="#b76e79" data-c2="#8b4557" style="background:linear-gradient(135deg,#b76e79,#8b4557)"></button>
+                    <button class="color-btn" data-c1="#2c3e50" data-c2="#1a252f" style="background:linear-gradient(135deg,#2c3e50,#1a252f)"></button>
                 </div>
 
                 <p class="section-title">Card Emoji</p>
@@ -366,10 +446,20 @@
                     <button class="emoji-btn" data-e="💝">💝</button>
                     <button class="emoji-btn" data-e="💘">💘</button>
                     <button class="emoji-btn" data-e="💗">💗</button>
+                    <button class="emoji-btn" data-e="💓">💓</button>
+                    <button class="emoji-btn" data-e="💞">💞</button>
+                    <button class="emoji-btn" data-e="💟">💟</button>
+                    <button class="emoji-btn" data-e="❣️">❣️</button>
+                    <button class="emoji-btn" data-e="🥰">🥰</button>
+                    <button class="emoji-btn" data-e="😍">😍</button>
+                    <button class="emoji-btn" data-e="😘">😘</button>
+                    <button class="emoji-btn" data-e="🤗">🤗</button>
+                    <button class="emoji-btn" data-e="🥺">🥺</button>
                     <button class="emoji-btn" data-e="🌹">🌹</button>
+                    <button class="emoji-btn" data-e="🌸">🌸</button>
+                    <button class="emoji-btn" data-e="🌺">🌺</button>
                     <button class="emoji-btn" data-e="🦋">🦋</button>
                     <button class="emoji-btn" data-e="✨">✨</button>
-                    <button class="emoji-btn" data-e="🌸">🌸</button>
                 </div>
 
                 <p class="section-title">Envelope Seal</p>
@@ -380,7 +470,12 @@
                     <button class="seal-emoji-btn" data-s="❤️">❤️</button>
                     <button class="seal-emoji-btn" data-s="💖">💖</button>
                     <button class="seal-emoji-btn" data-s="💘">💘</button>
+                    <button class="seal-emoji-btn" data-s="💗">💗</button>
+                    <button class="seal-emoji-btn" data-s="💞">💞</button>
+                    <button class="seal-emoji-btn" data-s="🥰">🥰</button>
+                    <button class="seal-emoji-btn" data-s="😘">😘</button>
                     <button class="seal-emoji-btn" data-s="🌹">🌹</button>
+                    <button class="seal-emoji-btn" data-s="🌸">🌸</button>
                     <button class="seal-emoji-btn" data-s="🦋">🦋</button>
                     <button class="seal-emoji-btn" data-s="✨">✨</button>
                     <button class="seal-emoji-btn" data-s="🎀">🎀</button>
@@ -421,18 +516,36 @@
                     <button class="sticker-btn" data-s="💗">💗</button>
                     <button class="sticker-btn" data-s="💘">💘</button>
                     <button class="sticker-btn" data-s="💝">💝</button>
+                    <button class="sticker-btn" data-s="💓">💓</button>
+                    <button class="sticker-btn" data-s="💞">💞</button>
+                    <button class="sticker-btn" data-s="💟">💟</button>
+                    <button class="sticker-btn" data-s="❣️">❣️</button>
                     <button class="sticker-btn" data-s="🌹">🌹</button>
                     <button class="sticker-btn" data-s="🌸">🌸</button>
                     <button class="sticker-btn" data-s="🌺">🌺</button>
+                    <button class="sticker-btn" data-s="🌷">🌷</button>
                     <button class="sticker-btn" data-s="🦋">🦋</button>
+                    <button class="sticker-btn" data-s="🐻">🐻</button>
+                    <button class="sticker-btn" data-s="🧸">🧸</button>
                     <button class="sticker-btn" data-s="✨">✨</button>
                     <button class="sticker-btn" data-s="⭐">⭐</button>
+                    <button class="sticker-btn" data-s="🌟">🌟</button>
+                    <button class="sticker-btn" data-s="💫">💫</button>
                     <button class="sticker-btn" data-s="🎀">🎀</button>
                     <button class="sticker-btn" data-s="💌">💌</button>
                     <button class="sticker-btn" data-s="🍫">🍫</button>
+                    <button class="sticker-btn" data-s="🍰">🍰</button>
+                    <button class="sticker-btn" data-s="🍭">🍭</button>
                     <button class="sticker-btn" data-s="💋">💋</button>
+                    <button class="sticker-btn" data-s="👑">👑</button>
                     <button class="sticker-btn" data-s="🥰">🥰</button>
+                    <button class="sticker-btn" data-s="😍">😍</button>
                     <button class="sticker-btn" data-s="😘">😘</button>
+                    <button class="sticker-btn" data-s="🤗">🤗</button>
+                    <button class="sticker-btn" data-s="🥺">🥺</button>
+                    <button class="sticker-btn" data-s="🙈">🙈</button>
+                    <button class="sticker-btn" data-s="💑">💑</button>
+                    <button class="sticker-btn" data-s="👫">👫</button>
                 </div>
 
                 <p class="section-title">Sticker Size</p>
@@ -941,7 +1054,7 @@
 
             // Store for reply
             originalSender = data.from || null;
-            receivedCardStyle = { color1: data.color1, color2: data.color2 };
+            receivedCardStyle = { color1: data.color1 || '#ff1744', color2: data.color2 || '#d50000' };
 
             // Apply data to immersive card
             const toVal = data.to || 'My Love';
@@ -983,9 +1096,19 @@
             // Show overlay
             overlay.classList.add('active');
 
+            // Wire up reply button for immersive view
+            document.getElementById('immersiveReplyBtn').onclick = function() {
+                const replyUrl = window.location.origin + window.location.pathname +
+                    '?reply=1' +
+                    (originalSender ? '&to=' + encodeURIComponent(originalSender) : '') +
+                    '&c1=' + encodeURIComponent(receivedCardStyle.color1) +
+                    '&c2=' + encodeURIComponent(receivedCardStyle.color2);
+                window.location.href = replyUrl;
+            };
+
             // Card flip interaction
             let immersiveFlipped = false;
-            card.addEventListener('click', () => {
+            card.onclick = function() {
                 card.classList.toggle('flipped');
                 immersiveFlipped = !immersiveFlipped;
 
@@ -996,7 +1119,7 @@
                         document.getElementById('immersiveReply').classList.add('visible');
                     }, 800);
                 }
-            });
+            };
         }
 
         // Apply card data to editor view
