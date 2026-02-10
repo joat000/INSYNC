@@ -5,71 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>NOTE2U 💕 Valentine Card Creator</title>
+    <title>NOTE2U - Valentine Card Creator</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Pacifico&family=Lobster&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { min-height: 100%; font-family: 'Quicksand', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; }
+        html, body { min-height: 100%; font-family: 'Quicksand', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; overflow-x: hidden; }
+
+        /* Ambient Background */
+        .ambient-bg { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%); background-size: 400% 400%; animation: ambientFlow 20s ease infinite; z-index: -1; }
+        @keyframes ambientFlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
         .app { max-width: 500px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+        .app.view-mode { padding-bottom: 20px; }
 
         /* Header */
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; background: linear-gradient(135deg, #ff6b9d, #ff1744, #ffb6c1, #ff6b9d); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 3s ease infinite; filter: drop-shadow(0 0 10px rgba(255,107,157,0.5)); }
+        .header { text-align: center; margin-bottom: 20px; opacity: 0; animation: fadeSlideDown 0.8s ease 0.2s forwards; }
+        .header h1 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; background: linear-gradient(135deg, #ff6b9d, #ff1744, #ffb6c1, #ff6b9d); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 3s ease infinite; filter: drop-shadow(0 0 15px rgba(255,107,157,0.4)); }
         @keyframes shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .header p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
 
+        @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes softPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        @keyframes gentleGlow { 0%, 100% { box-shadow: 0 0 20px rgba(255,107,157,0.2); } 50% { box-shadow: 0 0 30px rgba(255,107,157,0.4); } }
+
         /* Envelope & Card Container */
-        .card-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
+        .card-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; opacity: 0; animation: fadeSlideUp 0.8s ease 0.4s forwards; }
 
         /* Envelope */
-        .envelope { width: 240px; height: 160px; position: relative; cursor: pointer; transition: transform 0.3s; }
-        .envelope:hover { transform: scale(1.02); }
+        .envelope { width: 260px; height: 170px; position: relative; cursor: pointer; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); animation: softPulse 3s ease infinite; }
+        .envelope:hover { transform: scale(1.03); }
+        .envelope:active { transform: scale(0.98); }
         .envelope.hidden { display: none; }
 
-        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #e74c3c, #c0392b); border-radius: 0 0 12px 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-        .envelope-front { position: absolute; bottom: 0; width: 100%; height: 70%; background: linear-gradient(180deg, #ff6b6b, #ee5a5a); border-radius: 0 0 12px 12px; display: flex; align-items: center; justify-content: center; z-index: 2; }
-        .envelope-front p { font-family: 'Dancing Script', cursive; font-size: 1.2rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #e74c3c, #c0392b); border-radius: 0 0 14px 14px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        .envelope-front { position: absolute; bottom: 0; width: 100%; height: 70%; background: linear-gradient(180deg, #ff6b6b, #ee5a5a); border-radius: 0 0 14px 14px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+        .envelope-front p { font-family: 'Dancing Script', cursive; font-size: 1.3rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
-        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(135deg, #ff6b6b, #e74c3c); clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 3; transform-origin: top center; transition: transform 0.6s ease; }
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(135deg, #ff6b6b, #e74c3c); clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 3; transform-origin: top center; transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .envelope.opening .envelope-flap { transform: rotateX(180deg); }
 
-        .seal { position: absolute; top: 25%; left: 50%; transform: translateX(-50%); font-size: 2rem; z-index: 4; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); transition: opacity 0.3s, transform 0.3s; }
-        .envelope.opening .seal { opacity: 0; transform: translateX(-50%) scale(0); }
+        .seal { position: absolute; top: 25%; left: 50%; transform: translateX(-50%); font-size: 2.2rem; z-index: 4; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); transition: opacity 0.4s, transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .envelope.opening .seal { opacity: 0; transform: translateX(-50%) scale(0) rotate(180deg); }
 
-        .tap-hint { margin-top: 15px; font-size: 0.85rem; color: rgba(255,255,255,0.5); animation: pulse 2s infinite; }
+        .tap-hint { margin-top: 15px; font-size: 0.85rem; color: rgba(255,255,255,0.5); animation: pulse 2s ease infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         /* Card */
-        .card-wrapper { display: none; }
-        .card-wrapper.visible { display: block; animation: cardReveal 0.8s ease; }
-        @keyframes cardReveal { from { opacity: 0; transform: translateY(-30px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .card-wrapper { display: none; text-align: center; }
+        .card-wrapper.visible { display: block; animation: cardReveal 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes cardReveal {
+            0% { opacity: 0; transform: translateY(-50px) scale(0.8) rotateX(20deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotateX(0); }
+        }
 
-        .card { width: 240px; height: 340px; perspective: 1000px; cursor: pointer; margin: 0 auto; }
-        .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
+        .card { width: 260px; height: 360px; perspective: 1200px; cursor: pointer; margin: 0 auto; }
+        .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .card.flipped .card-inner { transform: rotateY(180deg); }
 
-        .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+        .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 18px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 
         .card-front { background: linear-gradient(135deg, var(--card-color1, #ff1744), var(--card-color2, #d50000)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; position: relative; }
-        .card-front::before { content: ''; position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; }
+        .card-front::before { content: ''; position: absolute; inset: 12px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; animation: borderGlow 3s ease infinite; }
+        @keyframes borderGlow { 0%, 100% { border-color: rgba(255,255,255,0.3); } 50% { border-color: rgba(255,255,255,0.5); } }
 
-        .card-emoji { font-size: 3.5rem; margin-bottom: 15px; }
-        .card-title { font-size: 1.5rem; color: #fff; text-align: center; text-shadow: 0 2px 8px rgba(0,0,0,0.3); line-height: 1.3; }
+        .card-emoji { font-size: 3.8rem; margin-bottom: 15px; animation: floatEmoji 3s ease infinite; }
+        @keyframes floatEmoji { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .card-title { font-size: 1.5rem; color: #fff; text-align: center; text-shadow: 0 2px 10px rgba(0,0,0,0.4); line-height: 1.3; }
 
         .card-back { background: linear-gradient(180deg, #fff5f5, #ffe4e9); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; text-align: center; }
         .card-to { font-size: 0.9rem; color: #c41e3a; margin-bottom: 8px; }
         .card-to span { font-size: 1.3rem; }
-        .card-msg { font-size: 0.95rem; color: #c41e3a; line-height: 1.6; margin-bottom: 15px; flex: 1; display: flex; align-items: center; }
+        .card-msg { font-size: 0.95rem; color: #c41e3a; line-height: 1.7; margin-bottom: 15px; flex: 1; display: flex; align-items: center; }
         .card-sign { font-size: 1.1rem; color: #c41e3a; }
         .card-from { font-size: 1rem; font-weight: 600; color: #c41e3a; margin-top: 5px; }
 
         .stickers-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-        .placed-sticker { position: absolute; pointer-events: auto; cursor: move; user-select: none; }
+        .placed-sticker { position: absolute; pointer-events: auto; cursor: move; user-select: none; transition: transform 0.2s; }
+        .placed-sticker:active { transform: scale(1.2); }
 
-        .card-hint { margin-top: 12px; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center; }
-        .seal-btn { margin-top: 10px; padding: 8px 16px; border: none; border-radius: 20px; background: rgba(255,107,157,0.2); color: rgba(255,255,255,0.7); font-family: inherit; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-        .seal-btn:hover { background: rgba(255,107,157,0.3); color: #fff; }
+        .card-hint { margin-top: 14px; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center; }
+        .seal-btn { margin-top: 12px; padding: 10px 20px; border: none; border-radius: 25px; background: rgba(255,107,157,0.2); color: rgba(255,255,255,0.8); font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .seal-btn:hover { background: rgba(255,107,157,0.35); transform: scale(1.05); }
+        .seal-btn:active { transform: scale(0.95); }
+
+        /* Reply Button - Appears in view mode */
+        .reply-btn { display: none; margin-top: 20px; padding: 14px 28px; border: none; border-radius: 30px; background: linear-gradient(135deg, rgba(255,107,157,0.3), rgba(255,23,68,0.3)); color: rgba(255,255,255,0.9); font-family: 'Dancing Script', cursive; font-size: 1.1rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); opacity: 0; animation: none; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .reply-btn.visible { display: inline-block; animation: replyFadeIn 1s ease 0.5s forwards; }
+        .reply-btn:hover { background: linear-gradient(135deg, rgba(255,107,157,0.5), rgba(255,23,68,0.5)); transform: scale(1.05); }
+        .reply-btn:active { transform: scale(0.95); }
+        @keyframes replyFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Font classes */
         .font-dancing { font-family: 'Dancing Script', cursive; }
@@ -79,21 +105,24 @@
         .font-quicksand { font-family: 'Quicksand', sans-serif; }
 
         /* Editor */
-        .editor { background: rgba(255,255,255,0.06); border-radius: 20px; padding: 20px; }
+        .editor { background: rgba(255,255,255,0.06); border-radius: 24px; padding: 20px; backdrop-filter: blur(10px); opacity: 0; animation: fadeSlideUp 0.8s ease 0.6s forwards; }
         .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab { flex: 1; min-width: 70px; padding: 10px 8px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .tab.active { background: linear-gradient(135deg, #ff1744, #ff6b9d); color: #fff; }
+        .tab { flex: 1; min-width: 70px; padding: 12px 8px; border: none; border-radius: 12px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .tab:hover { background: rgba(255,255,255,0.12); }
+        .tab.active { background: linear-gradient(135deg, #ff1744, #ff6b9d); color: #fff; transform: scale(1.02); box-shadow: 0 4px 15px rgba(255,23,68,0.4); }
 
         .panel { display: none; }
-        .panel.active { display: block; }
+        .panel.active { display: block; animation: panelFadeIn 0.4s ease; }
+        @keyframes panelFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Form */
-        .field { margin-bottom: 14px; }
-        .field label { display: block; font-size: 0.8rem; color: #ffb6c1; margin-bottom: 6px; font-weight: 600; }
-        .field input, .field textarea { width: 100%; padding: 12px; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; background: rgba(255,255,255,0.08); color: #fff; font-family: inherit; font-size: 1rem; }
-        .field input:focus, .field textarea:focus { outline: none; border-color: #ff6b9d; }
-        .field textarea { resize: none; min-height: 80px; }
-        .field-row { display: flex; gap: 10px; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 0.8rem; color: #ffb6c1; margin-bottom: 8px; font-weight: 600; }
+        .field input, .field textarea { width: 100%; padding: 14px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(255,255,255,0.06); color: #fff; font-family: inherit; font-size: 1rem; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .field input:focus, .field textarea:focus { outline: none; border-color: #ff6b9d; background: rgba(255,255,255,0.1); box-shadow: 0 0 25px rgba(255,107,157,0.3), inset 0 0 15px rgba(255,107,157,0.05); transform: scale(1.01); }
+        .field input:hover:not(:focus), .field textarea:hover:not(:focus) { border-color: rgba(255,107,157,0.3); background: rgba(255,255,255,0.08); }
+        .field textarea { resize: none; min-height: 90px; }
+        .field-row { display: flex; gap: 12px; }
         .field-row .field { flex: 1; }
 
         /* Sections */
@@ -106,72 +135,127 @@
         .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
 
         /* Buttons */
-        .color-btn { aspect-ratio: 1; border: 3px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-        .color-btn.active { border-color: #fff; transform: scale(1.1); }
+        .color-btn { aspect-ratio: 1; border: 3px solid transparent; border-radius: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .color-btn:hover { transform: scale(1.1); }
+        .color-btn.active { border-color: #fff; transform: scale(1.15); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        .emoji-btn, .sticker-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 10px; background: rgba(255,255,255,0.1); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .emoji-btn.active, .seal-emoji-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.25); }
-        .seal-emoji-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 10px; background: rgba(255,255,255,0.1); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .sticker-btn:active { transform: scale(1.15); background: rgba(255,107,157,0.3); }
+        .emoji-btn, .sticker-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 12px; background: rgba(255,255,255,0.08); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .emoji-btn:hover, .sticker-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.15); }
+        .emoji-btn.active, .seal-emoji-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.25); transform: scale(1.1); }
+        .seal-emoji-btn { aspect-ratio: 1; border: 2px solid transparent; border-radius: 12px; background: rgba(255,255,255,0.08); font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .seal-emoji-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.15); }
+        .sticker-btn:active { transform: scale(1.2); background: rgba(255,107,157,0.4); }
 
-        .font-btn { padding: 10px; border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; background: transparent; color: #fff; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
-        .font-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.2); }
+        .font-btn { padding: 12px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; background: transparent; color: #fff; font-size: 0.9rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .font-btn:hover { background: rgba(255,255,255,0.08); }
+        .font-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.2); transform: scale(1.02); }
 
-        .size-btn { padding: 8px 12px; border: 2px solid rgba(255,255,255,0.15); border-radius: 8px; background: transparent; color: #fff; font-size: 0.8rem; cursor: pointer; }
-        .size-btn.active { border-color: #ff6b9d; background: rgba(255,107,157,0.2); }
-
-        .quick-btn { padding: 10px 14px; border: none; border-radius: 20px; background: rgba(255,107,157,0.25); color: #fff; font-family: inherit; font-size: 0.85rem; cursor: pointer; }
+        .quick-btn { padding: 12px 16px; border: none; border-radius: 25px; background: rgba(255,107,157,0.2); color: #fff; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .quick-btn:hover { background: rgba(255,107,157,0.35); transform: scale(1.02); }
         .quick-btn:active { transform: scale(0.95); }
 
-        .clear-btn { width: 100%; padding: 10px; border: none; border-radius: 8px; background: rgba(255,100,100,0.2); color: #ff6b6b; font-family: inherit; font-size: 0.85rem; cursor: pointer; }
+        .clear-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: rgba(255,100,100,0.15); color: #ff6b6b; font-family: inherit; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; }
+        .clear-btn:hover { background: rgba(255,100,100,0.25); }
 
         /* Range Slider */
-        .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .slider-row label { font-size: 0.8rem; color: #ffb6c1; min-width: 80px; }
-        .slider-row input[type="range"] { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.2); -webkit-appearance: none; }
-        .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #ff6b9d; cursor: pointer; }
+        .slider-row input[type="range"] { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.15); -webkit-appearance: none; }
+        .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #ff6b9d, #ff1744); cursor: pointer; box-shadow: 0 2px 10px rgba(255,107,157,0.5); transition: transform 0.2s; }
+        .slider-row input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
         /* Share Button */
-        .share-btn { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 460px; margin: 0 auto; padding: 16px; border: none; border-radius: 50px; background: linear-gradient(135deg, #ff1744, #ff6b9d); color: #fff; font-family: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 25px rgba(255,23,68,0.5); display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 100; }
+        .share-btn { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 460px; margin: 0 auto; padding: 18px; border: none; border-radius: 50px; background: linear-gradient(135deg, #ff1744, #ff6b9d); color: #fff; font-family: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 8px 30px rgba(255,23,68,0.5); display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 100; opacity: 0; animation: fadeSlideUp 0.8s ease 0.8s forwards; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .share-btn:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(255,23,68,0.6); }
         .share-btn:active { transform: scale(0.98); }
+        .share-btn.saving { animation: savingPulse 1s ease infinite; }
+        @keyframes savingPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
         /* Modal */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
-        .modal.active { display: flex; }
-        .modal-box { width: 100%; max-width: 400px; background: linear-gradient(180deg, #1a1a2e, #16213e); border-radius: 24px 24px 0 0; padding: 25px; padding-bottom: 35px; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; width: 36px; height: 36px; border: none; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; font-size: 1.5rem; cursor: pointer; }
-        .modal h2 { text-align: center; font-size: 1.3rem; margin-bottom: 20px; }
-        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .share-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; border: none; border-radius: 14px; background: rgba(255,255,255,0.08); color: #fff; font-family: inherit; font-size: 0.75rem; cursor: pointer; }
-        .share-item span { font-size: 1.6rem; }
-        .share-item:active { background: rgba(255,107,157,0.3); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0); display: none; align-items: flex-end; justify-content: center; z-index: 1000; transition: background 0.3s; }
+        .modal.active { display: flex; background: rgba(0,0,0,0.85); }
+        .modal-box { width: 100%; max-width: 400px; background: linear-gradient(180deg, #1a1a2e, #16213e); border-radius: 28px 28px 0 0; padding: 28px; padding-bottom: 40px; position: relative; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .modal.active .modal-box { transform: translateY(0); }
+        .modal-close { position: absolute; top: 18px; right: 18px; width: 38px; height: 38px; border: none; border-radius: 50%; background: rgba(255,255,255,0.1); color: #fff; font-size: 1.5rem; cursor: pointer; transition: all 0.3s; }
+        .modal-close:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+        .modal h2 { text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
+        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .share-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 8px; border: none; border-radius: 16px; background: rgba(255,255,255,0.08); color: #fff; font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .share-item span { font-size: 1.8rem; }
+        .share-item:hover { background: rgba(255,107,157,0.25); transform: scale(1.05); }
+        .share-item:active { transform: scale(0.95); }
 
-        .link-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .link-section p { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
-        .link-row { display: flex; gap: 8px; }
-        .link-row input { flex: 1; padding: 10px; border: none; border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 0.8rem; }
-        .link-row button { padding: 10px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ff1744, #d50000); color: #fff; font-family: inherit; font-weight: 600; cursor: pointer; }
+        .link-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 18px; }
+        .link-section p { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+        .link-row { display: flex; gap: 10px; }
+        .link-row input { flex: 1; padding: 12px; border: none; border-radius: 10px; background: rgba(255,255,255,0.1); color: #fff; font-family: inherit; font-size: 0.85rem; }
+        .link-row button { padding: 12px 20px; border: none; border-radius: 10px; background: linear-gradient(135deg, #ff1744, #d50000); color: #fff; font-family: inherit; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .link-row button:hover { transform: scale(1.05); }
 
-        .card-id { text-align: center; margin-top: 12px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; }
-        .card-id code { font-size: 1.1rem; color: #ff6b9d; letter-spacing: 2px; }
+        .card-id { text-align: center; margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .card-id code { font-size: 1.2rem; color: #ff6b9d; letter-spacing: 3px; }
 
         /* Toast */
-        .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(50px); background: linear-gradient(135deg, #00c853, #69f0ae); color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; pointer-events: none; white-space: nowrap; }
+        .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(60px); background: linear-gradient(135deg, #00c853, #69f0ae); color: #fff; padding: 14px 28px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2000; pointer-events: none; white-space: nowrap; box-shadow: 0 8px 25px rgba(0,200,83,0.4); }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* Immersive View Mode */
+        .immersive-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f1e 100%); background-size: 400% 400%; animation: ambientFlow 15s ease infinite; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .immersive-overlay.active { display: flex; animation: immersiveFadeIn 0.6s ease; }
+        @keyframes immersiveFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .immersive-card { width: 300px; height: 420px; perspective: 1200px; cursor: pointer; }
+        .immersive-card .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .immersive-card.flipped .card-inner { transform: rotateY(180deg); }
+        .immersive-card .card-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+        .immersive-card .card-front { background: linear-gradient(135deg, var(--card-color1, #ff1744), var(--card-color2, #d50000)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; position: relative; }
+        .immersive-card .card-front::before { content: ''; position: absolute; inset: 14px; border: 2px solid rgba(255,255,255,0.3); border-radius: 14px; }
+        .immersive-card .card-emoji { font-size: 4.5rem; margin-bottom: 20px; animation: emojiEntrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards; }
+        @keyframes emojiEntrance { 0% { opacity: 0; transform: scale(0) rotate(-30deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+        .immersive-card .card-title { font-size: 1.8rem; color: #fff; text-align: center; text-shadow: 0 3px 12px rgba(0,0,0,0.4); line-height: 1.3; }
+        .immersive-card .card-back { background: linear-gradient(180deg, #fff5f5, #ffe4e9); transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .immersive-card .card-to { font-size: 1rem; color: #c41e3a; margin-bottom: 10px; opacity: 0; }
+        .immersive-card .card-to span { font-size: 1.5rem; }
+        .immersive-card .card-msg { font-size: 1.05rem; color: #c41e3a; line-height: 1.8; margin-bottom: 20px; flex: 1; display: flex; align-items: center; opacity: 0; }
+        .immersive-card .card-sign { font-size: 1.2rem; color: #c41e3a; opacity: 0; }
+        .immersive-card .card-from { font-size: 1.1rem; font-weight: 600; color: #c41e3a; margin-top: 8px; opacity: 0; }
+
+        /* Cinematic text reveal animation */
+        .immersive-card.flipped .card-to { animation: textReveal 0.6s ease 0.3s forwards; }
+        .immersive-card.flipped .card-msg { animation: textReveal 0.8s ease 0.6s forwards; }
+        .immersive-card.flipped .card-sign { animation: textReveal 0.5s ease 1.2s forwards; }
+        .immersive-card.flipped .card-from { animation: textReveal 0.5s ease 1.5s forwards; }
+        @keyframes textReveal {
+            0% { opacity: 0; transform: translateY(15px); filter: blur(4px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .immersive-hint { margin-top: 25px; font-size: 0.9rem; color: rgba(255,255,255,0.5); text-align: center; animation: pulse 2s ease infinite; }
+
+        .immersive-reply { margin-top: 30px; opacity: 0; transform: translateY(15px); transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .immersive-reply.visible { opacity: 1; transform: translateY(0); }
+        .immersive-reply button { padding: 16px 32px; border: none; border-radius: 30px; background: linear-gradient(135deg, rgba(255,107,157,0.3), rgba(255,23,68,0.3)); color: rgba(255,255,255,0.9); font-family: 'Dancing Script', cursive; font-size: 1.2rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15); }
+        .immersive-reply button:hover { background: linear-gradient(135deg, rgba(255,107,157,0.5), rgba(255,23,68,0.5)); transform: scale(1.05); }
+        .immersive-reply p { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 10px; }
 
         /* Desktop */
         @media (min-width: 600px) {
-            .envelope { width: 280px; height: 180px; }
-            .card { width: 280px; height: 400px; }
-            .card-emoji { font-size: 4rem; }
-            .card-title { font-size: 1.8rem; }
+            .envelope { width: 300px; height: 195px; }
+            .card { width: 300px; height: 420px; }
+            .card-emoji { font-size: 4.2rem; }
+            .card-title { font-size: 1.9rem; }
+            .immersive-card { width: 340px; height: 480px; }
+            .immersive-card .card-emoji { font-size: 5rem; }
+            .immersive-card .card-title { font-size: 2rem; }
             .modal { align-items: center; }
-            .modal-box { border-radius: 24px; margin: 20px; }
+            .modal-box { border-radius: 28px; margin: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="app">
+    <div class="ambient-bg"></div>
+
+    <div class="app" id="app">
         <header class="header">
             <h1>NOTE2U</h1>
             <p>Create & Share Valentine Cards</p>
@@ -185,7 +269,7 @@
                 <div class="seal" id="envSeal">💝</div>
                 <div class="envelope-front"><p>To: <span id="envTo">My Love</span></p></div>
             </div>
-            <p class="tap-hint" id="tapHint">👆 Tap to open</p>
+            <p class="tap-hint" id="tapHint">Tap to open</p>
 
             <!-- Card (hidden initially) -->
             <div class="card-wrapper" id="cardWrapper">
@@ -205,17 +289,18 @@
                         </div>
                     </div>
                 </div>
-                <p class="card-hint">👆 Tap card to flip</p>
-                <button class="seal-btn" id="sealBtn">📩 Put back in envelope</button>
+                <p class="card-hint">Tap card to flip</p>
+                <button class="seal-btn" id="sealBtn">Put back in envelope</button>
+                <button class="reply-btn" id="replyBtn">Your turn.</button>
             </div>
         </div>
 
-        <div class="editor">
+        <div class="editor" id="editor">
             <div class="tabs">
-                <button class="tab active" data-tab="write">✍️ Write</button>
-                <button class="tab" data-tab="style">🎨 Style</button>
-                <button class="tab" data-tab="font">Aa Font</button>
-                <button class="tab" data-tab="decorate">✨ Decorate</button>
+                <button class="tab active" data-tab="write">Write</button>
+                <button class="tab" data-tab="style">Style</button>
+                <button class="tab" data-tab="font">Font</button>
+                <button class="tab" data-tab="decorate">Decorate</button>
             </div>
 
             <!-- Write Panel -->
@@ -244,14 +329,14 @@
                 </div>
                 <p class="section-title" style="margin-top:15px">Quick Templates</p>
                 <div style="display:flex;flex-wrap:wrap;gap:8px">
-                    <button class="quick-btn" data-t="Be Mine!" data-m="You stole my heart and I never want it back. 💕">💘 Classic</button>
-                    <button class="quick-btn" data-t="I Love You!" data-m="Every moment with you feels like a beautiful dream. You mean everything to me.">❤️ Sweet</button>
-                    <button class="quick-btn" data-t="Hey You!" data-m="You're weird. I like it. Let's be weird together forever? 😄">😊 Funny</button>
-                    <button class="quick-btn" data-t="My Soulmate" data-m="In you, I found my best friend and my forever love. Happy Valentine's Day!">💖 Romantic</button>
-                    <button class="quick-btn" data-t="You + Me" data-m="Like coffee and mornings, we just belong together. Be my Valentine?">☕ Cute</button>
-                    <button class="quick-btn" data-t="Forever & Always" data-m="My heart knew you were the one from the very first moment. I love you endlessly.">💍 Deep</button>
-                    <button class="quick-btn" data-t="To My Love" data-m="You make ordinary days feel magical. Thank you for being you.">✨ Simple</button>
-                    <button class="quick-btn" data-t="Crazy About You" data-m="I fall for you a little more every single day. You're my favorite person!">🥰 Playful</button>
+                    <button class="quick-btn" data-t="Be Mine!" data-m="You stole my heart and I never want it back.">Classic</button>
+                    <button class="quick-btn" data-t="I Love You!" data-m="Every moment with you feels like a beautiful dream. You mean everything to me.">Sweet</button>
+                    <button class="quick-btn" data-t="Hey You!" data-m="You're weird. I like it. Let's be weird together forever?">Funny</button>
+                    <button class="quick-btn" data-t="My Soulmate" data-m="In you, I found my best friend and my forever love. Happy Valentine's Day!">Romantic</button>
+                    <button class="quick-btn" data-t="You + Me" data-m="Like coffee and mornings, we just belong together. Be my Valentine?">Cute</button>
+                    <button class="quick-btn" data-t="Forever & Always" data-m="My heart knew you were the one from the very first moment. I love you endlessly.">Deep</button>
+                    <button class="quick-btn" data-t="To My Love" data-m="You make ordinary days feel magical. Thank you for being you.">Simple</button>
+                    <button class="quick-btn" data-t="Crazy About You" data-m="I fall for you a little more every single day. You're my favorite person!">Playful</button>
                 </div>
             </div>
 
@@ -328,7 +413,7 @@
             <!-- Decorate Panel -->
             <div class="panel" id="decoratePanel">
                 <p class="section-title">Add Stickers</p>
-                <p class="hint">Tap to add • Drag to move • Long press to remove</p>
+                <p class="hint">Tap to add - Drag to move - Long press to remove</p>
                 <div class="grid-6">
                     <button class="sticker-btn" data-s="❤️">❤️</button>
                     <button class="sticker-btn" data-s="💕">💕</button>
@@ -360,14 +445,39 @@
             </div>
         </div>
 
-        <button class="share-btn" id="shareBtn">💌 Share Your Card</button>
+        <button class="share-btn" id="shareBtn">Share Your Card</button>
+    </div>
+
+    <!-- Immersive View Overlay -->
+    <div class="immersive-overlay" id="immersiveOverlay">
+        <div class="immersive-card" id="immersiveCard">
+            <div class="card-inner">
+                <div class="card-face card-front" id="immersiveFront">
+                    <div class="card-emoji" id="immersiveEmoji">💕</div>
+                    <p class="card-title font-dancing" id="immersiveTitle">Will You Be My Valentine?</p>
+                    <div class="stickers-layer" id="immersiveStickersFront"></div>
+                </div>
+                <div class="card-face card-back">
+                    <p class="card-to">To: <span class="font-dancing" id="immersiveTo">My Love</span></p>
+                    <p class="card-msg" id="immersiveMsg">Write something sweet...</p>
+                    <p class="card-sign font-dancing" id="immersiveSign">Forever Yours,</p>
+                    <p class="card-from" id="immersiveFrom">Your Name</p>
+                    <div class="stickers-layer" id="immersiveStickersBack"></div>
+                </div>
+            </div>
+        </div>
+        <p class="immersive-hint" id="immersiveHint">Tap to flip</p>
+        <div class="immersive-reply" id="immersiveReply">
+            <button id="immersiveReplyBtn">Your turn.</button>
+            <p>Reply with a card</p>
+        </div>
     </div>
 
     <!-- Modal -->
     <div class="modal" id="modal">
         <div class="modal-box">
             <button class="modal-close" id="modalClose">×</button>
-            <h2>Share Your Card 💕</h2>
+            <h2>Share Your Card</h2>
             <div class="card-id">
                 <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:5px">Your Card ID</p>
                 <code id="cardIdDisplay">------</code>
@@ -403,6 +513,8 @@
         let cardId = null;
         let envelopeOpened = false;
         let viewOnly = false;
+        let originalSender = null;
+        let receivedCardStyle = null;
 
         // Generate short ID
         function generateId() {
@@ -414,24 +526,47 @@
 
         // Init
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if viewing shared card
             const params = new URLSearchParams(window.location.search);
             const sharedId = params.get('id') || params.get('card');
+            const isReply = params.get('reply') === '1';
 
-            if (sharedId) {
+            if (sharedId && !isReply) {
+                // Viewing a shared card - immersive mode
                 viewOnly = true;
-                document.querySelector('.editor').style.display = 'none';
-                document.getElementById('shareBtn').style.display = 'none';
-                document.querySelector('.app').style.paddingBottom = '20px';
+                document.getElementById('app').style.display = 'none';
 
-                // Check if it's a 6-char ID (server) or encoded data (legacy)
                 if (sharedId.length === 6) {
-                    loadCardById(sharedId);
+                    loadCardById(sharedId, true);
                 } else {
-                    loadCardFromData(sharedId);
+                    loadCardFromData(sharedId, true);
                 }
-            }
+            } else if (isReply) {
+                // Reply mode - show editor with pre-filled style
+                const replyTo = params.get('to');
+                const c1 = params.get('c1');
+                const c2 = params.get('c2');
 
+                if (replyTo) {
+                    document.getElementById('inputTo').value = replyTo;
+                    document.getElementById('cardTo').textContent = replyTo;
+                    document.getElementById('envTo').textContent = replyTo;
+                    state.to = replyTo;
+                }
+
+                if (c1 && c2) {
+                    state.color1 = c1;
+                    state.color2 = c2;
+                    applyColors(c1, c2);
+                }
+
+                initAll();
+                toast('Create your reply card!');
+            } else {
+                initAll();
+            }
+        });
+
+        function initAll() {
             initEnvelope();
             initCard();
             initTabs();
@@ -443,12 +578,21 @@
             initSizes();
             initStickers();
             initShare();
-        });
+            initReply();
+        }
+
+        // Apply colors helper
+        function applyColors(c1, c2) {
+            document.getElementById('cardFront').style.setProperty('--card-color1', c1);
+            document.getElementById('cardFront').style.setProperty('--card-color2', c2);
+            document.querySelector('.envelope-back').style.background = `linear-gradient(180deg, ${c1}, ${c2})`;
+            document.querySelector('.envelope-front').style.background = `linear-gradient(180deg, ${c1}, ${adjustColor(c1, 20)})`;
+            document.querySelector('.envelope-flap').style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+        }
 
         // Envelope
         function initEnvelope() {
-            const env = document.getElementById('envelope');
-            env.addEventListener('click', openEnvelope);
+            document.getElementById('envelope').addEventListener('click', openEnvelope);
             document.getElementById('sealBtn').addEventListener('click', closeEnvelope);
         }
 
@@ -463,7 +607,7 @@
             setTimeout(() => {
                 env.classList.add('hidden');
                 document.getElementById('cardWrapper').classList.add('visible');
-            }, 800);
+            }, 900);
         }
 
         function closeEnvelope() {
@@ -471,11 +615,9 @@
             const env = document.getElementById('envelope');
             const card = document.getElementById('card');
 
-            // Reset card flip
             card.classList.remove('flipped');
             isFlipped = false;
 
-            // Hide card, show envelope
             document.getElementById('cardWrapper').classList.remove('visible');
             env.classList.remove('hidden');
             env.classList.remove('opening');
@@ -536,7 +678,7 @@
                     document.getElementById('cardMsg').textContent = btn.dataset.m;
                     state.title = btn.dataset.t;
                     state.msg = btn.dataset.m;
-                    toast('Template applied! ✨');
+                    toast('Template applied!');
                 });
             });
         }
@@ -549,13 +691,7 @@
                     state.color2 = btn.dataset.c2;
                     document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    document.getElementById('cardFront').style.setProperty('--card-color1', state.color1);
-                    document.getElementById('cardFront').style.setProperty('--card-color2', state.color2);
-                    // Update envelope too
-                    document.querySelector('.envelope-back').style.background = `linear-gradient(180deg, ${state.color1}, ${state.color2})`;
-                    document.querySelector('.envelope-front').style.background = `linear-gradient(180deg, ${state.color1}, ${adjustColor(state.color1, 20)})`;
-                    document.querySelector('.envelope-flap').style.background = `linear-gradient(135deg, ${state.color1}, ${state.color2})`;
-                    toast('Color changed! 🎨');
+                    applyColors(state.color1, state.color2);
                 });
             });
         }
@@ -576,18 +712,15 @@
                     document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     document.getElementById('cardEmoji').textContent = state.emoji;
-                    toast('Emoji changed! ' + state.emoji);
                 });
             });
 
-            // Seal emojis
             document.querySelectorAll('.seal-emoji-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     state.sealEmoji = btn.dataset.s;
                     document.querySelectorAll('.seal-emoji-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     document.getElementById('envSeal').textContent = state.sealEmoji;
-                    toast('Seal changed! ' + state.sealEmoji);
                 });
             });
         }
@@ -599,8 +732,7 @@
                     state.font = btn.dataset.font;
                     document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    const title = document.getElementById('cardTitle');
-                    title.className = 'card-title ' + state.font;
+                    document.getElementById('cardTitle').className = 'card-title ' + state.font;
                 });
             });
         }
@@ -648,7 +780,6 @@
             const stickerData = { emoji, x, y, size: state.stickerSize, side: isFlipped ? 'back' : 'front' };
             state.stickers.push(stickerData);
 
-            // Drag support
             let isDragging = false;
             let startX, startY, origX, origY;
 
@@ -673,7 +804,6 @@
 
             el.addEventListener('touchend', () => { isDragging = false; });
 
-            // Long press to remove
             let timer;
             el.addEventListener('touchstart', () => {
                 timer = setTimeout(() => {
@@ -686,7 +816,20 @@
             el.addEventListener('touchend', () => clearTimeout(timer));
 
             layer.appendChild(el);
-            toast('Sticker added! ✨');
+        }
+
+        // Reply functionality
+        function initReply() {
+            document.getElementById('replyBtn').addEventListener('click', startReply);
+            document.getElementById('immersiveReplyBtn').addEventListener('click', startReply);
+        }
+
+        function startReply() {
+            const replyUrl = window.location.origin + window.location.pathname +
+                '?reply=1' +
+                (originalSender ? '&to=' + encodeURIComponent(originalSender) : '') +
+                (receivedCardStyle ? '&c1=' + encodeURIComponent(receivedCardStyle.color1) + '&c2=' + encodeURIComponent(receivedCardStyle.color2) : '');
+            window.location.href = replyUrl;
         }
 
         // Share
@@ -694,15 +837,14 @@
             const modal = document.getElementById('modal');
 
             document.getElementById('shareBtn').addEventListener('click', async () => {
-                // Generate card ID
                 if (!cardId) {
                     cardId = generateId();
                 }
 
-                // Save card to server
                 const cardData = { ...state, id: cardId };
                 document.getElementById('cardIdDisplay').textContent = cardId;
-                document.getElementById('linkInput').value = 'Saving card...';
+                document.getElementById('linkInput').value = 'Saving...';
+                document.getElementById('shareBtn').classList.add('saving');
                 modal.classList.add('active');
 
                 try {
@@ -712,20 +854,19 @@
                         body: JSON.stringify(cardData)
                     });
                     if (!saveRes.ok) throw new Error('Save failed');
+                    toast('Card saved!');
                 } catch (e) {
                     console.error('Save error:', e);
                 }
 
-                // Create share URL with just ID
+                document.getElementById('shareBtn').classList.remove('saving');
                 const shareUrl = window.location.origin + window.location.pathname + '?id=' + cardId;
                 document.getElementById('linkInput').value = shareUrl;
-                toast('Card ready to share! 💌');
             });
 
             document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
             modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
 
-            // Native share
             if (navigator.share) {
                 document.getElementById('shareNative').addEventListener('click', async () => {
                     try {
@@ -737,39 +878,39 @@
                 document.getElementById('shareNative').style.display = 'none';
             }
 
-            // WhatsApp
             document.getElementById('shareWhatsApp').addEventListener('click', () => {
                 window.open('https://wa.me/?text=' + encodeURIComponent(getShareText() + '\n\n' + document.getElementById('linkInput').value), '_blank');
             });
 
-            // SMS
             document.getElementById('shareSMS').addEventListener('click', () => {
                 const text = getShareText() + ' ' + document.getElementById('linkInput').value;
                 window.location.href = /iPad|iPhone|iPod/.test(navigator.userAgent) ? 'sms:&body=' + encodeURIComponent(text) : 'sms:?body=' + encodeURIComponent(text);
             });
 
-            // Email
             document.getElementById('shareEmail').addEventListener('click', () => {
-                window.location.href = 'mailto:?subject=' + encodeURIComponent('Valentine Card for You! 💕') + '&body=' + encodeURIComponent(getShareText() + '\n\n' + document.getElementById('linkInput').value);
+                window.location.href = 'mailto:?subject=' + encodeURIComponent('Valentine Card for You!') + '&body=' + encodeURIComponent(getShareText() + '\n\n' + document.getElementById('linkInput').value);
             });
 
-            // Copy
             document.getElementById('copyLink').addEventListener('click', () => {
-                navigator.clipboard.writeText(document.getElementById('linkInput').value).then(() => toast('Link copied! 📋'));
+                navigator.clipboard.writeText(document.getElementById('linkInput').value).then(() => toast('Link copied!'));
             });
         }
 
         function getShareText() {
-            return (state.from || 'Someone special') + ' sent you a Valentine\'s card! 💕';
+            return (state.from || 'Someone special') + ' sent you a Valentine\'s card!';
         }
 
         // Load card by ID from server
-        async function loadCardById(id) {
+        async function loadCardById(id, immersive = false) {
             try {
                 const res = await fetch('/.netlify/functions/get-card?id=' + encodeURIComponent(id));
                 if (res.ok) {
                     const data = await res.json();
-                    applyCardData(data);
+                    if (immersive) {
+                        showImmersiveCard(data);
+                    } else {
+                        applyCardData(data);
+                    }
                 } else {
                     toast('Card not found');
                 }
@@ -779,17 +920,86 @@
             }
         }
 
-        // Load card from encoded data (legacy URLs)
-        function loadCardFromData(encoded) {
+        // Load card from encoded data (legacy)
+        function loadCardFromData(encoded, immersive = false) {
             try {
                 const data = JSON.parse(decodeURIComponent(atob(encoded)));
-                applyCardData(data);
+                if (immersive) {
+                    showImmersiveCard(data);
+                } else {
+                    applyCardData(data);
+                }
             } catch (e) {
                 toast('Invalid card data');
             }
         }
 
-        // Apply card data
+        // Show immersive card view
+        function showImmersiveCard(data) {
+            const overlay = document.getElementById('immersiveOverlay');
+            const card = document.getElementById('immersiveCard');
+
+            // Store for reply
+            originalSender = data.from || null;
+            receivedCardStyle = { color1: data.color1, color2: data.color2 };
+
+            // Apply data to immersive card
+            const toVal = data.to || 'My Love';
+            const titleVal = data.title || 'Will You Be My Valentine?';
+            const msgVal = data.msg || 'A special message for you...';
+            const signVal = data.sign || 'Forever Yours,';
+            const fromVal = data.from || 'Someone Special';
+
+            document.getElementById('immersiveTo').textContent = toVal;
+            document.getElementById('immersiveTitle').textContent = titleVal;
+            document.getElementById('immersiveMsg').innerHTML = msgVal.replace(/\n/g, '<br>');
+            document.getElementById('immersiveSign').textContent = signVal;
+            document.getElementById('immersiveFrom').textContent = fromVal;
+
+            if (data.color1 && data.color2) {
+                document.getElementById('immersiveFront').style.setProperty('--card-color1', data.color1);
+                document.getElementById('immersiveFront').style.setProperty('--card-color2', data.color2);
+            }
+
+            if (data.emoji) document.getElementById('immersiveEmoji').textContent = data.emoji;
+            if (data.font) document.getElementById('immersiveTitle').className = 'card-title ' + data.font;
+            if (data.titleSize) document.getElementById('immersiveTitle').style.fontSize = data.titleSize + 'rem';
+            if (data.msgSize) document.getElementById('immersiveMsg').style.fontSize = data.msgSize + 'rem';
+
+            // Add stickers
+            if (data.stickers && data.stickers.length) {
+                data.stickers.forEach(s => {
+                    const layer = document.getElementById(s.side === 'back' ? 'immersiveStickersBack' : 'immersiveStickersFront');
+                    const el = document.createElement('div');
+                    el.className = 'placed-sticker';
+                    el.textContent = s.emoji;
+                    el.style.fontSize = (s.size || 1.5) + 'rem';
+                    el.style.left = s.x + '%';
+                    el.style.top = s.y + '%';
+                    layer.appendChild(el);
+                });
+            }
+
+            // Show overlay
+            overlay.classList.add('active');
+
+            // Card flip interaction
+            let immersiveFlipped = false;
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+                immersiveFlipped = !immersiveFlipped;
+
+                // Show reply button after first flip
+                if (immersiveFlipped) {
+                    document.getElementById('immersiveHint').style.display = 'none';
+                    setTimeout(() => {
+                        document.getElementById('immersiveReply').classList.add('visible');
+                    }, 800);
+                }
+            });
+        }
+
+        // Apply card data to editor view
         function applyCardData(data) {
             const toVal = data.to || 'My Love';
             const titleVal = data.title || 'Will You Be My Valentine?';
@@ -820,11 +1030,7 @@
 
             if (data.color1 && data.color2) {
                 state.color1 = data.color1; state.color2 = data.color2;
-                document.getElementById('cardFront').style.setProperty('--card-color1', data.color1);
-                document.getElementById('cardFront').style.setProperty('--card-color2', data.color2);
-                document.querySelector('.envelope-back').style.background = `linear-gradient(180deg, ${data.color1}, ${data.color2})`;
-                document.querySelector('.envelope-front').style.background = `linear-gradient(180deg, ${data.color1}, ${adjustColor(data.color1, 20)})`;
-                document.querySelector('.envelope-flap').style.background = `linear-gradient(135deg, ${data.color1}, ${data.color2})`;
+                applyColors(data.color1, data.color2);
             }
 
             if (data.emoji) { state.emoji = data.emoji; document.getElementById('cardEmoji').textContent = data.emoji; }
@@ -848,7 +1054,6 @@
             }
 
             cardId = data.id;
-            toast('💌 Card loaded!');
         }
 
         function toast(msg) {
